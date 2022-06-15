@@ -41,7 +41,7 @@ function Auth() {
                     <Text className="text-lg text-[#3a3b45] "  >
                        { processing == "none" ? (auth_state == "login" ?  "Welcome Back!" : auth_state == "forgot" ? "Forgot password?" :  "Hey 👋") : processing == "error" ? "An Error Occured" : processing == "invalid" ? "Invalid Credentials Added" : processing == "loading" ? "Working On it" : "" }
                     </Text>
-                    <Form name="login_form" layout='vertical' className="!mt-[12px] !w-4/5 !p-[20px] " >
+                    <Form name="auth_form" layout='vertical' className="!mt-[12px] !w-4/5 !p-[20px] " >
                         { auth_state == "signup" && <Form.Item rules={[{required: true, message: "First Name is Required"}]}  name="first_name" className="!w-full !flex !flex-row"  >
                                 <CustomInput type="text"   placeholder="First Name" />
                         </Form.Item>}
