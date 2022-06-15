@@ -17,7 +17,9 @@
 
 const withAntdLess = require('next-plugin-antd-less');
 
-module.exports = require("@next/bundle-analyzer")(withAntdLess({
+
+
+module.exports = withAntdLess({
   modifyVars: { 
     '@primary-color': '#4e73df',
     '@success-color': "#1cc88a",
@@ -33,7 +35,7 @@ module.exports = require("@next/bundle-analyzer")(withAntdLess({
   cssLoaderOptions: {
     // ... 
     mode: "local",
-    localIdentName: typeof __DEV__ == "undefined" ? "[local]--[hash:base64:4]" : __DEV__ ? "[hash:base64:8]" : "[hash:base64:8]", // invalid! for Unify getLocalIdent (Next.js / CRA), Cannot set it, but you can rewritten getLocalIdentFn
+    localIdentName: process.env.NODE_ENV == "development" ? "[local]--[hash:base64:4]"  : "[hash:base64:8]", // invalid! for Unify getLocalIdent (Next.js / CRA), Cannot set it, but you can rewritten getLocalIdentFn
     exportLocalsConvention: "camelCase",
     exportOnlyLocals: false,
     // ...
@@ -61,4 +63,4 @@ module.exports = require("@next/bundle-analyzer")(withAntdLess({
   future: {
     webpack5: true,
   },
-}));
+});
