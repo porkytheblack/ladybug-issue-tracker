@@ -1,8 +1,13 @@
 import { authInitialState, user_management_types } from "../types";
 
 const userState: authInitialState = {
-    authenticated: false,
-    user: null
+    //- authenticated: false,
+    authenticated: true, //+ for testing
+    // user: null
+    user: { // for testing
+        user_email: "don@email.com",
+        user_name: "don"
+    }
 }
 
 export function user_reducer(state: authInitialState = userState, action: user_management_types): authInitialState{

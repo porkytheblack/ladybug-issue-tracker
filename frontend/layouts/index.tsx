@@ -10,16 +10,16 @@ function Layout({children}: {children: ReactNode | ReactNode[]}) {
     const authenticated = useAppSelector((state)=>state.user.authenticated)
     const {isAuthenticated, user} = useAuth0()
     const dispatch = useAppDispatch()
-    useEffect(()=>{
-        if(isAuthenticated){
-            dispatch(authenticate_user({
-                user_name: user?.name,
-                user_email: user?.email
-            }))
-        }else{
-            dispatch(deauthenticate_user())
-        }
-    }, [isAuthenticated])
+    // useEffect(()=>{
+    //     if(isAuthenticated){
+    //         dispatch(authenticate_user({
+    //             user_name: user?.name,
+    //             user_email: user?.email
+    //         }))
+    //     }else{
+    //         dispatch(deauthenticate_user())
+    //     }
+    // }, [isAuthenticated])
     if(authenticated){
         return (
             <DashboardLayout>
