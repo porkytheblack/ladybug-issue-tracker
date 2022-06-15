@@ -3,6 +3,8 @@ import '../styles/vars.css'
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { createGlobalStyle, ThemeProvider } from 'styled-components'
+import { wrapper } from '../redux/Store'
+import Layout from '../layouts'
 
 const GlobalStyles = createGlobalStyle`
   *{
@@ -12,20 +14,19 @@ const GlobalStyles = createGlobalStyle`
 `
 
 const theme = {
-  colors: {
-    primary: "black"
-  }
+  
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
 
   return    <>
-    <GlobalStyles/>
-  <ThemeProvider theme={theme} >
-            
-            <Component {...pageProps} />
+          <GlobalStyles/>
+          <ThemeProvider theme={theme} >
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
           </ThemeProvider> 
           </>
 }
 
-export default MyApp
+export default wrapper.withRedux(MyApp)
