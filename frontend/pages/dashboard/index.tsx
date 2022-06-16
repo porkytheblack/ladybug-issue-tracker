@@ -70,7 +70,7 @@ function Dashboard() {
                   </Select>
                 </Col>
                 <Col span={3} >
-                  <Select className="!w-[150px]" defaultActiveFirstOption >
+                  <Select defaultValue={["active"]} className="!w-[150px]" defaultActiveFirstOption >
                     <Option value="active" key="active" >
                       Active
                     </Option>
