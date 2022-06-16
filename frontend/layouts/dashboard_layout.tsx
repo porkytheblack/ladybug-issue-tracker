@@ -38,6 +38,7 @@ export default DashboardLayout
 
 const DashboardLayoutContainer = styled.div`
   .child-container {
+    overflow-y: scroll;
     &::-webkit-scrollbar{
       background: transparent;
       width: 5px;
