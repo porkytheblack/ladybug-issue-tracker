@@ -1,6 +1,6 @@
 import { AppstoreOutlined, BugOutlined, DashboardFilled, DashboardOutlined, LeftOutlined, LogoutOutlined, MailOutlined, RightOutlined, SettingOutlined, TeamOutlined, ToolOutlined, UserOutlined } from '@ant-design/icons'
 import { Avatar, Menu, Typography } from 'antd'
-import MenuItem from 'antd/lib/menu/MenuItem'
+import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { MenuProps } from 'rc-menu'
@@ -83,11 +83,11 @@ function SideMenu() {
                 <Menu.Item icon={<SettingOutlined/>} onClick={()=>{call_change_active("settings")}}   key="settings"  >
                     Settings
                 </Menu.Item>
-                <Menu.Item  icon={<MailOutlined/>} onClick={()=>{call_change_active("inbox")}}   key="inbox"  >
+                <Menu.Item className="!mb-[100px]"  icon={<MailOutlined/>} onClick={()=>{call_change_active("inbox")}}   key="inbox"  >
                     In box
                 </Menu.Item>
-                <li className='h-[10%]' ></li>
-                <Menu.Item key="user" onClick={()=>{call_change_active("user")}}  icon={<Avatar src="https://joeschmoe.io/api/v1/jess" size="large" shape='circle' />} >
+                
+                <Menu.Item key="user" className="!p-0 !flex !flex-col !items-center !w-full  !justify-center" onClick={()=>{call_change_active("user")}}  icon={<Avatar className="!overflow-visible !absolute " src="https://joeschmoe.io/api/v1/jess"  shape='circle' />} >
                     User
                 </Menu.Item>
                 <Menu.Item key="logout" icon={<LogoutOutlined/>} >
@@ -98,13 +98,15 @@ function SideMenu() {
                 <a onClick={toggle_menu_state} className="absolute z-10 top-3 flex flex-row items-center justify-center right-[-10px] h-[20px] w-[20px] icon-container" >
                     {sub_menu == "open" ?<LeftOutlined  /> : <RightOutlined/>}
                 </a>
-                <li className="h-[20%]" ></li>
-                <MenuItem icon={<TeamOutlined/>} >
+                <li className="h-[20%] flex flex-col items-center justify-center " >
+                    <SettingOutlined className="h-9 w-9 text-[36px] "  />
+                </li>
+                <Menu.Item icon={<TeamOutlined/>} >
                     Teams
-                </MenuItem>
-                <MenuItem icon={<ToolOutlined/>} >
+                </Menu.Item>
+                <Menu.Item icon={<ToolOutlined/>} >
                     Workflows
-                </MenuItem>
+                </Menu.Item>
         </SecondaryMenu>}
     </MenuContainer>
   )
@@ -116,15 +118,18 @@ const SideMenuContainer = styled(Menu)`
     z-index: 5;
     max-width: 200px;
     min-width: 0px;
+    
 `
 const SecondaryMenu = styled(Menu)<{menu_state: "open"  | "closed" }>`
     max-width: 200px;
     min-width: 0px;
+    box-shadow: 0 0 17px 1px rgba(32,33,36,.1) !important;
     margin-left: ${({menu_state})=>menu_state == "closed" ? "-93.9%" : "0%"};
     .icon-container {
         border-radius: 10px;
         background: rgba(201, 232, 255, 0.9);
     }
+    transition: margin .3s ease-in;
 `
 
 const MenuContainer = styled.div`

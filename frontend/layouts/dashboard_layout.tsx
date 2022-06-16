@@ -25,7 +25,10 @@ function DashboardLayout({children}: {children: ReactNode | ReactNode[]}) {
     <DashboardContext.Provider value={{expanded, toggle_menu, active, change_active}} >
       <DashboardLayoutContainer className=" !bg-[#F2F5FA] flex flex-row items-start justify-start w-screen h-screen overflow-x-hidden overflow-y-hidden" >
           <SideMenu/>
+          <div className="w-full flex flex-col items-center justify-start h-full" >
           {children}
+          </div>
+          
       </DashboardLayoutContainer>
     </DashboardContext.Provider>
   )
@@ -34,5 +37,14 @@ function DashboardLayout({children}: {children: ReactNode | ReactNode[]}) {
 export default DashboardLayout
 
 const DashboardLayoutContainer = styled.div`
-
+  .child-container {
+    &::-webkit-scrollbar{
+      background: transparent;
+      width: 5px;
+    }
+    &::-webkit-scrollbar-thumb{
+      border-radius: 2.5px;
+      background: #b3d4fc;
+    }
+  }
 `
