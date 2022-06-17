@@ -1,4 +1,4 @@
-import { Tabs, Typography } from 'antd'
+import { Col, Row, Tabs, Typography } from 'antd'
 import React from 'react'
 import styled from 'styled-components'
 import Hero from '../../../components/Containers/Hero'
@@ -32,7 +32,11 @@ function Projects() {
             }
             key="1"
             >
-                <ProjectCardWithActions/>
+              <Row align="top" justify='space-between'  className="w-full" >
+                  <Col span={8} >
+                    <ProjectCardWithActions project_name='LadyBug' project_type='site' />
+                  </Col>
+              </Row>
             </TabPane>
             <TabPane tab={
               <Text className='!text-black' >

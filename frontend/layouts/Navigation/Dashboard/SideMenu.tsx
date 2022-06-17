@@ -1,4 +1,4 @@
-import { AppstoreOutlined, BugOutlined, DashboardFilled, DashboardOutlined, LeftOutlined, LogoutOutlined, MailOutlined, RightOutlined, SettingOutlined, TeamOutlined, ToolOutlined, UserOutlined } from '@ant-design/icons'
+import { AppstoreOutlined, BarChartOutlined, BugOutlined, CheckCircleOutlined, DashboardFilled, DashboardOutlined, ExclamationCircleOutlined, LeftOutlined, LogoutOutlined, MailOutlined, RightOutlined, SettingOutlined, TeamOutlined, ToolOutlined, UserOutlined } from '@ant-design/icons'
 import { Avatar, Menu, Typography } from 'antd'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
@@ -7,16 +7,26 @@ import { MenuProps } from 'rc-menu'
 import { ItemType } from 'rc-menu/lib/interface'
 import React, { Key, ReactNode, useContext, useState } from 'react'
 import styled from 'styled-components'
-import { DashboardContext } from '../../dashboard_layout'
+import { active_sub, active_type, DashboardContext } from '../../dashboard_layout'
 
 
 type MenuItem = Required<MenuProps>['items'][number]
 
 const {Text} = Typography
 
-const secondary_menu_items = [
+export interface sub_mens {
+    active: string,
+    active_icon: ReactNode,
+    menus: {
+        name: string,
+        icon: ReactNode
+    }[]
+}
+
+const secondary_menu_items: sub_mens[]  = [
     {
-        active: "workflows",
+        active: "settings",
+        active_icon: <SettingOutlined className="h-9 w-9 text-[36px] "  />,
         menus: [
             {
                 name: "Teams",
@@ -27,6 +37,28 @@ const secondary_menu_items = [
                 icon: <ToolOutlined/>
             }
         ]
+    },
+    {
+        active: "project_sub",
+        active_icon: <Image src={`/icons/site.svg`} height="100px" width="110px" />,
+        menus: [
+            {
+                name: "Overview",
+                icon: <AppstoreOutlined/>
+            },
+            {
+                name: "Issues",
+                icon: <ExclamationCircleOutlined/>
+            },
+            {
+                name: "Activity",
+                icon: <CheckCircleOutlined/>
+            },
+            {
+                name: "Sprints",
+                icon: <BarChartOutlined/>
+            }
+        ]
     }
 ]
 
@@ -34,11 +66,11 @@ const secondary_menu_items = [
 
 
 function SideMenu() {
-    const {expanded, active, change_active} = useContext(DashboardContext)
+    const {expanded, active, change_active, active_sub} = useContext(DashboardContext)
     const [sub_menu, set_submenu] = useState<"open" | "closed">("open") 
     const router = useRouter()
     
-    const call_change_active = (a: "dashboard" | "settings" | "inbox" | "projects" | "user") =>{
+    const call_change_active = (a: active_type) =>{
         if(typeof change_active !== "undefined"){
             if( a !== active ){
                 change_active(a)
@@ -50,6 +82,19 @@ function SideMenu() {
                 
             }
             
+        }
+    }
+
+    const sub_menu_nav = (a: active_sub) =>{
+        if(typeof change_active !== "undefined"){
+            if( a !== active) {
+                
+                if(active == "project_sub"){
+                    router.push(`/dashboard/projects/${a}`)
+                }else if(active == "settings"){
+                    router.push(`/dashboard/settings/${a}`)
+                }
+             }
         }
     }
 
@@ -68,7 +113,7 @@ function SideMenu() {
      
   return (
     <MenuContainer className="flex flex-row items-start justify-start h-screen  " >
-        <SideMenuContainer theme="dark" defaultSelectedKeys={["dashboard"]}  inlineCollapsed={true} className="h-screen " mode="inline" >
+        <SideMenuContainer theme="dark" activeKey={active}  defaultSelectedKeys={["dashboard"]}  inlineCollapsed={true} className="h-screen " mode="inline" >
                 <li className="w-full   flex flex-col items-center justify-center  !h-[30%]" >
                         <Text className="font-sans font-bold text-lg " >
                                 <Image src="/icons/logo.svg" className="hover:cursor-pointer" width="40px" height="42.5px" />
@@ -94,20 +139,21 @@ function SideMenu() {
                     Logout
                 </Menu.Item>
         </SideMenuContainer>
-        {active == "settings" && <SecondaryMenu menu_state={sub_menu} className="!h-screen relative" mode="inline"  >
-                <a onClick={toggle_menu_state} className="absolute z-10 top-3 flex flex-row items-center justify-center right-[-10px] h-[20px] w-[20px] icon-container" >
-                    {sub_menu == "open" ?<LeftOutlined  /> : <RightOutlined/>}
-                </a>
-                <li className="h-[20%] flex flex-col items-center justify-center " >
-                    <SettingOutlined className="h-9 w-9 text-[36px] "  />
-                </li>
-                <Menu.Item icon={<TeamOutlined/>} >
-                    Teams
-                </Menu.Item>
-                <Menu.Item icon={<ToolOutlined/>} >
-                    Workflows
-                </Menu.Item>
-        </SecondaryMenu>}
+                {secondary_menu_items.filter(item=>item.active == active).map(({active, active_icon, menus})=>(
+                    <SecondaryMenu  defaultValue={[active_sub]} activeKey={active_sub} menu_state={sub_menu} className="!h-screen relative" mode="inline"  >
+                    <a onClick={toggle_menu_state} className="absolute z-10 top-3 flex flex-row items-center justify-center right-[-10px] h-[20px] w-[20px] icon-container" >
+                        {sub_menu == "open" ?<LeftOutlined  /> : <RightOutlined/>}
+                    </a>
+                    <li className="h-[20%] flex flex-col items-center justify-center " >
+                        {active_icon}
+                    </li>
+                    {menus.map(({name, icon})=>(
+                            <Menu.Item onClick={()=>{sub_menu_nav(name.toLocaleLowerCase() as active_sub)}} icon={icon} key={name.toLocaleLowerCase()} >
+                                {name}
+                            </Menu.Item>
+                    ))}
+                    </SecondaryMenu>
+                ))}
     </MenuContainer>
   )
 }
@@ -121,10 +167,10 @@ const SideMenuContainer = styled(Menu)`
     
 `
 const SecondaryMenu = styled(Menu)<{menu_state: "open"  | "closed" }>`
-    max-width: 200px;
+    width: 250px;
     min-width: 0px;
     box-shadow: 0 0 17px 1px rgba(32,33,36,.1) !important;
-    margin-left: ${({menu_state})=>menu_state == "closed" ? "-93.9%" : "0%"};
+    margin-left: ${({menu_state})=>menu_state == "closed" ? "-75.9%" : "0%"};
     .icon-container {
         border-radius: 10px;
         background: rgba(201, 232, 255, 0.9);

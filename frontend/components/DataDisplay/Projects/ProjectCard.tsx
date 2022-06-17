@@ -3,8 +3,9 @@ import Image from 'next/image'
 import React from 'react'
 
 const {Text} = Typography
+export type project_type = "site" | "server" | "database" | "app"
 
-function ProjectCard({project_name, project_type}:{project_name: string, project_type: "site" | "server" | "database" | "app" }) {
+function ProjectCard({project_name, project_type}:{project_name: string, project_type: project_type }) {
   return (
     <div className="flex flex-col items-center justify-center p-5 rounded-[8px] border-[0.7px] border-[#eaeaea] "  >
         <Image src={`/icons/${project_type}.svg`} width="110px" height="100px" className="mb-3" />

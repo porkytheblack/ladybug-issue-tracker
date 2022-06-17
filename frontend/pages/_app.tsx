@@ -10,6 +10,7 @@ import { Auth0Provider } from '@auth0/auth0-react'
 import Head from 'next/head'
 import { InstantSearch } from 'react-instantsearch-dom'
 import algoliasearch from 'algoliasearch'
+import { Select, Typography } from 'antd';
 
 const GlobalStyles = createGlobalStyle`
   *{
@@ -25,6 +26,9 @@ const theme = {
 const client = algoliasearch("3W9J6JZQEU", "893665089787aa0e349041379af938b2")
 
 // console.log(client.getLogs())
+
+export const {Text } = Typography
+export const {Option} = Select
 
 function MyApp({ Component, pageProps }: AppProps) {
 

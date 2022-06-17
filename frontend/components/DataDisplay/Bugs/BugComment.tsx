@@ -20,7 +20,7 @@ function BugComment() {
         </Text>
         <div className="flex flex-row items-center w-full min-h-[100px] overflow-hidden "></div>
         <div className="absolute bottom-0 w-full flex flex-col read-more items-center justify-end pb-5"   >
-            <Button type='primary' >
+            <Button type='primary' className="!bg-blue-700" >
                 <Text className="!text-white text-medium" >Read More</Text>
             </Button>
         </div>
