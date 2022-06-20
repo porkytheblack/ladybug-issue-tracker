@@ -7,6 +7,8 @@ import { MenuProps } from 'rc-menu'
 import { ItemType } from 'rc-menu/lib/interface'
 import React, { Key, ReactNode, useContext, useState } from 'react'
 import styled from 'styled-components'
+import { deauthenticate_user } from '../../../redux/actions/user.actions'
+import { useAppDispatch } from '../../../redux/hooks'
 import { active_sub, active_type, DashboardContext } from '../../dashboard_layout'
 
 
@@ -55,8 +57,8 @@ const secondary_menu_items: sub_mens[]  = [
                 icon: <CheckCircleOutlined/>
             },
             {
-                name: "Sprints",
-                icon: <BarChartOutlined/>
+                name: "Settings",
+                icon: <SettingOutlined/>
             }
         ]
     }
@@ -69,7 +71,7 @@ function SideMenu() {
     const {expanded, active, change_active, active_sub} = useContext(DashboardContext)
     const [sub_menu, set_submenu] = useState<"open" | "closed">("open") 
     const router = useRouter()
-    
+    const dispatch = useAppDispatch()
     const call_change_active = (a: active_type) =>{
         if(typeof change_active !== "undefined"){
             if( a !== active ){
@@ -91,14 +93,16 @@ function SideMenu() {
                 
                 if(active == "project_sub"){
                     router.push(`/dashboard/projects/${a}`)
-                }else if(active == "settings"){
-                    router.push(`/dashboard/settings/${a}`)
+                }else if(active == "teams"){
+                    router.push(`/dashboard/teams/${a}`)
                 }
              }
         }
     }
 
     const logout = () =>{
+        router.push("/")
+        dispatch(deauthenticate_user())
 
     }
 
@@ -125,17 +129,14 @@ function SideMenu() {
                 <Menu.Item onClick={()=>{call_change_active("projects")}}    icon={<AppstoreOutlined  />} key="projects"  >
                     Projects
                 </Menu.Item>
-                <Menu.Item icon={<SettingOutlined/>} onClick={()=>{call_change_active("settings")}}   key="settings"  >
-                    Settings
-                </Menu.Item>
-                <Menu.Item className="!mb-[100px]"  icon={<MailOutlined/>} onClick={()=>{call_change_active("inbox")}}   key="inbox"  >
-                    In box
+                <Menu.Item icon={<TeamOutlined/>} onClick={()=>{call_change_active("teams")}}   key="settings"  >
+                    Teams
                 </Menu.Item>
                 
                 <Menu.Item key="user" className="!p-0 !flex !flex-col !items-center !w-full  !justify-center" onClick={()=>{call_change_active("user")}}  icon={<Avatar className="!overflow-visible !absolute " src="https://joeschmoe.io/api/v1/jess"  shape='circle' />} >
                     User
                 </Menu.Item>
-                <Menu.Item key="logout" icon={<LogoutOutlined/>} >
+                <Menu.Item key="logout" onClick={logout} icon={<LogoutOutlined/>} >
                     Logout
                 </Menu.Item>
         </SideMenuContainer>

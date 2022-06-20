@@ -4,13 +4,13 @@ import { Text } from '../../../pages/_app'
 import BaseCard from '../../Containers/BaseCard'
 import BugUpdate from '../Bugs/BugUpdate'
 
-function UpdatesCard() {
+function UpdatesCard({className}: {className?: string}) {
   return (
-    <BaseCard span={24} className="bg-white h-full " >
+    <BaseCard span={24} className={`bg-white w-full h-full  `} >
         <Text className="text-lg !text-black font-medium" >
             Updates
         </Text>
-        <UpdatesContainer>
+        <UpdatesContainer className={`w-full ${typeof className!== "undefined" ? className : ""} `} >
             <BugUpdate/>
             <BugUpdate/>
             <BugUpdate/>

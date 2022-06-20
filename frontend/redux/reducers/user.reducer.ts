@@ -2,7 +2,7 @@ import { authInitialState, user_management_types } from "../types";
 
 const userState: authInitialState = {
     //- authenticated: false,
-    authenticated: true, //+ for testing
+    authenticated: false, //+ for testing
     // user: null
     user: { // for testing
         user_email: "don@email.com",

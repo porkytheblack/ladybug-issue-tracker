@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { project_type } from '../components/DataDisplay/Projects/ProjectCard'
 import SideMenu from './Navigation/Dashboard/SideMenu'
 
-export type active_type = "dashboard" | "settings" | "inbox" | "projects" | "user" | "project_sub"
+export type active_type = "dashboard" | "teams" | "inbox" | "projects" | "user" | "project_sub"
 export type active_sub = "settings" |  "overview" | "issues" | "activity" | "sprints" | "teams" | "workflows" | "none"
 
 
@@ -35,8 +35,8 @@ function DashboardLayout({children}: {children: ReactNode | ReactNode[]}) {
 
   useEffect(()=>{
     console.log(pathname)
-    if(pathname == "/dashboard/settings"){
-      set_active("settings")
+    if(pathname == "/dashboard/teams"){
+      set_active("teams")
     }else if(pathname == "/dashboard/inbox"){
       set_active("inbox")
     }else if(pathname == "/user"){
@@ -47,8 +47,8 @@ function DashboardLayout({children}: {children: ReactNode | ReactNode[]}) {
       n = ["overview", "issues", "settings", "activity" , "sprints"].indexOf(n) !== -1 ? n : "none"
       set_active_sub(n as active_sub)
     }else if(pathname.indexOf("/dashboard/settings/") !== -1 && pathname.length > "/dashboard/settings/".length){
-      set_active("settings")
-      var n = pathname.replace("/dashboard/settings/", "")
+      set_active("teams")
+      var n = pathname.replace("/dashboard/teams/", "")
       n = ["teams", "workflows"].indexOf(n) !== -1 ? n : "none"
       set_active_sub(n as active_sub)
     }else if(pathname == "/dashboard/projects"){

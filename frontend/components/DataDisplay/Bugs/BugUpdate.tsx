@@ -18,7 +18,7 @@ function BugUpdate() {
             </Text>
             
         </div>
-        <ul className="flex flex-col items-start justify-start pl-5" >
+        <ul className="flex flex-col w-full items-start justify-start pl-5" >
                 <BugUpdateItem/>
         </ul>
     </div>
