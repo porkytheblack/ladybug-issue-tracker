@@ -4,13 +4,13 @@ import React from 'react'
 import { Text } from '../../../pages/_app'
 import BaseCard from '../../Containers/BaseCard'
 
-function TeamCard() {
+function TeamCard({onClickEdit}:{onClickEdit?: ()=>void}) {
     const DropDownMenu = () =>(
         <Menu >
             <Menu.Item key="remove" >
                     Remove
             </Menu.Item>
-            <Menu.Item key="edit" >
+            <Menu.Item onClick={onClickEdit} key="edit" >
                     Edit
             </Menu.Item>
         </Menu>

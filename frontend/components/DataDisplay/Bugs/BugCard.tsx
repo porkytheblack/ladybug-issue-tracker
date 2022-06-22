@@ -1,7 +1,8 @@
 import { MessageFilled } from '@ant-design/icons'
 import { Avatar, Col, Divider, Row, Typography } from 'antd'
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
+import LeftModalContainer from '../../Containers/LeftModal'
 import BaseTag from '../../Tags/BaseTag'
 import StatusTag from '../../Tags/StatusTag'
 
@@ -9,15 +10,26 @@ import StatusTag from '../../Tags/StatusTag'
 const {Text} = Typography
 
 function BugCard() {
+    const [is_modal_visible, set_is_modal_visible] = useState<boolean>(false)
+
+    const hide = () =>{
+        set_is_modal_visible(false)
+    }
+    const show = () =>{
+        set_is_modal_visible(true)
+    }
   return (
-    <BugCardContainer className="flex cursor-pointer w-full flex-col items-center justify-start bg-white rounded-[5px] p-5 " >
+    <>
+    <LeftModalContainer isVisible={is_modal_visible} hide={hide} >
+
+    </LeftModalContainer>
+    <BugCardContainer onClick={show} className="flex cursor-pointer w-full flex-col items-center justify-start bg-white rounded-[5px] p-5 " >
+            
             <Row align="middle"  justify='space-between' className="w-full h-full " >
                 <Col span={3} className="!flex !flex-row !items-center !justify-center " >
-
                     <Text className="font-medium uppercase !text-black text-sm " >
                         Bug1
                     </Text>
-                    
                 </Col>
                 <Col span={3} >
                     <BaseTag severity='high' >
@@ -72,6 +84,7 @@ function BugCard() {
                 </Col>
             </Row>
     </BugCardContainer>
+    </>
   )
 }
 

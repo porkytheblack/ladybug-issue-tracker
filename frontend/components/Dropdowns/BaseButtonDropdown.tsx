@@ -21,7 +21,11 @@ function BaseButtonDropdown({default_val, options, get_current_val, title, onCli
             <Divider className='!p-0 !m-0 ' />
             <Radio.Group  onChange={(e)=>{
                     if(typeof onChange !== "undefined"){
-                            
+                            set_current_item({
+                                name: e.target.value,
+                                current_icon: <></>
+                            })
+                            get_current_val(e.target.value)
                     }else{
                         var n = e.target.value
                         console.log(n)
@@ -54,10 +58,8 @@ function BaseButtonDropdown({default_val, options, get_current_val, title, onCli
     )
 
   return (
-    <Dropdown overlay={DropdownMenu} visible={menu_open} >
-        <Button onClick={()=>{
-            set_menu_open(!menu_open)
-        }} className="!rounded-md flex flex-row w-full items-center capitalize justify-between" icon={current_icon} >
+    <Dropdown overlay={DropdownMenu}  >
+        <Button className="!rounded-md flex flex-row w-full items-center capitalize justify-between" icon={current_icon} >
             {name}
         </Button>
     </Dropdown>

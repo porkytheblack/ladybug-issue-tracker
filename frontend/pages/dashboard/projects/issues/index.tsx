@@ -9,6 +9,7 @@ import BaseIssueCard from '../../../../components/DataDisplay/Issues/BaseIssueCa
 import "react-quill/dist/quill.snow.css"
 import UploadAction from '../../../../components/Actions/UploadAction'
 import BaseButtonDropdown from '../../../../components/Dropdowns/BaseButtonDropdown'
+import MultipleSelectDropdown from '../../../../components/Dropdowns/MultipleSelectDropdown'
 
 
 
@@ -23,6 +24,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
   const [isMenuVisible, handleMenuVisibleChange] = useState<boolean>(false)
   const [issue_modal_visible, set_issue_modal_visible] = useState<boolean>(false)
   const [on_client, set_on_client] = useState<boolean>(false)
+  const [active_tags, set_active_tags] = useState<string[]>([])
   const [{
     summary,
     description,
@@ -66,6 +68,9 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
     }
   }, [])
   
+  const update_active_tags = (vals: string[])=>{
+    set_active_tags(vals)
+  }
 
 
 
@@ -108,7 +113,14 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
   return (
     <PageBaseContainer  >
 
-        <Modal title="Add Issue" width="60vw" onCancel={()=>{set_issue_modal_visible(false)}} visible={issue_modal_visible} footer={null} >
+        <Modal   title="Add Issue" width="60vw" onCancel={()=>{set_issue_modal_visible(false)}} visible={issue_modal_visible} footer={[
+          <Button>
+            Save
+          </Button>,
+          <Button>
+            Cancel
+          </Button>
+        ]} >
               <div className="flex flex-row items-start justify-between w-full">
                     <div className="flex flex-col items-start justify-start w-[60%] ">
                         <Form name="issue_form" layout='vertical' className='w-full h-full' >
@@ -240,7 +252,11 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
                                   name: "UI"
                                 }
                               ]} />
-
+                            <MultipleSelectDropdown get_active={update_active_tags} tags={[
+                              "New",
+                              "Functionality",
+                              "Improvement"
+                            ]} />
                     </div>  
               </div>
         </Modal>

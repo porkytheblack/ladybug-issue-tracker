@@ -30,8 +30,7 @@ function Projects() {
       </div>
      
       <Tabs className="w-4/5 h-full " >
-            
-            
+
             <TabPane tab={
               <Text className='!text-black' >
                   All(3)
