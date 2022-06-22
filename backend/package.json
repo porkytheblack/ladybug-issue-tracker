@@ -25,6 +25,7 @@
     "find-config": "^1.0.0",
     "flatted": "^3.2.5",
     "lodash": "^4.17.21",
+    "mongoose": "^6.4.0",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.15"
   }
