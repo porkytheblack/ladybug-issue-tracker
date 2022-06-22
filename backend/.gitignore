@@ -1,1 +1,5 @@
 node_modules
+./db.ts
+.env
+db.ts
+/db.ts
