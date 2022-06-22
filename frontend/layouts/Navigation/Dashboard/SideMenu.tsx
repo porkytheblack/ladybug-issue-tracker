@@ -1,12 +1,15 @@
 import { AppstoreOutlined, BarChartOutlined, BugOutlined, CheckCircleOutlined, DashboardFilled, DashboardOutlined, ExclamationCircleOutlined, LeftOutlined, LogoutOutlined, MailOutlined, RightOutlined, SettingOutlined, TeamOutlined, ToolOutlined, UserOutlined } from '@ant-design/icons'
+import { useAuth0 } from '@auth0/auth0-react'
 import { Avatar, Menu, Typography } from 'antd'
 import { motion } from 'framer-motion'
+import { useAtom } from 'jotai'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import { MenuProps } from 'rc-menu'
 import { ItemType } from 'rc-menu/lib/interface'
 import React, { Key, ReactNode, useContext, useState } from 'react'
 import styled from 'styled-components'
+import { userAtom, userAuthTypeAtom } from '../../../jotai/state'
 import { deauthenticate_user } from '../../../redux/actions/user.actions'
 import { useAppDispatch } from '../../../redux/hooks'
 import { active_sub, active_type, DashboardContext } from '../../dashboard_layout'
@@ -69,9 +72,13 @@ const secondary_menu_items: sub_mens[]  = [
 
 function SideMenu() {
     const {expanded, active, change_active, active_sub} = useContext(DashboardContext)
+    const [, set_user_atom] = useAtom(userAtom)
+    const [getUserAuthType, setUserAuthType] = useAtom(userAuthTypeAtom)
     const [sub_menu, set_submenu] = useState<"open" | "closed">("open") 
     const router = useRouter()
     const dispatch = useAppDispatch()
+    const {logout} = useAuth0()
+
     const call_change_active = (a: active_type) =>{
         if(typeof change_active !== "undefined"){
             if( a !== active ){
@@ -100,11 +107,7 @@ function SideMenu() {
         }
     }
 
-    const logout = () =>{
-        router.push("/")
-        dispatch(deauthenticate_user())
-
-    }
+    
 
     const toggle_menu_state = () =>{
         if(sub_menu == "closed"){
@@ -114,6 +117,18 @@ function SideMenu() {
         }
     }
 
+    const logUserOut = () =>{
+        if(getUserAuthType == "auth0"){
+            set_user_atom(null)
+            logout()
+            setUserAuthType("unauthenticated")
+        }else{
+            set_user_atom(null)
+            setUserAuthType("unauthenticated")
+        }
+        
+    }
+ 
      
   return (
     <MenuContainer className="flex flex-row items-start justify-start h-screen  " >
@@ -136,7 +151,7 @@ function SideMenu() {
                 <Menu.Item key="user" className="!p-0 !flex !flex-col !items-center !w-full  !justify-center" onClick={()=>{call_change_active("user")}}  icon={<Avatar className="!overflow-visible !absolute " src="https://joeschmoe.io/api/v1/jess"  shape='circle' />} >
                     User
                 </Menu.Item>
-                <Menu.Item key="logout" onClick={logout} icon={<LogoutOutlined/>} >
+                <Menu.Item key="logout" onClick={logUserOut} icon={<LogoutOutlined/>} >
                     Logout
                 </Menu.Item>
         </SideMenuContainer>

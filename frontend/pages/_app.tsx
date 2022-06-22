@@ -34,7 +34,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return    (
       
-                  <Auth0Provider domain='dev-1r9889va.us.auth0.com' clientId='Im7sn8k1xfKw0Lb9Btn1TbemThVGtjnR' redirectUri='http://localhost:3000/auth' >
+                  <Auth0Provider  domain='dev-1r9889va.us.auth0.com' clientId='MC8VL8hqPB1QByekIIM9Cs38fnfevGla' redirectUri='http://localhost:3000/auth' >
                 <Head>
                   <title>LadyBug</title>
                   <meta name="description" content="The only bug tracker you will ever need" />

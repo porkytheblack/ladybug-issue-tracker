@@ -14,6 +14,7 @@ const {Option} = Select
 function Dashboard() {
   return (
     <CustomDash className="flex pt-[60px] flex-col !items-center   justify-start w-full pl-[60px] pr-[20px] h-screen overflow-x-hidden child-container" >
+      
       <Col span={24} className="min-w-full  h-full" >
         <div className="flex flex-row items-center  justify-start w-full mb-8 ">
             <Text className="font-medium !text-black text-[36px] text-left"  >

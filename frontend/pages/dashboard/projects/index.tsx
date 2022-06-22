@@ -1,7 +1,9 @@
 import { Col, Row, Tabs, Typography } from 'antd'
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
+import BaseModalContainer from '../../../components/Containers/BaseModalContainer'
 import Hero from '../../../components/Containers/Hero'
+import LeftModalContainer from '../../../components/Containers/LeftModal'
 import ProjectCardWithActions from '../../../components/DataDisplay/Projects/ProjectCardWithActions'
 import TopSearchContainer from '../../../components/OneJob/TopSearchContainer'
 
@@ -9,8 +11,13 @@ const {TabPane} = Tabs
 const {Text} = Typography
 
 function Projects() {
+  const [isModalVisible, handleModalVisibility] = useState<boolean>(true)
+  const hide = () =>{
+    handleModalVisibility(false)
+  }
   return (
     <ProjectContainer className="flex flex-col w-full h-full child-container items-center justify-start">
+      
       <div className="w-full flex flex-col items-center h-[300px] justify-center bg-white" >
         <Hero image={["projects", "complete_project", "project_org" ] }more="with our easy to use tool" >
             Make working on your projects easier

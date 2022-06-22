@@ -72,13 +72,6 @@ function Auth() {
                             
                             </Button>
                         </Col>
-                        <Col span={4} >
-                            <Button onClick={loginWithPopup} className="!border-none" icon={
-                                <Image src="/icons/facebook.svg" height="36px" width="36px" />
-                            } >
-                            
-                            </Button>
-                        </Col>
                     </Row>}
                     <div className="w-[74%] h-[0.3px] opacity-[0.4] bg-[#3a3b45] " ></div>
                     <div  className="flex flex-col items-center justify-start" >

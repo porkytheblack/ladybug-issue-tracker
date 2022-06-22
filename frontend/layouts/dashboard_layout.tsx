@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router'
 import React, { createContext, ReactNode, useEffect, useState } from 'react'
 import styled from 'styled-components'
+import BaseModalContainer from '../components/Containers/BaseModalContainer'
 import { project_type } from '../components/DataDisplay/Projects/ProjectCard'
 import SideMenu from './Navigation/Dashboard/SideMenu'
 
@@ -60,13 +61,14 @@ function DashboardLayout({children}: {children: ReactNode | ReactNode[]}) {
 
   return (
     <DashboardContext.Provider value={{expanded, toggle_menu, active, change_active, active_sub,  current_project_type: project_type}} >
-      <DashboardLayoutContainer className=" !bg-[#F2F5FA] flex flex-row items-start justify-start w-screen h-screen overflow-x-hidden overflow-y-hidden" >
+      <DashboardLayoutContainer className=" !bg-[#F2F5FA] flex flex-row items-start justify-start w-screen relative h-screen overflow-x-hidden overflow-y-hidden" >
           <SideMenu/>
           <div className="w-full flex flex-col items-center justify-start h-full" >
           {children}
           </div>
           
       </DashboardLayoutContainer>
+      
     </DashboardContext.Provider>
   )
 }
