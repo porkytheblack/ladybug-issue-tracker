@@ -22,45 +22,13 @@ const UserSchema = new Schema({
                 type: String,
                 default: "assignee"
             },
-            project_platform: String,
+            platform: String,
             project_id: {
                 type: Types.ObjectId,
-                required: true,
-                unique: true
-            }
-        }
-    ],
-    issues: [
-        {
-            issue_id: {
-                type: Types.ObjectId,
-                unique: true,
-                required: true
-            },
-            summary: String,
-            description: String,
-            type: String,
-            severity: String,
-            status: String,
-            tags: [
-                {
-                    tag_name: {
-                        type: String,
-                        unique: true
-                    },
-                    tag_color: {
-                        type: String,
-                        unique: true
-                    }
-                }
-            ],
-            system_details: {
-                type: Types.Map,
-                of: String
             }
         }
     ]
 })
 
 
-export default model("User", UserSchema)
+export default model("Users", UserSchema)

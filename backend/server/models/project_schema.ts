@@ -1,55 +1,58 @@
-import {Schema, Types, model} from "mongoose"
+import {Schema, Types, model, SchemaTypes} from "mongoose"
 
 const ProjectSchema = new Schema({
     project_name: String,
     project_creator: String,
     team: {
-        team_id: Types.ObjectId,
         team_name: String
     },
     platform: {
         type: String
     },
     description: String,
-    issues: new Schema({
+    issues: [new Schema({
             summary: String,
             description: String,
-            asignees: new Schema({
+            assignees: [new Schema({
                 user_name: String,
                 avatar: String
-            }),
-            attachmanets: new Schema({
+            })],
+            attachments: [{
                 attachment_name: String,
-                attachment: Types.Buffer
-            }),
-            tags: new Schema({
+                attachment: SchemaTypes.Buffer
+            }],
+            tags: [{
                 tag_name: String,
                 tag_color: String
-            }),
+            }],
             type: String,
             severity: String,
             status: String,
             system_details: {
-                type: Types.Map,
+                type: SchemaTypes.Map,
                 of: String
             },
-            comments: new Schema({
+            comments: [new Schema({
                 author: {
                     name: String,
-                    avatar: String
+                    avatar: String 
                 },
-                created_at: {
-                    type: Date ,
-                    default: new Date()
-                },
-                last_update: {
-                    type: Date,
-                    default: new Date()
-                },
-                description: String
-            }),
+                
+                description: String,
+                lastModified: {
+                    type: SchemaTypes.Date,
+                    default: new Date(Date.now())
+                }
+            }, {
+                timestamps: true
+            })],
 
-    })
+    }, {
+        timestamps: true
+    })]
+}, {
+    typeKey: "$type",
+    timestamps: true
 })
 
 export default model("Project", ProjectSchema)

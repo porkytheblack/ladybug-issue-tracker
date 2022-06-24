@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon node --loader ts-node/esm ./server.ts "
+    "dev":"nodemon node --loader ts-node/esm ./server.ts "
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",

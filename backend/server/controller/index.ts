@@ -5,3 +5,5 @@ export const ping = (req: Request, res: Response) => {
         msg: "Ping Successful"
     })
 }
+
+
