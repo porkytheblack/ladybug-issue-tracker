@@ -1,4 +1,5 @@
 import {Schema, ObjectId, Types, model} from "mongoose"
+import {hashSync} from "bcrypt"
 
 const UserSchema = new Schema({
     user_name: {
@@ -8,7 +9,10 @@ const UserSchema = new Schema({
     first_name: String,
     last_name: String,
     email: String,
-    avatar: String,
+    avatar: {
+        type: String,
+        default: ""
+    },
     password: String,
     authType: {
         type: String,
@@ -30,5 +34,15 @@ const UserSchema = new Schema({
     ]
 })
 
+
+UserSchema.pre("save",function(next){
+    if(this.password.length > 0){
+        this.password = hashSync(this.password, 15)
+        console.log(this.password)
+        next()
+    }else{
+        next()
+    }
+})
 
 export default model("Users", UserSchema)

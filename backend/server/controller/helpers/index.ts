@@ -43,11 +43,9 @@ const action_types = [
 
 const required_fields = [
     [
-        "password",
         "user_name"
     ],
     [
-        "password",
         "user_name"
     ],
     [

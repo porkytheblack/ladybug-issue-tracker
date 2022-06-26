@@ -2,10 +2,14 @@ import { Router } from "express";
 import { ping } from "../controller";
 import { add_assignee, add_tag, create_comment, create_project, create_project_issue, delete_assignee, delete_comment, delete_issues, delete_project, delete_tag, update_comment, update_issue, update_project, update_system_details, update_tag } from "../controller/projects";
 import { add_team_member, create_team } from "../controller/team";
-import { add_user_project, create_user, update_user_project } from "../controller/user";
+import { login } from "../controller/tokens";
+import { add_user_project, create_auth0_user, create_user, update_user_project } from "../controller/user";
+import { auth_middleware } from "../middleware/auth";
 
 
 const router = Router()
+
+router.use(auth_middleware)
 
 //ping the server
 router.get("/", ping)
@@ -13,6 +17,7 @@ router.get("/", ping)
 router.post("/user", create_user)
 router.post("/user/project/:user_name", add_user_project)
 router.put("/user/project/:user_name", update_user_project)
+router.post("/user/auth0", create_auth0_user)
 
 
 router.post("/project", create_project)
@@ -41,6 +46,9 @@ router.put("/issue/:issue_id", update_issue)
 router.post("/team", create_team)
 
 router.post("/team/:team", add_team_member)
+
+
+router.post("/login", login)
 
 
 module.exports = router
