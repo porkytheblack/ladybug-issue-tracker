@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import { MenuProps } from 'rc-menu'
 import { ItemType } from 'rc-menu/lib/interface'
 import React, { Key, ReactNode, useContext, useState } from 'react'
+import { useCookies } from 'react-cookie'
 import styled from 'styled-components'
 import { userAtom, userAuthTypeAtom } from '../../../jotai/state'
 import { deauthenticate_user } from '../../../redux/actions/user.actions'
@@ -78,6 +79,7 @@ function SideMenu() {
     const router = useRouter()
     const dispatch = useAppDispatch()
     const {logout} = useAuth0()
+    const [{access_token}, set_access_token] = useCookies(["access_token"])
 
     const call_change_active = (a: active_type) =>{
         if(typeof change_active !== "undefined"){
@@ -126,7 +128,9 @@ function SideMenu() {
             set_user_atom(null)
             setUserAuthType("unauthenticated")
         }
-        
+        set_access_token("access_token", "")
+        setUserAuthType("unauthenticated")
+        router.push("/auth")
     }
  
      

@@ -11,6 +11,7 @@ import Head from 'next/head'
 import { InstantSearch } from 'react-instantsearch-dom'
 import algoliasearch from 'algoliasearch'
 import { Select, Typography } from 'antd';
+import { CookiesProvider } from 'react-cookie';
 
 const GlobalStyles = createGlobalStyle`
   *{
@@ -33,7 +34,7 @@ export const {Option} = Select
 function MyApp({ Component, pageProps }: AppProps) {
 
   return    (
-      
+                  <CookiesProvider>
                   <Auth0Provider  domain='dev-1r9889va.us.auth0.com' clientId='MC8VL8hqPB1QByekIIM9Cs38fnfevGla' redirectUri='http://localhost:3000/auth' >
                 <Head>
                   <title>LadyBug</title>
@@ -50,6 +51,7 @@ function MyApp({ Component, pageProps }: AppProps) {
                 </InstantSearch>
               </ThemeProvider> 
               </Auth0Provider>
+              </CookiesProvider>
       
   )
   
