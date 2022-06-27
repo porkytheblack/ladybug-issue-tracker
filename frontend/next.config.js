@@ -50,13 +50,16 @@ module.exports = withAntdLess({
   },
 
   enabled: process.env.ANALYZE === 'true',
-  reactStrictMode: true,
+  reactStrictMode: false,
   compiler: {
     styledComponents: true,
   },
 
   webpack(config) {
     return config;
+  },
+  images: {
+    domains: ["lh3.googleusercontent.com"]
   },
 
   // ONLY for Next.js 10, if you use Next.js 11, delete this block

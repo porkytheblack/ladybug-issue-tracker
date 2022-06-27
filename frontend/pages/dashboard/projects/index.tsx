@@ -1,11 +1,13 @@
 import { Col, Row, Tabs, Typography } from 'antd'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import BaseModalContainer from '../../../components/Containers/BaseModalContainer'
 import Hero from '../../../components/Containers/Hero'
 import LeftModalContainer from '../../../components/Containers/LeftModal'
 import ProjectCardWithActions from '../../../components/DataDisplay/Projects/ProjectCardWithActions'
 import TopSearchContainer from '../../../components/OneJob/TopSearchContainer'
+import useProjects from '../../../hooks/useProjects'
+import useTeams from '../../../hooks/useTeams'
 
 const {TabPane} = Tabs
 const {Text} = Typography
@@ -15,6 +17,19 @@ function Projects() {
   const hide = () =>{
     handleModalVisibility(false)
   }
+
+
+  ///////////////////get projects 
+  const {projects, loading, error, len} = useProjects()
+  
+  ///////////////////end of get projects
+
+  
+
+
+
+
+
   return (
     <ProjectContainer className="flex flex-col w-full h-full child-container items-center justify-start">
       
@@ -38,10 +53,15 @@ function Projects() {
             }
             key="1"
             >
-              <Row align="top" justify='space-between'  className="w-full" >
-                  <Col span={8} >
-                    <ProjectCardWithActions project_name='LadyBug' project_type='site' />
-                  </Col>
+              <Row align="top"  gutter={[8, 16]} justify='space-between'  className="w-full pb-9 h-full" >
+                
+                {
+                  projects.map(({_id, project_name, team, platform})=>(
+                    <Col className=' !flex  !h-[280px]' span={7} >
+                      <ProjectCardWithActions project_name={project_name} platform={platform} team={team} _id={_id} />
+                    </Col>
+                  ))
+                }
               </Row>
             </TabPane>
             <TabPane tab={

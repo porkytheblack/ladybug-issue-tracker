@@ -58,8 +58,8 @@ function BaseButtonDropdown({default_val, options, get_current_val, title, onCli
     )
 
   return (
-    <Dropdown overlay={DropdownMenu}  >
-        <Button className="!rounded-md flex flex-row w-full items-center capitalize justify-between" icon={current_icon} >
+    <Dropdown   overlay={DropdownMenu}  >
+        <Button onMouseOver={onClick} className="!rounded-md flex flex-row w-full items-center capitalize justify-between" icon={current_icon} >
             {name}
         </Button>
     </Dropdown>

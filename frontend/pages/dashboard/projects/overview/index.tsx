@@ -7,8 +7,10 @@ import SeverityCard from '../../../../components/DataDisplay/Cards/SeverityCard'
 import TagsCard from '../../../../components/DataDisplay/Cards/TagsCard'
 import TopIssues from '../../../../components/DataDisplay/Cards/TopIssues'
 import UpdatesCard from '../../../../components/DataDisplay/Cards/UpdatesCard'
+import useProject from '../../../../hooks/useProject'
 
 function Overview() {
+  const project = useProject()
   return (
     <PageBaseContainer>
         <Row className="w-full mb-5 " align="top" justify='space-between' >

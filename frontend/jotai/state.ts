@@ -15,6 +15,8 @@ export const userAtom = atomWithStorage<userInterface|null>("user", null)
 
 export const userAuthTypeAtom = atomWithStorage<user_auth_type>("user_auth_type", "unauthenticated")
 
+export const activeProjectAtom = atomWithStorage<string | null>("current_project", null)
+
 
 
 

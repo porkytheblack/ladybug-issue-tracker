@@ -2,7 +2,9 @@ import { BugOutlined, BulbOutlined, ExclamationCircleOutlined, FileOutlined, Fil
 import { Avatar, Button, Checkbox, Dropdown, Form, Input, Menu, Modal, Select } from 'antd'
 import { atom, useAtom, useAtomValue } from 'jotai'
 import React, { useEffect, useState } from 'react'
-import ReactQuill, {Quill} from 'react-quill'
+const ReactQuill = dynamic(()=>import("react-quill"), {
+  ssr: false
+})
 import PageBaseContainer from '../../../../components/Containers/PageBaseContainer'
 import BugCard from '../../../../components/DataDisplay/Bugs/BugCard'
 import BaseIssueCard from '../../../../components/DataDisplay/Issues/BaseIssueCard'
@@ -10,6 +12,9 @@ import "react-quill/dist/quill.snow.css"
 import UploadAction from '../../../../components/Actions/UploadAction'
 import BaseButtonDropdown from '../../../../components/Dropdowns/BaseButtonDropdown'
 import MultipleSelectDropdown from '../../../../components/Dropdowns/MultipleSelectDropdown'
+import dynamic from 'next/dynamic'
+import { useForm } from 'antd/lib/form/Form'
+import useTeam from '../../../../hooks/useTeam'
 
 
 
@@ -25,25 +30,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
   const [issue_modal_visible, set_issue_modal_visible] = useState<boolean>(false)
   const [on_client, set_on_client] = useState<boolean>(false)
   const [active_tags, set_active_tags] = useState<string[]>([])
-  const [{
-    summary,
-    description,
-    asignees,
-    attachments,
-    system_details
-  }, set_issue] = useState<{
-    summary: string,
-    description: string,
-    asignees: string[],
-    attachments: string[],
-    system_details: string
-  }>({
-    summary: "",
-    description: "",
-    asignees: [],
-    attachments: [],
-    system_details: ""
-  })
+  const [description, set_description] = useState<string>("")
 
   const [current_option, set_current_option] = useState<string[]>([
     "bug",
@@ -53,11 +40,10 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
   const [active, set_active] = useState<number>(0)
 
   const change_current_option = (val: string) =>{
-    if(active == 0){
+    
       const c = current_option
-      c[0] = val
+      c[active] = val
       set_current_option((_)=>c)
-    }
 
   }
 
@@ -110,44 +96,44 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
   }
 
 
+  const [issue_form]  = useForm()
+
+  const handleSubmit = () =>{
+    issue_form.validateFields().then((vals)=>{
+      console.log(vals)
+      console.log(current_option)
+    }).catch((e)=>{
+      console.log(e)
+    })
+  }
+
+  const {members} = useTeam()
+
+
   return (
     <PageBaseContainer  >
-
         <Modal   title="Add Issue" width="60vw" onCancel={()=>{set_issue_modal_visible(false)}} visible={issue_modal_visible} footer={[
-          <Button>
+          <Button onClick={handleSubmit} >
             Save
           </Button>,
-          <Button>
+          <Button onClick={()=>set_issue_modal_visible(false)} >
             Cancel
           </Button>
         ]} >
               <div className="flex flex-row items-start justify-between w-full">
                     <div className="flex flex-col items-start justify-start w-[60%] ">
-                        <Form name="issue_form" layout='vertical' className='w-full h-full' >
+                        <Form form={issue_form} name="issue_form" layout='vertical' className='w-full h-full' >
 
-                          <Form.Item  label="Summary"  >
-                            <Input onChange={(e)=>{
-                                set_issue((issue)=>({
-                                  ...issue,
-                                  summary: e.target.value
-                                }))
-                            }} value={summary} placeholder='Crisp, precise, and focus on impact' />
+                          <Form.Item name="summary" rules={[{required: true, message: "A Summary is required"}]} label="Summary"  >
+                            <Input  placeholder='Crisp, precise, and focus on impact' />
                           </Form.Item>
-                          {on_client && <Form.Item label="Description" >
-                              <ReactQuill theme='snow' value={description} onChange={(content)=>{
-                                  set_issue((issue)=>({
-                                    ...issue,
-                                    description: content
-                                  }))
-                              }} />
-                          </Form.Item>}
-                          <Form.Item label="System Details" >
-                              <Input placeholder='e.g HP / Windows 11 / 64 bit' value={system_details} onChange={(e)=>{
-                                set_issue((issue)=>({
-                                  ...issue,
-                                  system_details: e.target.value
-                                }))
-                              }} />
+                          <Form.Item initialValue={""} name="description" label="Description" >
+                              {on_client && <ReactQuill theme="snow" value={description || ""} onChange={(content)=>{
+                                set_description(content)
+                              }} />}
+                          </Form.Item>
+                          <Form.Item name="system_details" label="System Details" >
+                              <Input placeholder='e.g HP / Windows 11 / 64 bit'  />
                           </Form.Item>
                           <Form.Item label="Assignees" >
                             <Avatar.Group>
@@ -190,10 +176,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
                                   name: "New Features"
                                 }
                               ]} />
-
-                              <BaseButtonDropdown onChange={(val)=>{
-
-                              }} onClick={()=>set_active(1)} get_current_val={change_current_option} title="Severity" default_val={{name: "low", current_icon: <></>}} options={[
+                              <BaseButtonDropdown onClick={()=>set_active(1)} get_current_val={change_current_option} title="Severity" default_val={{name: "low", current_icon: <></>}} options={[
                                 {
                                   icon: <></>,
                                   name: "Low"
@@ -211,46 +194,43 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
                                   name: "Critical"
                                 }
                               ]} />
-
-                          <BaseButtonDropdown onChange={(val)=>{
-
-                          }} onClick={()=>set_active(2)} get_current_val={change_current_option} title="Status" default_val={{name: "New", current_icon: <></>}} options={[
-                                {
-                                  icon: <></>,
-                                  name: "New"
-                                },
-                                {
-                                  icon: <></>,
-                                  name: "Improvement"
-                                },
-                                {
-                                  icon: <></>,
-                                  name: "Bug"
-                                },
-                                {
-                                  icon: <></>,
-                                  name: "Issue"
-                                },
-                                {
-                                  icon: <></>,
-                                  name: "Task"
-                                },
-                                {
-                                  icon: <></>,
-                                  name: "Question"
-                                },
-                                {
-                                  icon: <></>,
-                                  name: "Suggestion"
-                                },
-                                {
-                                  icon: <></>,
-                                  name: "Functional"
-                                },
-                                {
-                                  icon: <></>,
-                                  name: "UI"
-                                }
+                              <BaseButtonDropdown onClick={()=>set_active(2)} get_current_val={change_current_option} title="Status" default_val={{name: "New", current_icon: <></>}} options={[
+                                    {
+                                      icon: <></>,
+                                      name: "New"
+                                    },
+                                    {
+                                      icon: <></>,
+                                      name: "Improvement"
+                                    },
+                                    {
+                                      icon: <></>,
+                                      name: "Bug"
+                                    },
+                                    {
+                                      icon: <></>,
+                                      name: "Issue"
+                                    },
+                                    {
+                                      icon: <></>,
+                                      name: "Task"
+                                    },
+                                    {
+                                      icon: <></>,
+                                      name: "Question"
+                                    },
+                                    {
+                                      icon: <></>,
+                                      name: "Suggestion"
+                                    },
+                                    {
+                                      icon: <></>,
+                                      name: "Functional"
+                                    },
+                                    {
+                                      icon: <></>,
+                                      name: "UI"
+                                    }
                               ]} />
                             <MultipleSelectDropdown get_active={update_active_tags} tags={[
                               "New",

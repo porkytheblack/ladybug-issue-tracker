@@ -1,16 +1,20 @@
 import { MoreOutlined, PushpinOutlined } from '@ant-design/icons'
 import { Col, Divider, Dropdown, Menu, Row, Tooltip, Typography } from 'antd'
+import { useAtom } from 'jotai'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { is_def_string } from '../../../helpers'
+import { activeProjectAtom } from '../../../jotai/state'
 import { project_type } from './ProjectCard'
 
 const {Text} = Typography
 
-function ProjectCardWithActions({project_name, project_type}:{project_name: string, project_type: project_type}) {
+function ProjectCardWithActions({project_name, platform, team, _id}:{project_name?: string, platform?: string, _id?: string, team?: string}) {
   const [dropdown, set_dropdown] = useState<"visible" | "colapsed" >("colapsed")
-
+  const [current_project, set_current_project] = useAtom(activeProjectAtom)
+  
   const DropDownMenu = () =>(
     <Menu mode="vertical" className='!min-w-[200px]'   >
       <Menu.Item onClick={()=>{push("/dashboard/projects/sprints")}} key="sprints" >
@@ -31,7 +35,7 @@ function ProjectCardWithActions({project_name, project_type}:{project_name: stri
   const {pathname, push} = useRouter()
 
   return (
-    <CardContainer  className="bg-[#fcfcfc] flex flex-col  items-center justify-start overflow-hidden  cursor-pointer rounded-[8px] border-[.0.7px] border-[#eaeaea] group " >
+    <CardContainer  className="bg-[#fcfcfc] !w-full !h-full flex flex-col  items-center justify-start overflow-hidden  cursor-pointer rounded-[8px] border-[.0.7px] border-[#eaeaea] group " >
         <div className="flex p-[10px] flex-row items-center mb-5 justify-end w-full pl-[10px]">
           <Tooltip title="Pin project" >
             <a  className=" invisible mr-[10px] group-hover:visible flex  hover:bg-[#eaeaea]  flex-row items-center justify-center rounded-full p-[5px] ">
@@ -45,16 +49,22 @@ function ProjectCardWithActions({project_name, project_type}:{project_name: stri
           </Dropdown>
           
         </div>
-        <div onClick={()=>{push("/dashboard/projects/overview")}} className="flex flex-row items-center justify-center w-full">
-          <Image src={`/icons/${project_type}.svg`}  height={100} width={110}  />
+        <div onClick={()=>{
+          push("/dashboard/projects/overview")
+          set_current_project(is_def_string(_id))
+          }}  className="flex flex-row items-center justify-center w-full">
+          <Image src={`/icons/${platform}.svg`}  height={100} width={110}  />
         </div>
-        <div onClick={()=>{push("/dashboard/projects/overview")}} className="flex p-[10px] flex-row items-center justify-center w-full">
+        <div onClick={()=>{
+          push("/dashboard/projects/overview")  
+          set_current_project(is_def_string(_id))          
+          }} className="flex p-[10px] flex-row items-center justify-center w-full">
           <Text className="font-medium flex flex-row items-center justify-center text-lg" >
             <Text className="!text-black mr-5 capitalize" >
               {project_name}
             </Text>
             <Text  >
-              d_house_dev
+              {team}
             </Text>
           </Text>
         </div>

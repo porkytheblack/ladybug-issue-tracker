@@ -1,10 +1,18 @@
 import {Schema, Types, model, SchemaTypes} from "mongoose"
 
 const ProjectSchema = new Schema({
-    project_name: String,
-    project_creator: String,
+    project_name: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    project_creator: {
+        type: String,
+        required: true
+    },
     team: {
-        team_name: String
+        type: String,
+        required: true
     },
     platform: {
         type: String
@@ -50,9 +58,6 @@ const ProjectSchema = new Schema({
     }, {
         timestamps: true
     })]
-}, {
-    typeKey: "$type",
-    timestamps: true
 })
 
 export default model("Project", ProjectSchema)

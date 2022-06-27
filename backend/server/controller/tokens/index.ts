@@ -37,7 +37,7 @@ export const login = (req: Request, res: Response) =>{
                                 if(!is_password) return res.status(400).send({Error: "Invalid password provided"})
                                 const {user_name, email, authType, avatar} = results
                                 res.cookie("access_token", jwt.sign({
-                                    user_name
+                                    user_name: user_name
                                 }, process.env.access_token), {
                                     secure: false,
                                     httpOnly:false,
@@ -89,7 +89,7 @@ export const login = (req: Request, res: Response) =>{
                         const {email, avatar, authType, user_name} = data
                         console.log(data, 88)
                         res.cookie("access_token", jwt.sign({
-                            user_name: data.nickname
+                            user_name: `${user_name}`
                         }, process.env.access_token), {
                             secure: false,
                             httpOnly: false,

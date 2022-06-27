@@ -26,7 +26,8 @@ const expected_keys = [
     "member",
     "role",
     "project_id",
-    "issue_id"
+    "issue_id",
+    "team"
 ]
 
 const action_types = [
@@ -38,7 +39,8 @@ const action_types = [
     "add_assignee",
     "add_tag",
     "add_team",
-    "add_user_project"
+    "add_user_project",
+    
 ]
 
 const required_fields = [
@@ -50,7 +52,7 @@ const required_fields = [
     ],
     [
         "project_name",
-        "project_creator"
+
     ],
     [
         "summary",

@@ -12,6 +12,7 @@ import { InstantSearch } from 'react-instantsearch-dom'
 import algoliasearch from 'algoliasearch'
 import { Select, Typography } from 'antd';
 import { CookiesProvider } from 'react-cookie';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 const GlobalStyles = createGlobalStyle`
   *{
@@ -32,9 +33,12 @@ export const {Text } = Typography
 export const {Option} = Select
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const appClient = new QueryClient()
 
-  return    (
+  return    ( 
+
                   <CookiesProvider>
+                    <QueryClientProvider client={appClient} >
                   <Auth0Provider  domain='dev-1r9889va.us.auth0.com' clientId='MC8VL8hqPB1QByekIIM9Cs38fnfevGla' redirectUri='http://localhost:3000/auth' >
                 <Head>
                   <title>LadyBug</title>
@@ -51,8 +55,9 @@ function MyApp({ Component, pageProps }: AppProps) {
                 </InstantSearch>
               </ThemeProvider> 
               </Auth0Provider>
+              </QueryClientProvider>
               </CookiesProvider>
-      
+              
   )
   
 }

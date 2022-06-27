@@ -1,21 +1,21 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import { check_for_required_fields, verify_body } from "../helpers";
 import ProjectModel from "../../models/project_schema";
+import { extRequest } from "../../middleware/auth";
 
 
-export const create_project = (req: Request, res: Response)=>{
+export const create_project = (req: extRequest, res: Response)=>{
+    const {user_name} = req.user
     verify_body(req.body).then((body)=>{
-        console.log(body)
         check_for_required_fields(body, "create_project").then((data)=>{
-            const NewProject = new ProjectModel(data)
+            const NewProject = new ProjectModel({...data, project_creator: user_name})
             NewProject.save().then((_res)=>{
                 res.status(200).send(_res)
             }).catch((e)=>{
                 res.status(500).send(e)
             })
         }).catch((e)=>{
-            console.log(e)
-            res.status(500).send(e)
+            res.status(400).send(e)
         })
     })
 }
@@ -357,4 +357,40 @@ export const delete_tag = (req: Request, res: Response)=>{
             Error: "Invalid tagname provided"
         })
     }
+}
+
+
+export const get_user_issues = (req: extRequest, res: Response)=>{
+    ProjectModel.find({
+        "issues.assignees.user_name": req.user.user_name
+    }, (err, result)=>{
+        if(err) return res.status(500).send({Error: err, message: "An error occured while trying to retrieve the issue"})
+        res.status(200).send(result)
+    })
+}   
+
+export const get_user_projects = (req: extRequest, res: Response)=>{
+    ProjectModel.find({
+        $or: [
+            {
+                project_creator: req.user.user_name
+            },
+            {
+                "issues.assignees.user_name": req.user.user_name
+            }
+        ]
+    }, (err, result)=>{
+        if(err) return res.status(500).send({Error: e, message: "An error occured while retrieving projects"})
+        res.status(200).send(result)
+    })
+}
+
+export const get_project_by_id = (req: extRequest, res: Response) =>{
+    const _id = req.params.project_id 
+    if(typeof _id == "undefined" || _id == null ) return res.status(400).send({Error: "Invalid project id provided"})
+    if(_id.length == 0) return res.status(400).send({Error: "Project Id was not specified"})
+    ProjectModel.findById(_id, (err, result)=>{
+        if(err) return res.status(500).send(err )
+        res.status(200).send(result)
+    })
 }

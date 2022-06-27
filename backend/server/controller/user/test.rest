@@ -1,8 +1,7 @@
-POST http://localhost:8080/login 
+GET http://localhost:8080/teams
+Cookie: "access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJwb3JreXRoZWJsYWNrIiwiaWF0IjoxNjU2MzE5MDUzfQ.mkahDZOZUZYsePonj9VEyr6LsN60JuoCLZ7He9YmVO4;"
 Content-Type: application/json
 
 {
-    "user_name": "chloe",
-    "password": "password",
-    "authType":"normal"
+    "team_name": "cool_cats"
 }

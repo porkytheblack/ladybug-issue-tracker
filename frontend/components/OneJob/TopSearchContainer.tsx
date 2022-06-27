@@ -1,4 +1,4 @@
-import { Button, Col, Form, Input, Modal, Row, Select } from 'antd'
+import { Button, Col, Form, Input, Modal, notification, Row, Select } from 'antd'
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import CustomSearch from '../Custom/CustomSearchBox'
@@ -7,6 +7,10 @@ import { SearchBox } from 'react-instantsearch-dom'
 import { PlusOutlined } from '@ant-design/icons'
 import { atom, useAtom } from 'jotai'
 import LeftModalContainer from '../Containers/LeftModal'
+import { useForm } from 'antd/lib/form/Form'
+import useTeams from '../../hooks/useTeams'
+import { backend_url } from '../../globals'
+import axios from 'axios'
 
 const {Option} = Select
 
@@ -65,14 +69,32 @@ function TopSearchContainer() {
     const [, handleModalVisibility] = useAtom(handleModalVisibilityAtom)
     const [{create_project_modal_open, chosen_team, platform}, ] = useAtom(topSearchContainerAtom)
     const [submission_error, set_submission_error] = useState<boolean>(false)
+    const [project_form] = useForm()
+    const {team_names} = useTeams()
 
-    const handleSubmit = (val: any) =>{
-        console.log(val)
-        if(!submission_error){
-            handleModalVisibility(false)
-        }
-        
+    const handleSubmit = () =>{
+        project_form.validateFields().then((vals)=>{
+            axios.post(`${backend_url}/project`, vals, {
+                withCredentials: true
+            }).then(({})=>{
+                notification.success({
+                    message: "Successfully added new project",
+                    key: "add_project_success"
+                })
+                handleModalVisibility(false)
+            }).catch((e)=>{
+                console.log(e)
+                notification.error({
+                    message: "An error occured",
+                    key: "add_project_error"
+                })
+            })
+        }).catch((e)=>{
+            console.log(e)
+        })
     }
+
+    
 
   return (
         <CustomContainer align="middle" justify='space-between' className="w-full " >
@@ -80,13 +102,15 @@ function TopSearchContainer() {
                     <SearchBox/>
             </Col>
             <Col span={3}  >
-                <Select className="w-full" value={chosen_team} defaultValue={"all_teams"}  >
-                    <Option value="all_teams" >
-                        All Teams
-                    </Option>
-                    <Option  value="d_house_dev" >
-                        d_house_dev
-                    </Option>
+                <Select className="w-full" value={chosen_team} defaultValue={team_names[0]}  >
+                    {
+                        team_names.map((team_name)=>(
+                            <Option  value={team_name} >
+                                {team_name}
+                            </Option>
+                        ))
+                    }
+                    
                 </Select>
             </Col>
             <Col span={3}  >
@@ -133,7 +157,7 @@ function TopSearchContainer() {
                     }} onError={(e)=>{
                                 console.log(e)
                                 set_submission_error(true)
-                    }} onFinish={handleSubmit} layout='vertical' className='!flex !flex-row !flex-wrap w-full !items-center !justify-between' name="new_project_form" >
+                    }} onFinish={handleSubmit} form={project_form} layout='vertical' className='!flex !flex-row !flex-wrap w-full !items-center !justify-between' name="new_project_form" >
                         <Form.Item className='!w-1/2' label="Project Name" rules={[
                             {
                                 required: true,
@@ -147,14 +171,15 @@ function TopSearchContainer() {
                                 required: true,
                                 message: "Select a team to continue"
                             }
-                        ]} name="project_team" >
-                            <Select defaultValue={["d_house_dev"]} >
-                                <Select.Option key="d_house_dev" >
-                                    d_house_dev
-                                </Select.Option>
-                                <Select.Option key="ProjectX" >
-                                    ProjectX
-                                </Select.Option>
+                        ]} name="team" >
+                            <Select defaultValue={team_names[0]} >
+                                {
+                                    team_names.map((team_name)=>(
+                                        <Select.Option key={team_name} >
+                                            {team_name}
+                                        </Select.Option>
+                                    ))
+                                }
                             </Select>
                         </Form.Item>
                         <Form.Item className="!w-1/2" label="Platform" rules={[
@@ -173,7 +198,7 @@ function TopSearchContainer() {
                             </Select>
                         </Form.Item>
                         <Form.Item className="!w-full"   >
-                            <Button htmlType='submit' className="!text-black" >
+                            <Button  htmlType='submit' className="!text-black" >
                                 Submit
                             </Button>
                         </Form.Item>

@@ -9,10 +9,8 @@ export interface extRequest extends Request {
 
 export const auth_middleware = (req: extRequest, res: Response, next: NextFunction) =>{
         const {url, method} = req
-        console.log("cookies=>", req.cookies)
         if((url == "/login" && method == "POST") || (url == "/user" && method == "POST") || (url == "/user/auth0" && method == "POST")) return next()
-        const {access_token} = req.cookies 
-        console.log(req.cookies)
+        const {access_token} = req.cookies
         if(typeof access_token == "undefined") return res.status(400).send({
             Error: "Access token is undefined"
         })
@@ -25,6 +23,7 @@ export const auth_middleware = (req: extRequest, res: Response, next: NextFuncti
                     Error: err
                 })
             }else{
+                console.log(results)
                 req.user = results 
                 next()
             }
