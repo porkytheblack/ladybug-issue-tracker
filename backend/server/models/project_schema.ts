@@ -43,14 +43,13 @@ const ProjectSchema = new Schema({
             comments: [{
                 type: new Schema({
                 author: {
-                    name: String,
+                    user_name: String,
                     avatar: String 
                 },
                 
                 description: String,
                 lastModified: {
                     type: SchemaTypes.Date,
-                    default: new Date(Date.now())
                 }
             }, {
                 timestamps: true
@@ -60,6 +59,7 @@ const ProjectSchema = new Schema({
         timestamps: true
     })}]
 })
+
 
 
 export default model("Project", ProjectSchema)

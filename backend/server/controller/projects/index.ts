@@ -64,9 +64,11 @@ export const create_comment  = (req: extRequest, res: Response) =>{
                         $push: {
                             "issues.$.comments": [
                                 {...data, author: {
-                                    user_name,
-                                    avatar
-                                }}
+                                    user_name: user_name,
+                                    avatar: avatar
+                                },
+                                lastModified: new Date(Date.now())
+                            }
                             ]
                         },
                 }, (err, result)=>{
@@ -78,7 +80,7 @@ export const create_comment  = (req: extRequest, res: Response) =>{
                 })
                 
             }).catch((e)=>{
-                
+
                 res.status(400).send(e)
             })
         }).catch((e)=>{
