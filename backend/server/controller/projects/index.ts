@@ -20,15 +20,19 @@ export const create_project = (req: extRequest, res: Response)=>{
     })
 }
 
-export const create_project_issue = (req: Request, res: Response) =>{
+export const create_project_issue = (req: extRequest, res: Response) =>{
     const proj_id = req.params.project_id
+    const {user_name} = req.user
     verify_body(req.body).then((body)=>{
         check_for_required_fields(body, "add_issue").then((data)=>{
             if(typeof proj_id == "string"){
                 ProjectModel.updateOne({_id: proj_id}, {
                     $push: {
                         issues: [
-                            data
+                            {...data, creator: {
+                                user_name,
+                                avatar: ""
+                            }}
                         ]
                     }
                 }, (err, result)=>{
@@ -50,15 +54,19 @@ export const create_project_issue = (req: Request, res: Response) =>{
     })
 }
 
-export const create_comment  = (req: Request, res: Response) =>{
+export const create_comment  = (req: extRequest, res: Response) =>{
     const issue_id = req.params.issue_id
+    const {user_name, avatar} = req.user
     if(typeof issue_id !== "undefined" && issue_id.length > 0){
         verify_body(req.body).then((body)=>{
             check_for_required_fields(body, "add_comment").then((data)=>{
                 ProjectModel.updateOne({"issues._id": issue_id}, {
                         $push: {
                             "issues.$.comments": [
-                                data
+                                {...data, author: {
+                                    user_name,
+                                    avatar
+                                }}
                             ]
                         },
                 }, (err, result)=>{
@@ -70,6 +78,7 @@ export const create_comment  = (req: Request, res: Response) =>{
                 })
                 
             }).catch((e)=>{
+                
                 res.status(400).send(e)
             })
         }).catch((e)=>{

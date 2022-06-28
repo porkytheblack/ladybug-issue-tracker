@@ -61,7 +61,6 @@ const required_fields = [
         "status"
     ],
     [
-        "author",
         "description"
     ],
     [

@@ -8,6 +8,9 @@ const morgan = require("morgan")
 const client = require("./db")
 const cookieParser = require("cookie-parser")
 
+app.use(express.json({limit: "20mb", extended: true}))
+app.use(express.urlencoded({limit: "20mb", extended: true}))
+
 
 
 dotenv.config({path: path.resolve(`${__dirname}/.env`)})

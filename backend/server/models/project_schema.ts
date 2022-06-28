@@ -18,7 +18,8 @@ const ProjectSchema = new Schema({
         type: String
     },
     description: String,
-    issues: [new Schema({
+    issues: [{
+        type: new Schema({
             summary: String,
             description: String,
             assignees: [new Schema({
@@ -37,10 +38,10 @@ const ProjectSchema = new Schema({
             severity: String,
             status: String,
             system_details: {
-                type: SchemaTypes.Map,
-                of: String
+                type: String
             },
-            comments: [new Schema({
+            comments: [{
+                type: new Schema({
                 author: {
                     name: String,
                     avatar: String 
@@ -53,11 +54,12 @@ const ProjectSchema = new Schema({
                 }
             }, {
                 timestamps: true
-            })],
+            })}],
 
     }, {
         timestamps: true
-    })]
+    })}]
 })
+
 
 export default model("Project", ProjectSchema)

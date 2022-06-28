@@ -3,7 +3,8 @@ import jwt from "jsonwebtoken";
 
 export interface extRequest extends Request {
     user: {
-        user_name: string
+        user_name: string,
+        avatar: string
     }
 }
 
@@ -24,7 +25,8 @@ export const auth_middleware = (req: extRequest, res: Response, next: NextFuncti
                 })
             }else{
                 console.log(results)
-                req.user = results 
+                const {avatar, user_name} = results
+                req.user = {avatar, user_name}
                 next()
             }
         })
