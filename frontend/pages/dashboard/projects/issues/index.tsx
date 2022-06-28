@@ -1,5 +1,5 @@
-import { BugOutlined, BulbOutlined, ExclamationCircleOutlined, FileOutlined, FilterOutlined, IssuesCloseOutlined, LoadingOutlined, PlusOutlined, QuestionOutlined, SearchOutlined, StarOutlined, ToolOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons'
-import { Avatar, Button, Checkbox, Dropdown, Form, Input, Menu, Modal, Select } from 'antd'
+import { BugOutlined, BulbOutlined, DownOutlined, ExclamationCircleOutlined, FileOutlined, FilterOutlined, IssuesCloseOutlined, LoadingOutlined, PlusOutlined, QuestionOutlined, SearchOutlined, StarOutlined, ToolOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons'
+import { Avatar, Button, Checkbox, Dropdown, Form, Input, Menu, Modal, notification, Select } from 'antd'
 import { atom, useAtom, useAtomValue } from 'jotai'
 import React, { useEffect, useState } from 'react'
 const ReactQuill = dynamic(()=>import("react-quill"), {
@@ -15,6 +15,14 @@ import MultipleSelectDropdown from '../../../../components/Dropdowns/MultipleSel
 import dynamic from 'next/dynamic'
 import { useForm } from 'antd/lib/form/Form'
 import useTeam from '../../../../hooks/useTeam'
+import Image from 'next/image'
+import { is_def_string } from '../../../../helpers'
+import { Text } from '../../../_app'
+import { generateRandomColor } from '../../../../helpers/randomColor'
+import axios from 'axios'
+import { backend_url } from '../../../../globals'
+import { activeProjectAtom } from '../../../../jotai/state'
+import useIssues from '../../../../hooks/useIssues'
 
 
 
@@ -24,6 +32,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
 
 
  function Issues() {
+  const [current_project, set_current_project ] = useAtom(activeProjectAtom)
   const current_filter = useAtomValue(activeFilter)
   const [activeFilterAtom, set_activeFilterAtom] = useAtom(activeFilterAtomAtom)
   const [isMenuVisible, handleMenuVisibleChange] = useState<boolean>(false)
@@ -31,14 +40,14 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
   const [on_client, set_on_client] = useState<boolean>(false)
   const [active_tags, set_active_tags] = useState<string[]>([])
   const [description, set_description] = useState<string>("")
-
+  const [team_overlay, set_team_overlay] = useState<boolean>(false)
   const [current_option, set_current_option] = useState<string[]>([
     "bug",
     "medium",
     "new"
   ])
   const [active, set_active] = useState<number>(0)
-
+  const [attachments, set_attachments] = useState<string[]>([])
   const change_current_option = (val: string) =>{
     
       const c = current_option
@@ -46,20 +55,15 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
       set_current_option((_)=>c)
 
   }
-
   useEffect(()=>{
     set_on_client(true)
     return ()=>{
       set_on_client(false)
     }
   }, [])
-  
   const update_active_tags = (vals: string[])=>{
     set_active_tags(vals)
   }
-
-
-
   const FilterMenu = () =>{
     const filters = current_filter == "none" ? [] : current_filter == "assignee" ? ["Dave", "Jim", "Don"] : current_filter == "severity" ? ["High", "Critical", "Low", "Medium"] : ["Observation", "Bug", "Question", "Suggestion", "New Feature", "Improvement" , "Note"]
 
@@ -94,20 +98,46 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
       </div>    
     )
   }
-
-
   const [issue_form]  = useForm()
-
   const handleSubmit = () =>{
     issue_form.validateFields().then((vals)=>{
       console.log(vals)
       console.log(current_option)
+
+      axios.post(`${backend_url}/issue/${current_project}`, {
+        summary: vals.summary,
+        description: vals.description,
+        type: current_option[0],
+        severity: current_option[1],
+        status: current_option[2],
+        assignees: members[0].filter(({user_name})=>vals.assignees.includes(user_name)),
+        tags: active_tags.map((tag)=>({
+          tag_name: tag,
+          tag_color: generateRandomColor()
+        })),
+        attachments: []
+      }, {
+        withCredentials: true
+      }).then(()=>{
+        notification.success({
+          message: "Added new issue successfully",
+          key: "new_issue_success"
+        })
+        set_issue_modal_visible(false)
+      }).catch((e)=>{
+        console.log(e)
+        notification.error({
+          message: "An error occured",
+          key: "add_issue_error"
+        })
+      })
     }).catch((e)=>{
       console.log(e)
     })
   }
-
   const {members} = useTeam()
+
+  const {issues, total_issues, new_issues, closed_issues, ongoing_issues} = useIssues()
 
 
   return (
@@ -128,20 +158,33 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
                             <Input  placeholder='Crisp, precise, and focus on impact' />
                           </Form.Item>
                           <Form.Item initialValue={""} name="description" label="Description" >
-                              {on_client && <ReactQuill theme="snow" value={description || ""} onChange={(content)=>{
+                              {on_client && <ReactQuill preserveWhitespace={true} theme="snow" value={description || ""} onChange={(content)=>{
                                 set_description(content)
                               }} />}
                           </Form.Item>
                           <Form.Item name="system_details" label="System Details" >
                               <Input placeholder='e.g HP / Windows 11 / 64 bit'  />
                           </Form.Item>
-                          <Form.Item label="Assignees" >
-                            <Avatar.Group>
-                              <Avatar src="https://joeschmoe.io/api/v1/random" />
-                              <Avatar src="https://joeschmoe.io/api/v1/jess"  />
-                              <Avatar src="https://joeschmoe.io/api/v1/joe" />
-                              <Avatar icon={<UserAddOutlined/>}  className="!flex cursor-pointer flex-row items-center justify-center" />
-                            </Avatar.Group>
+                          <Form.Item name={"assignees"} label="Assignees" >
+                            
+                                  <Checkbox.Group>
+                                  {
+                                   typeof members[0] !== "undefined" && members[0].map(({user_name, avatar})=>{
+                                      return (
+                                        <Checkbox className="!flex !flex-row items-center !w-full !h-full justify-between" value={user_name} >
+                                      <div className="flex flex-row items-center w-[250px] justify-between">
+                                        <div style={{backgroundColor: generateRandomColor()}} className="flex flex-row h-[40px] w-[40px] rounded-full overflow-hidden ">
+                                          <Image src={typeof avatar !== "undefined" ? avatar : `https://joeschmoe.io/api/v1/${user_name}`} referrerPolicy="no-referrer" height="40px" width="40px" />
+                                        </div>  
+                                        <Text className=' !text-black' >
+                                          @{user_name}
+                                        </Text>
+                                      </div>
+                                      </Checkbox>
+                                    )})
+                                  }
+                                  </Checkbox.Group>
+                             
                           </Form.Item>
                           <Form.Item name="attachments" label="Attachments" >
                             <UploadAction/>
@@ -255,10 +298,10 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
           </div>
           
           <div className="flex flex-row items-center mb-2 justify-between w-full pt-9">
-            <BaseIssueCard icon={<BugOutlined className='text-blue-800' />} num={4} title={"Total issues"} />
-            <BaseIssueCard icon={<FileOutlined className='text-blue-800' />} num={2} title={"New issues"} />
-            <BaseIssueCard icon={<LoadingOutlined className='text-blue-800  ' />} num={1} title={"Ongoing"} />
-            <BaseIssueCard icon={<IssuesCloseOutlined className='text-blue-800' />} num={0} title={"Closed"} />
+            <BaseIssueCard icon={<BugOutlined className='text-blue-800' />} num={total_issues} title={"Total issues"} />
+            <BaseIssueCard icon={<FileOutlined className='text-blue-800' />} num={new_issues} title={"New issues"} />
+            <BaseIssueCard icon={<LoadingOutlined className='text-blue-800  ' />} num={ongoing_issues} title={"Ongoing"} />
+            <BaseIssueCard icon={<IssuesCloseOutlined className='text-blue-800' />} num={closed_issues} title={"Closed"} />
           </div>
         <div className="flex flex-row p-2 items-center justify-start bg-transparent  w-full ">
             <Input.Search className="w-1/4" placeholder='Search issues'  />
@@ -271,11 +314,11 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
             </Dropdown> 
         </div>
         <div className="flex flex-col space-y-2 items-center justify-start w-full h-full">
-          <BugCard/>
-          <BugCard/>
-          <BugCard/>
-          <BugCard/>
-          <BugCard/>
+          {
+            issues.map((issue, key)=>(
+              <BugCard issue={issue} count={key} />
+            ))
+          }
         </div>
     </PageBaseContainer>
   )

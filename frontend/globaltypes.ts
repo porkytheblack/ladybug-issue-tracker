@@ -33,26 +33,27 @@ export interface CustomizedFormProps {
     team?: string,
     platform?: string,
     description?: string,
-    issues?: [{
+    issues?: {
+            _id: string,
             summary: string,
             description: string,
-            assignees?: [{
+            assignees?: {
                 user_name: string,
                 avatar: string
-            }],
-            attachments?: [{
+            }[],
+            attachments?: {
                 attachment_name: string,
                 attachment: Buffer
-            }],
-            tags?: [{
+            }[],
+            tags?: {
                 tag_name: string,
                 tag_color: string
-            }],
+            }[],
             type?: string,
             severity?: string,
             status?: string,
             system_details?: any,
-            comments?: [{
+            comments?: {
                 author: {
                     name?: string,
                     avatar?: string 
@@ -60,17 +61,48 @@ export interface CustomizedFormProps {
                 
                 description?: string,
                 lastModified?: Date
-            }],
+            }[],
 
-    }]
+    }[]
 }
 
 export interface TeamSchema {
     team_name?: string,
     team_creator?: string,
-    members?: [{
-        user_name: string,
-        avatar: string
-    }],
+    members: {
+        user_name?: string,
+        avatar?: string
+    }[],
     _id?: string
+}
+
+export interface IssueInterface {
+            _id: string,
+            summary: string,
+            description: string,
+            assignees?: {
+                user_name: string,
+                avatar: string
+            }[],
+            attachments?: {
+                attachment_name: string,
+                attachment: Buffer
+            }[],
+            tags?: {
+                tag_name: string,
+                tag_color: string
+            }[],
+            type?: string,
+            severity?: string,
+            status?: string,
+            system_details?: any,
+            comments?: {
+                author: {
+                    name?: string,
+                    avatar?: string 
+                },
+                
+                description?: string,
+                lastModified?: Date
+            }[],        
 }

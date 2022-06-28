@@ -59,7 +59,7 @@ module.exports = withAntdLess({
     return config;
   },
   images: {
-    domains: ["lh3.googleusercontent.com"]
+    domains: ["lh3.googleusercontent.com", "joeschmoe.io"]
   },
 
   // ONLY for Next.js 10, if you use Next.js 11, delete this block

@@ -17,6 +17,9 @@ export const userAuthTypeAtom = atomWithStorage<user_auth_type>("user_auth_type"
 
 export const activeProjectAtom = atomWithStorage<string | null>("current_project", null)
 
+export const activeIssueAtom = atomWithStorage<string | null>("current_issue", null)
+
+export const LeftModalVisibility = atom<boolean>(false)
 
 
 

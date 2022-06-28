@@ -2,6 +2,7 @@ import { useRouter } from 'next/router'
 import React, { createContext, ReactNode, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import BaseModalContainer from '../components/Containers/BaseModalContainer'
+import LeftModalContainer from '../components/Containers/LeftModal'
 import { project_type } from '../components/DataDisplay/Projects/ProjectCard'
 import SideMenu from './Navigation/Dashboard/SideMenu'
 
@@ -66,7 +67,7 @@ function DashboardLayout({children}: {children: ReactNode | ReactNode[]}) {
           <div className="w-full flex flex-col items-center justify-start h-full" >
           {children}
           </div>
-          
+          <LeftModalContainer/>
       </DashboardLayoutContainer>
       
     </DashboardContext.Provider>
@@ -77,6 +78,17 @@ export default DashboardLayout
 
 const DashboardLayoutContainer = styled.div`
   .child-container {
+    overflow-y: scroll;
+    &::-webkit-scrollbar{
+      background: transparent;
+      width: 5px;
+    }
+    &::-webkit-scrollbar-thumb{
+      border-radius: 2.5px;
+      background: #b3d4fc;
+    }
+  }
+  .with-scrollbar{
     overflow-y: scroll;
     &::-webkit-scrollbar{
       background: transparent;
