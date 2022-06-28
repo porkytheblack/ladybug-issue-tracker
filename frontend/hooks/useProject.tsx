@@ -16,7 +16,6 @@ function useProject() {
   useEffect(()=>{
     if(project_query.isLoading || project_query.isError || project_query.data == null || typeof project_query.data == "undefined") return ()=> {}
     set_project(project_query.data)
-    console.log(project_query.data)
   }, [,project_query.isLoading, project_query.isError, project_query.data])
 
   return (

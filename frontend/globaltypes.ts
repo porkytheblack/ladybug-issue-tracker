@@ -45,7 +45,7 @@ export interface CustomizedFormProps {
                 attachment_name: string,
                 attachment: Buffer
             }[],
-            tags?: {
+            tags: {
                 tag_name: string,
                 tag_color: string
             }[],
@@ -53,14 +53,15 @@ export interface CustomizedFormProps {
             severity?: string,
             status?: string,
             system_details?: any,
-            comments?: {
+            comments: {
                 author: {
-                    name?: string,
+                    user_name?: string,
                     avatar?: string 
                 },
                 
                 description?: string,
-                lastModified?: Date
+                lastModified?: Date,
+                _id: string
             }[],
 
     }[]
@@ -96,13 +97,31 @@ export interface IssueInterface {
             severity?: string,
             status?: string,
             system_details?: any,
-            comments?: {
+            comments: {
                 author: {
-                    name?: string,
+                    user_name?: string,
                     avatar?: string 
                 },
-                
+                summary?: string,
                 description?: string,
-                lastModified?: Date
+                lastModified?: Date,
+                _id: string,
+                issue_id?: string
             }[],        
+}
+
+
+export interface CommentInterface {
+    author: {
+        user_name?: string,
+        avatar?: string 
+    },
+    description?: string,
+    lastModified?: Date,
+    _id: string,
+    issue_id?: string
+}
+
+export interface extCommentInterface extends CommentInterface {
+    summary: string
 }

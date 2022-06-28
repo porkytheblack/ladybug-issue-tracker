@@ -11,7 +11,6 @@ function useIssue() {
 
     useEffect(()=>{
         var cur_issue = issues.filter(({_id})=>_id == current_issue)
-        console.log(cur_issue)
         set_issue(cur_issue[0])
     }, [,issues, current_issue])
 

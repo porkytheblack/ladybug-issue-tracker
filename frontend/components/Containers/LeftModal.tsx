@@ -25,7 +25,7 @@ function LeftModalContainer() {
     const [edit_description, set_edit_description] = useState<boolean>(false)
     const [visible, set_visible] = useAtom(LeftModalVisibility)
     const [comment, set_comment] = useState<string>("")
-    const [active_comment, set_active_comment] = useState<number>(comments?.length)
+    const [active_comment, set_active_comment] = useState<number>(999)
 
     useEffect(()=>{
         const target = document.querySelector("#leftmodal")
