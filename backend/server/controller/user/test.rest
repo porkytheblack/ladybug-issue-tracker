@@ -1,7 +1,7 @@
-GET http://localhost:8080/teams
-Cookie: "access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJwb3JreXRoZWJsYWNrIiwiaWF0IjoxNjU2MzE5MDUzfQ.mkahDZOZUZYsePonj9VEyr6LsN60JuoCLZ7He9YmVO4;"
+GET http://localhost:8080/issue/62bbfdd3c46c01fbb2041103
+Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJwb3JreXRoZWJsYWNrIiwiYXZhdGFyIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2hmajRiYkMwczQzVnhpT3ZpcENGZ2RaamtmaFQ1MUI4Sm1RNlpMPXM5Ni1jIiwiaWF0IjoxNjU2NDgzNzI0fQ.KvRLq8pQmvt1CVRrDCKRnwHwqzcDzhBvshQWC7yWAbM
 Content-Type: application/json
 
 {
-    "team_name": "cool_cats"
+
 }

@@ -22,6 +22,7 @@ export const login = (req: Request, res: Response) =>{
                 ]
             }, (err, results)=>{
                 if(err){
+                    console.log("25", err)
                     res.status(500).send({
                         Error: "An error occured while retrieving the user"
                     })
@@ -29,6 +30,7 @@ export const login = (req: Request, res: Response) =>{
                     if(Object.keys(results).length > 0){
                         compare(password, results.password, (err, is_password)=>{
                             if(err){
+                                console.log("33", err)
                                 res.status(500).send({
                                     Error: err,
                                     message: "An error occured while trying to verify the password"

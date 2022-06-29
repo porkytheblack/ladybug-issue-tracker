@@ -34,6 +34,7 @@ const ProjectSchema = new Schema({
                 tag_name: String,
                 tag_color: String
             }],
+            platform: String,
             type: String,
             severity: String,
             status: String,

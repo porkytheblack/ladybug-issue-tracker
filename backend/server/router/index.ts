@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { ping } from "../controller";
-import { add_assignee, add_tag, create_comment, create_project, create_project_issue, delete_assignee, delete_comment, delete_issues, delete_project, delete_tag, get_project_by_id, get_user_issues, get_user_projects, update_comment, update_issue, update_project, update_system_details, update_tag } from "../controller/projects";
+import { add_assignee, add_tag, create_comment, create_project, create_project_issue, delete_assignee, delete_comment, delete_issues, delete_project, delete_tag, get_comments, get_issue_by_id, get_project_by_id, get_user_issues, get_user_projects, update_comment, update_issue, update_project, update_system_details, update_tag } from "../controller/projects";
 import { add_team_member, create_team, get_user_teams } from "../controller/team";
 import { login } from "../controller/tokens";
 import { add_user_project, create_auth0_user, create_user, update_user_project } from "../controller/user";
@@ -33,6 +33,7 @@ router.delete("/issues/:issue_id", delete_issues)
 router.post("/comment/:issue_id", create_comment)
 router.put("/comment/:comment_id", update_comment)
 router.delete("/comment/:comment_id", delete_comment)
+router.get("/comments", get_comments)
 
 router.post("/assignee/:issue_id", add_assignee)
 router.delete("/assignee/:user_name", delete_assignee)
@@ -45,6 +46,7 @@ router.post("/system_details/:issue_id", update_system_details)
 
 router.put("/issue/:issue_id", update_issue)
 router.get("/issues", get_user_issues)
+router.get("/issue/:issue_id", get_issue_by_id)
 
 router.post("/team", create_team)
 router.get("/teams", get_user_teams)

@@ -405,3 +405,23 @@ export const get_project_by_id = (req: extRequest, res: Response) =>{
         res.status(200).send(result)
     })
 }
+
+export const get_issue_by_id = (req: extRequest, res: Response) =>{
+    const  id = req.params.issue_id 
+    if(typeof id == "undefined" || id.length == 0) return res.status(400).send({Error: "issue id not specified"})
+    ProjectModel.findOne({
+        "issues.$._id": id,
+    }, (err, result)=>{
+        if(err)return res.status(500).send({Error: err, message: "An error occured"})
+        res.status(200).send(result.issues.filter(({_id})=>_id == id))
+    })
+}
+
+export const get_comments = (req: extRequest, res: Response) => {
+    ProjectModel.find({
+        "issues.assignees.user_name": req.user.user_name
+    }).sort({"issues.comments.lastModified": -1}).exec((err, docs)=>{
+        if(err) return res.status(500).send({Error: err, meaage: "An error occured"})
+        res.status(200).send(docs)
+    })
+}
