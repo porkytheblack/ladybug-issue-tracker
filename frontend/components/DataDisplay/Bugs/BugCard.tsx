@@ -36,6 +36,8 @@ function BugCard({issue, count}:{issue: IssueInterface, count: number}) {
         show()
     }
 
+    console.log(issue)
+
     
     
   return (
@@ -93,7 +95,7 @@ function BugCard({issue, count}:{issue: IssueInterface, count: number}) {
                         issue?.assignees?.map(({user_name, avatar})=>(
                             <Tooltip title={user_name} >
                                 <div className="flex flex-row items-center justify-center overflow-hidden rounded-full h-[40px] w-[40px] ">
-                                    <Image src={typeof avatar !== "undefined" ? avatar : `https://joeschmoe.io/api/v1/${user_name}`} width={40} height={40} referrerPolicy="no-referrer" />
+                                    <Image src={(typeof avatar !== "undefined" && avatar.length !== 0 ) ? avatar : `https://joeschmoe.io/api/v1/${user_name}`} width={40} height={40} referrerPolicy="no-referrer" />
                                 </div>
                             </Tooltip>
                         ))

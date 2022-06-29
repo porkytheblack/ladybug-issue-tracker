@@ -1,4 +1,5 @@
 import { useAtom } from 'jotai'
+import { flatten } from 'lodash'
 import React, { useEffect, useState } from 'react'
 import { activeProjectAtom } from '../jotai/state'
 import useProject from './useProject'
@@ -8,7 +9,7 @@ function useTeam() {
     const [members, set_members] = useState<{
         user_name?: string,
         avatar?: string
-    }[][]> ([])
+    }[]> ([])
     
     const [current_project, ] = useAtom(activeProjectAtom)
     const {project} = useProject()
@@ -16,7 +17,7 @@ function useTeam() {
 
     useEffect(()=>{
         var m = teams.filter(({team_name})=>team_name == project.team).map((values)=>values.members)
-       set_members(m)
+       set_members(flatten(m))
     }, [,project, teams, current_project])
     
 

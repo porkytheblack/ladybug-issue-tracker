@@ -1,6 +1,7 @@
 import React from 'react'
 import {Chart as ChartJs, ArcElement, Tooltip, Legend} from "chart.js"
 import { Doughnut } from 'react-chartjs-2'
+import { AnyMap } from 'immer/dist/internal'
 
 ChartJs.register(
     ArcElement,
@@ -8,7 +9,7 @@ ChartJs.register(
     Legend
 )
 
-function BaseDoughnutChart({data, custonConfig}: {data: Array<any> , custonConfig?: any}) {
+function BaseDoughnutChart({data, custonConfig, labels}: {data: Array<any> , custonConfig?: AnyMap, labels: string[]}) {
     
   return (
     <Doughnut   options={{
@@ -32,7 +33,7 @@ function BaseDoughnutChart({data, custonConfig}: {data: Array<any> , custonConfi
         }
     }}  data={{
         datasets: data,
-        
+        labels: labels
     }}  />
   )
 }

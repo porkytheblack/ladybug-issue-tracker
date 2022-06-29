@@ -1,5 +1,6 @@
 import { MoreOutlined } from '@ant-design/icons'
 import { Avatar, Button, Divider, Dropdown, Menu, Tooltip } from 'antd'
+import { isUndefined } from 'lodash'
 import Image from 'next/image'
 import React from 'react'
 import styled from 'styled-components'
@@ -19,8 +20,8 @@ function TeamCard({
     team_creator?: string,
     _id?: string,
     members?: {
-        user_name: string,
-        avatar: string
+        user_name?: string,
+        avatar?: string
     }[]
 }) {
 
@@ -35,9 +36,9 @@ function TeamCard({
         </Menu>
     )
   return (
-    <BaseCard span={7} className="!flex !flex-col mr-5 !items-center !justify-center !bg-white " >
+    <BaseCard span={7} className="!flex !flex-col mr-5 mb-5 !items-center p-2 !justify-center !bg-white " >
         <div className="flex flex-row w-full items-center justify-between">
-            <Text className="text-lg font-semibold !text-black " >
+            <Text className="text-lg font-semibold !text-black uppercase " >
                 {team_name}
             </Text>
             <Dropdown overlay={DropDownMenu} >
@@ -47,35 +48,25 @@ function TeamCard({
             </Dropdown>
         </div>
         <div className="flex flex-col items-center justify-center w-full pt-4">
-                        <CustomAvatar style={{padding: 0}}   >
-                             <Image referrerPolicy='no-referrer' src={typeof members !== "undefined"  ?members[0]?.avatar : ''} height="40px" width={"40px"}  />
-                        </CustomAvatar>
+            <div className="flex flex-row rounded-full h-10 w-10 overflow-hidden ">
+                { !isUndefined(members) && <Image src={(isUndefined(members[0]?.avatar) || members[0]?.avatar.length == 0)? `https://joeschmoe.io/api/v1/${members[0]?.user_name}` : members[0]?.avatar } height={40} width={40} />}
+            </div>
             <Text className="pt-2" >
                     {team_creator}
             </Text>
         </div>
         <Divider type="horizontal" />
         <div className="flex flex-row items-center justify-center w-full p-2">
-            <Avatar.Group>
-                {
-                    members?.map(({
-                        user_name,
-                        avatar
-                    })=> avatar.length > 0 ? (
-                        <Tooltip title={user_name} >
-                        <CustomAvatar style={{padding: 0}}   >
-                             <Image referrerPolicy='no-referrer' src={avatar} height="40px" width={"40px"}  />
-                        </CustomAvatar>
-                        </Tooltip>
-                    ): (
-                        <Tooltip title={user_name} >
-                            <Avatar style={{backgroundColor: generateRandomColor()}} >
-                                {user_name.toLocaleUpperCase()[0]}
-                            </Avatar>
-                        </Tooltip>
-                    ))
-                }
-                
+        <Avatar.Group>
+              {
+                !isUndefined(members) && members.map(({user_name, avatar})=>(
+                  <Tooltip title={user_name} >
+                  {isUndefined(avatar) || avatar.length == 0 ? <Avatar src={`https://joeschmoe.io/api/v1/${user_name}`} />  : <div className="flex flex-row h-10 w-10 items-center justify-center rounded-full overflow-hidden">
+                    <Image src={isUndefined(avatar) ? `https://joeschmoe.io/api/v1/${user_name}` : avatar } height={40} width={40} />
+                  </div>}
+                  </Tooltip>
+                ))
+              }
             </Avatar.Group>
         </div>
     </BaseCard>

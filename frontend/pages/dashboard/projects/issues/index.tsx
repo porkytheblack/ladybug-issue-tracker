@@ -1,5 +1,5 @@
 import { BugOutlined, BulbOutlined, DownOutlined, ExclamationCircleOutlined, FileOutlined, FilterOutlined, IssuesCloseOutlined, LoadingOutlined, PlusOutlined, QuestionOutlined, SearchOutlined, StarOutlined, ToolOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons'
-import { Avatar, Button, Checkbox, Dropdown, Form, Input, Menu, Modal, notification, Select } from 'antd'
+import { Avatar, Button, Checkbox, Dropdown, Empty, Form, Input, Menu, Modal, notification, Select, Tooltip } from 'antd'
 import { atom, useAtom, useAtomValue } from 'jotai'
 import React, { useEffect, useState } from 'react'
 const ReactQuill = dynamic(()=>import("react-quill"), {
@@ -21,8 +21,11 @@ import { Text } from '../../../_app'
 import { generateRandomColor } from '../../../../helpers/randomColor'
 import axios from 'axios'
 import { backend_url } from '../../../../globals'
-import { activeProjectAtom } from '../../../../jotai/state'
+import { activeProjectAtom, tick_up } from '../../../../jotai/state'
 import useIssues from '../../../../hooks/useIssues'
+import EmptyAndLoading from '../../../../components/Containers/EmptyAndLoading'
+import { flatten, isUndefined } from 'lodash'
+import { IssueInterface } from '../../../../globaltypes'
 
 
 
@@ -32,6 +35,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
 
 
  function Issues() {
+  const [, up] = useAtom(tick_up)
   const [current_project, set_current_project ] = useAtom(activeProjectAtom)
   const current_filter = useAtomValue(activeFilter)
   const [activeFilterAtom, set_activeFilterAtom] = useAtom(activeFilterAtomAtom)
@@ -99,6 +103,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
     )
   }
   const [issue_form]  = useForm()
+
   const handleSubmit = () =>{
     issue_form.validateFields().then((vals)=>{
       console.log(vals)
@@ -107,10 +112,11 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
       axios.post(`${backend_url}/issue/${current_project}`, {
         summary: vals.summary,
         description: vals.description,
+        platform: vals.platform,
         type: current_option[0],
         severity: current_option[1],
         status: current_option[2],
-        assignees: members[0].filter(({user_name})=>vals.assignees.includes(user_name)),
+        assignees: members.filter(({user_name})=>vals.assignees.includes(user_name)),
         tags: active_tags.map((tag)=>({
           tag_name: tag,
           tag_color: generateRandomColor()
@@ -119,11 +125,13 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
       }, {
         withCredentials: true
       }).then(()=>{
+        up()
         notification.success({
           message: "Added new issue successfully",
           key: "new_issue_success"
         })
         set_issue_modal_visible(false)
+
       }).catch((e)=>{
         console.log(e)
         notification.error({
@@ -137,7 +145,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
   }
   const {members} = useTeam()
 
-  const {issues, total_issues, new_issues, closed_issues, ongoing_issues} = useIssues()
+  const {issues, total_issues, new_issues, closed_issues, ongoing_issues, is_error, is_loading} = useIssues()
 
 
   return (
@@ -165,16 +173,32 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
                           <Form.Item name="system_details" label="System Details" >
                               <Input placeholder='e.g HP / Windows 11 / 64 bit'  />
                           </Form.Item>
+                          <Form.Item name="platform" label="Platform" >
+                              <Select defaultActiveFirstOption={true} >
+                                <Select.Option value="web" >
+                                  Web
+                                </Select.Option>
+                                <Select.Option value="desktop" >
+                                  Desktop
+                                </Select.Option>
+                                <Select.Option value="android" >
+                                  Android
+                                </Select.Option>
+                                <Select.Option value="ios" >
+                                  IOS
+                                </Select.Option>
+                              </Select>
+                          </Form.Item>
                           <Form.Item name={"assignees"} label="Assignees" >
                             
                                   <Checkbox.Group>
                                   {
-                                   typeof members[0] !== "undefined" && members[0].map(({user_name, avatar})=>{
+                                   typeof members !== "undefined" && members.map(({user_name, avatar})=>{
                                       return (
                                         <Checkbox className="!flex !flex-row items-center !w-full !h-full justify-between" value={user_name} >
                                       <div className="flex flex-row items-center w-[250px] justify-between">
                                         <div style={{backgroundColor: generateRandomColor()}} className="flex flex-row h-[40px] w-[40px] rounded-full overflow-hidden ">
-                                          <Image src={typeof avatar !== "undefined" ? avatar : `https://joeschmoe.io/api/v1/${user_name}`} referrerPolicy="no-referrer" height="40px" width="40px" />
+                                          <Image src={(typeof avatar !== "undefined" && avatar.length !== 0 )? avatar : `https://joeschmoe.io/api/v1/${user_name}`} referrerPolicy="no-referrer" height="40px" width="40px" />
                                         </div>  
                                         <Text className=' !text-black' >
                                           @{user_name}
@@ -244,51 +268,56 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
                                     },
                                     {
                                       icon: <></>,
-                                      name: "Improvement"
+                                      name: "In Progress"
                                     },
                                     {
                                       icon: <></>,
-                                      name: "Bug"
+                                      name: "Fixed"
                                     },
                                     {
                                       icon: <></>,
-                                      name: "Issue"
+                                      name: "Not Fixed"
                                     },
                                     {
                                       icon: <></>,
-                                      name: "Task"
+                                      name: "Closed"
                                     },
                                     {
                                       icon: <></>,
-                                      name: "Question"
+                                      name: "Cancelled"
                                     },
                                     {
                                       icon: <></>,
-                                      name: "Suggestion"
+                                      name: "Released"
                                     },
-                                    {
-                                      icon: <></>,
-                                      name: "Functional"
-                                    },
-                                    {
-                                      icon: <></>,
-                                      name: "UI"
-                                    }
                               ]} />
                             <MultipleSelectDropdown get_active={update_active_tags} tags={[
                               "New",
                               "Functionality",
-                              "Improvement"
+                              "Improvement",
+                              "Bug",
+                              "Issue",
+                              "Task",
+                              "Question",
+                              "Suggestion",
+                              "UI",
+                              "UX"
                             ]} />
                     </div>  
               </div>
         </Modal>
 
         <div className="flex flex-row items-center p-[10px] justify-between w-full">
-        <Avatar.Group>
-              <Avatar size="large" src="https://joeschmoe.io/api/v1/random" />
-              <Avatar size="large" src="https://joeschmoe.io/api/v1/joe" />
-              <Avatar size="large" src="https://joeschmoe.io/api/v1/jess" />
+            <Avatar.Group>
+              {
+                flatten(members).map(({user_name, avatar})=>(
+                  <Tooltip title={user_name} >
+                  {isUndefined(avatar) || avatar.length == 0 ? <Avatar src={`https://joeschmoe.io/api/v1/${user_name}`} />  : <div className="flex flex-row h-10 w-10 items-center justify-center rounded-full overflow-hidden">
+                    <Image src={(isUndefined(avatar) || avatar.length == 0 ) ? `https://joeschmoe.io/api/v1/${user_name}` : avatar } height={40} width={40} />
+                  </div>}
+                  </Tooltip>
+                ))
+              }
               <Avatar size="large" icon={<UserAddOutlined/>} className="bg-blue-800 cursor-pointer !flex flex-row items-center justify-center "  />
             </Avatar.Group>
             <Button size='large' onClick={()=>{set_issue_modal_visible(true)}}  icon={<PlusOutlined/>} className="mr-5 !bg-blue-800 !text-white " >
@@ -313,13 +342,13 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
               </Button>
             </Dropdown> 
         </div>
-        <div className="flex flex-col space-y-2 items-center justify-start w-full h-full">
-          {
-            issues.map((issue, key)=>(
-              <BugCard issue={issue} count={key} />
+        <EmptyAndLoading showLoading={true} loading={is_loading} className="flex flex-col space-y-2 items-center justify-start w-full h-full">
+          { 
+            issues.map((issue: IssueInterface, key)=>(
+              <BugCard issue={issue} count={key} />  
             ))
           }
-        </div>
+        </EmptyAndLoading >
     </PageBaseContainer>
   )
 }

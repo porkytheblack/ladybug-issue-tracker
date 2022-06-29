@@ -11,13 +11,14 @@ import { useForm } from 'antd/lib/form/Form'
 import useTeams from '../../hooks/useTeams'
 import { backend_url } from '../../globals'
 import axios from 'axios'
+import { tick_up_project } from '../../jotai/state'
 
 const {Option} = Select
 
 export const topSearchContainerAtom = atom({
     create_project_modal_open: false,
-    chosen_team: "d_house_dev",
-    platform: "ios"
+    chosen_team: "all",
+    platform: "all"
 })
 
 export const handleModalVisibilityAtom = atom(
@@ -63,7 +64,7 @@ export const change_platform = atom (
 
 
 
-function TopSearchContainer() {
+function TopSearchContainer({}: {}) {
     const [, set_platform] = useAtom(change_platform)
     const [, set_team] = useAtom(change_team)
     const [, handleModalVisibility] = useAtom(handleModalVisibilityAtom)
@@ -71,12 +72,14 @@ function TopSearchContainer() {
     const [submission_error, set_submission_error] = useState<boolean>(false)
     const [project_form] = useForm()
     const {team_names} = useTeams()
+    const [, up] = useAtom(tick_up_project)
 
     const handleSubmit = () =>{
         project_form.validateFields().then((vals)=>{
             axios.post(`${backend_url}/project`, vals, {
                 withCredentials: true
             }).then(({})=>{
+                up()
                 notification.success({
                     message: "Successfully added new project",
                     key: "add_project_success"
@@ -102,7 +105,12 @@ function TopSearchContainer() {
                     <SearchBox/>
             </Col>
             <Col span={3}  >
-                <Select className="w-full" value={chosen_team} defaultValue={team_names[0]}  >
+                <Select onChange={(val)=>{
+                    set_team(val as any)
+                }} className="w-full" value={chosen_team} defaultValue={"all"}  >
+                    <Option value="all" >
+                        All
+                    </Option>
                     {
                         team_names.map((team_name)=>(
                             <Option  value={team_name} >
@@ -114,35 +122,27 @@ function TopSearchContainer() {
                 </Select>
             </Col>
             <Col span={3}  >
-                <Select className="w-full" value={platform} defaultValue={"all_platforms"}  >
-                    <Option value="all_platforms" >
+                <Select onChange={(val)=>{
+                    set_platform(val as any)
+                }} className="w-full" value={platform} defaultValue={"all"}  >
+                    <Option value="all" >
                         All Platforms
                     </Option>
-                    <Option  value="Android" >
+                    <Option  value="android" >
                         Android
                     </Option>
                     <Option  value="ios" >
                         IOS
                     </Option>
-                    <Option  value="mobile_web" >
-                        Mobile Web
+                    <Option  value="web" >
+                        Web
+                    </Option>
+                    <Option  value="desktop" >
+                        Desktop
                     </Option>
                 </Select>
             </Col>
-            <Col span={3}  >
-                <Select className="w-full" defaultValue={"all"}  >
-                    <Option value="all" >
-                        All
-                    </Option>
-                    <Option  value="Active" >
-                        Active
-                    </Option>
-                    <Option  value="Archived" >
-                        Archived
-                    </Option>
-                </Select>
-            </Col>
-            <Col span={7} ></Col>
+            <Col span={9} ></Col>
             <Col span={3} >
                 <Button icon={<PlusOutlined/>} onClick={()=>{
                         handleModalVisibility(true)
@@ -194,6 +194,15 @@ function TopSearchContainer() {
                                 </Select.Option>
                                 <Select.Option key="web" >
                                     Web
+                                </Select.Option>
+                                <Select.Option key="ios" >
+                                    IOS
+                                </Select.Option>
+                                <Select.Option key="desktop" >
+                                    Desktop
+                                </Select.Option>
+                                <Select.Option key="wearable" >
+                                    Wearable
                                 </Select.Option>
                             </Select>
                         </Form.Item>

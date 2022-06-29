@@ -1,11 +1,14 @@
-import { Col, Row, Tabs, Typography } from 'antd'
+import { Col, Empty, Row, Tabs, Typography } from 'antd'
+import { useAtom } from 'jotai'
+import { isUndefined } from 'lodash'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import BaseModalContainer from '../../../components/Containers/BaseModalContainer'
+import EmptyAndLoading from '../../../components/Containers/EmptyAndLoading'
 import Hero from '../../../components/Containers/Hero'
 import LeftModalContainer from '../../../components/Containers/LeftModal'
 import ProjectCardWithActions from '../../../components/DataDisplay/Projects/ProjectCardWithActions'
-import TopSearchContainer from '../../../components/OneJob/TopSearchContainer'
+import TopSearchContainer, { topSearchContainerAtom } from '../../../components/OneJob/TopSearchContainer'
 import useProjects from '../../../hooks/useProjects'
 import useTeams from '../../../hooks/useTeams'
 
@@ -14,7 +17,9 @@ const {Text} = Typography
 
 function Projects() {
   const [isModalVisible, handleModalVisibility] = useState<boolean>(true)
+  const [{chosen_team, platform: p}, ] = useAtom(topSearchContainerAtom)
   const hide = () =>{
+
     handleModalVisibility(false)
   }
 
@@ -44,49 +49,15 @@ function Projects() {
           </div>
       </div>
      
-      <Tabs className="w-4/5 h-full " >
-
-            <TabPane tab={
-              <Text className='!text-black' >
-                  All(3)
-              </Text>
-            }
-            key="1"
-            >
-              <Row align="top"  gutter={[8, 16]} justify='space-between'  className="w-full pb-9 h-full" >
-                
-                {
-                  projects.map(({_id, project_name, team, platform})=>(
+      <EmptyAndLoading showLoading={true} loading={loading}  className="h-full pt-5 flex w-4/5 flex-row items-start justify-start flex-wrap space-y-2 space-x-1">
+          {
+                  projects.filter(({team, platform})=> (chosen_team == team && platform == p) || (chosen_team == "all" && platform == p) || (chosen_team == team && p == "all") || (chosen_team == "all" && p == "all")  ).map(({_id, project_name, team, platform, issues})=>(
                     <Col className=' !flex  !h-[280px]' span={7} >
-                      <ProjectCardWithActions project_name={project_name} platform={platform} team={team} _id={_id} />
+                      <ProjectCardWithActions issues={isUndefined(issues) ? [] : issues as any} project_name={project_name} platform={platform} team={team} _id={_id} />
                     </Col>
                   ))
                 }
-              </Row>
-            </TabPane>
-            <TabPane tab={
-              <Text className='!text-black' >
-                  Private(2)
-              </Text>
-            }
-            key="2"
-            ></TabPane>
-            <TabPane tab={
-              <Text className='!text-black' >
-                  Public(0)
-              </Text>
-            }
-            key="3"
-            ></TabPane>
-            <TabPane tab={
-              <Text className='!text-black' >
-                
-                Contributed Projects(1)
-              </Text>
-            }
-            key="4"
-            ></TabPane>
-      </Tabs>
+      </EmptyAndLoading >
         
     </ProjectContainer>
   )

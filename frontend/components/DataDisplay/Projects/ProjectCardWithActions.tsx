@@ -5,13 +5,14 @@ import Image from 'next/image'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import styled from 'styled-components'
+import { IssueInterface } from '../../../globaltypes'
 import { is_def_string } from '../../../helpers'
 import { activeProjectAtom } from '../../../jotai/state'
 import { project_type } from './ProjectCard'
 
 const {Text} = Typography
 
-function ProjectCardWithActions({project_name, platform, team, _id}:{project_name?: string, platform?: string, _id?: string, team?: string}) {
+function ProjectCardWithActions({project_name, platform, team, _id, issues}:{project_name?: string, platform?: string, _id?: string, team?: string, issues: IssueInterface[]}) {
   const [dropdown, set_dropdown] = useState<"visible" | "colapsed" >("colapsed")
   const [current_project, set_current_project] = useAtom(activeProjectAtom)
   
@@ -35,7 +36,7 @@ function ProjectCardWithActions({project_name, platform, team, _id}:{project_nam
   const {pathname, push} = useRouter()
 
   return (
-    <CardContainer  className="bg-[#fcfcfc] !w-full !h-full flex flex-col  items-center justify-start overflow-hidden  cursor-pointer rounded-[8px] border-[.0.7px] border-[#eaeaea] group " >
+    <CardContainer  className="bg-[#fcfcfc] !w-full !h-full flex flex-col  items-center justify-between overflow-hidden  cursor-pointer rounded-[8px] border-[.0.7px] border-[#eaeaea] group " >
         <div className="flex p-[10px] flex-row items-center mb-5 justify-end w-full pl-[10px]">
           <Tooltip title="Pin project" >
             <a  className=" invisible mr-[10px] group-hover:visible flex  hover:bg-[#eaeaea]  flex-row items-center justify-center rounded-full p-[5px] ">
@@ -72,11 +73,11 @@ function ProjectCardWithActions({project_name, platform, team, _id}:{project_nam
           <Col className="!h-[40px] !flex !flex-row items-center justify-center !border-r-[#eaeaea] !border-solid !border-r-[1px] " span={12} >
                 <Text className="text-sm mr-2 font-medium " > 
                   <Text className="!text-black" >
-                      0
+                      {issues?.filter(({status})=>status !== "closed").length}
                   </Text>
                   / 
                   <Text>
-                    0
+                    {issues?.length}
                   </Text>
                  </Text>
                  <Text className='!text-black text-sm ' >
@@ -86,11 +87,11 @@ function ProjectCardWithActions({project_name, platform, team, _id}:{project_nam
           <Col span={12} className="!h-[40px] !flex !flex-row items-center  justify-center "  >
                 <Text className="text-sm mr-2 font-medium " > 
                   <Text className="!text-green-600" >
-                      0
+                  {issues?.filter(({status})=>status == "closed").length}
                   </Text>
                   / 
                   <Text className="text-green-900" >
-                    0
+                  {issues?.length}
                   </Text>
                  </Text>
                  <Text className='!text-black text-sm ' >

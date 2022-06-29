@@ -3,16 +3,31 @@ import { extCommentInterface, IssueInterface } from '../globaltypes'
 import useProject from './useProject'
 import _ from "lodash"
 import { is_def_string } from '../helpers'
+import { useQuery } from 'react-query'
+import axios from 'axios'
+import { backend_url } from '../globals'
+import { useAtom } from 'jotai'
+import { activeProjectAtom, issue_fetch_tick } from '../jotai/state'
+import { generateRandomColor } from '../helpers/randomColor'
+import { useRouter } from 'next/router'
 
 function useIssues() {
+    const [tick, ] = useAtom(issue_fetch_tick)
     const {project} = useProject()
     const [issues, set_issues] = useState<IssueInterface[]>([])
     const [comments, set_comments] = useState<extCommentInterface[]>()
+    const issues_query = useQuery(["issues", tick], ()=>axios.get(`${backend_url}/issues`, {withCredentials: true}).then(({data})=>data))
+    const {pathname} = useRouter()
+    const [current_project, ] = useAtom(activeProjectAtom) 
 
     useEffect(()=>{
-        if( typeof project.issues == "undefined")  return ()=>{}
-        set_issues(project.issues as IssueInterface[])
-    }, [,project, project.issues, project?.issues?.length])
+        if(issues_query.isError || issues_query.isLoading || typeof issues_query.data == "undefined" || issues_query.data == null)  return ()=>{}
+        var is;
+        if(pathname.includes("projects/")) is = _.flatten(issues_query.data.filter((proj: any)=>proj?._id == current_project ).map((proj: any)=>Object.values(proj?.issues)))
+        
+        is = _.flatten(issues_query.data.map((proj: any)=>Object.values(proj?.issues)))
+        set_issues(is as IssueInterface[])
+    }, [,issues_query.isLoading, issues_query.isError])
 
     useEffect(()=>{
         console.log(issues)
@@ -34,6 +49,22 @@ function useIssues() {
         new_issues: issues.filter(({status})=> status == "new").length,
         closed_issues: issues.filter(({status})=> status == "closed").length,
         ongoing_issues: issues.filter(({status})=>status !== "new" && status !== "closed").length,
+        fixed: issues.filter(({status})=>status == "fixed").length,
+        not_fixed: issues.filter(({status})=>status == "not fixed").length,
+        cancelled: issues.filter(({status})=>status == "cancelled").length,
+        released: issues.filter(({status})=>status == "released").length,
+        high: issues.filter(({severity})=>severity == "high").length,
+        low: issues.filter(({severity})=>severity == "low").length,
+        medium: issues.filter(({severity})=>severity == "medium").length,
+        critical: issues.filter(({severity})=>severity == "critical").length,
+        tags: _.flatten(issues.filter(({tags})=> typeof tags !== "undefined" ? tags?.length > 0 : false).map(({tags})=>typeof tags == "undefined" ? [] : tags)) ,
+        tag_names: _.uniq(_.flatten(issues.filter(({tags})=> typeof tags !== "undefined" ? tags?.length > 0 : false).map(({tags})=>typeof tags == "undefined" ? [] : tags.map(({tag_name})=>tag_name)))),
+        platforms: _.flatten(issues.filter(({platform})=>typeof platform !== "undefined").map(({platform})=>platform)),
+        platorm_colors: _.uniq(_.flatten(issues.filter(({platform})=>typeof platform !== "undefined").map(({platform})=>platform))).map(()=>generateRandomColor()) ,
+        tag_colors: _.uniq(_.flatten(issues.filter(({tags})=> typeof tags !== "undefined" ? tags?.length > 0 : false).map(({tags})=>typeof tags == "undefined" ? [] : tags.map(({tag_name})=>tag_name)))).map(()=>generateRandomColor()),
+        top_issues: _.slice(_.reverse(_.sortBy(issues, (issue)=>issue.comments.length)), 0, 5) ,
+        is_loading: issues_query.isLoading,
+        is_error: issues_query.isError,
         comments
     }
   )

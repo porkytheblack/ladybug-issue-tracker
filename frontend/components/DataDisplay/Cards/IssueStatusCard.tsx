@@ -1,54 +1,50 @@
 import { Col, Progress, Row, Select } from 'antd'
 import React from 'react'
+import useIssues from '../../../hooks/useIssues'
 import { Option, Text } from '../../../pages/_app'
 import BaseCard from '../../Containers/BaseCard'
 
 function IssueStatusCard() {
+    var n = (b: number): number =>{
+        return Math.floor((b/total_issues) *100)
+    }
+    const {new_issues, fixed, cancelled, closed_issues, not_fixed, ongoing_issues, released, total_issues} = useIssues()
   return (
     <BaseCard span={8}  className="flex flex-col bg-white items-start justify-start !h-full" >
         <div className="flex flex-row mb-5 items-center justify-between">
                 <Text className="font-medium text-lg !text-black"  >
                     Issue Status
                 </Text>
-                <Select size='small' defaultValue={["all"]} className="w-[30%]" >
-                    <Option value="all" >
-                        All
-                    </Option>
-                    <Option value="critical" >
-                        Critical
-                    </Option>
-                    <Option value="high" >
-                        High
-                    </Option>
-                    <Option value="medium" >
-                        Medium
-                    </Option>
-                    <Option value="low" >
-                        Low
-                    </Option>
-                </Select>
         </div>
         <div className="flex flex-col items-start w-full justify-start">
             {[
                 {
                     name: "New",
-                    val: 40
+                    val: n(new_issues)
                 },
                 {
                     name: "In Progress",
-                    val: 30
+                    val: n(ongoing_issues)
                 },
                 {
                     name: "Fixed",
-                    val: 20
+                    val: n(fixed)
                 },
                 {
                     name: "Closed",
-                    val: 60
+                    val: n(closed_issues)
                 },
                 {
                     name: "Released",
-                    val: 50
+                    val: n(released)
+                },
+                {
+                    name: "Cancelled",
+                    val: n(cancelled)
+                },
+                {
+                    name: "Not Fixed",
+                    val: n(not_fixed)
                 }
             ].map(({name, val})=>(
                 <Row className="w-full mb-1 " align="middle" justify='space-between' >

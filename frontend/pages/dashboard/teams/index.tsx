@@ -2,12 +2,15 @@ import { PlusOutlined, UserAddOutlined } from '@ant-design/icons'
 import { Avatar, Button, Form, Input, Modal, notification, Row } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
+import { useAtom } from 'jotai'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
+import EmptyAndLoading from '../../../components/Containers/EmptyAndLoading'
 import PageBaseContainer from '../../../components/Containers/PageBaseContainer'
 import TeamCard from '../../../components/DataDisplay/Cards/TeamCard'
 import { backend_url } from '../../../globals'
 import useTeams from '../../../hooks/useTeams'
+import { tick_up_team } from '../../../jotai/state'
 
 function Teams() {
   const [{
@@ -30,6 +33,8 @@ function Teams() {
       change_action("edit")
     }
 
+    const [,up] = useAtom(tick_up_team)
+
     const [form] = useForm()
 
     const handleSubmit  = () =>{
@@ -38,6 +43,7 @@ function Teams() {
           axios.post(`${backend_url}/team`, vals, {
             withCredentials: true
           }).then((res)=>{
+            up()
             notification.success({
               message: "success",
               key: "add_team_success"
@@ -94,7 +100,7 @@ function Teams() {
                   )
                 }
           </Modal>
-          <div className="flex flex-row w-full mt-5 items-center justify-between">
+          <div className="flex flex-row w-[90%] mt-5 items-center justify-between">
             <Input.Search placeholder='Search Teams' className="w-1/4"  />
             <Button onClick={(e)=>{
                 change_action("add")
@@ -102,13 +108,14 @@ function Teams() {
               Add Team
             </Button>
           </div>
-          <Row className="w-full h-full mt-8 " align="top" justify='start' gutter={[10, 16]} >
+          <EmptyAndLoading className=" flex flex-row mt-8 w-[90%] h-full flex-wrap items-start justify-start  " >
+            
             {
               teams.map(({team_name, team_creator, members})=>(
                 <TeamCard team_creator={team_creator} team_name={team_name} members={members}  />
               ))
             }
-          </Row>
+          </EmptyAndLoading>
       </div>
      
     </PageBaseContainer>

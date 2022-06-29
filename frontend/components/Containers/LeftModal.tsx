@@ -17,6 +17,7 @@ import { useAtom } from 'jotai'
 import { LeftModalVisibility } from '../../jotai/state'
 import axios from 'axios'
 import { backend_url } from '../../globals'
+import CommentInput from '../Input/CommentInput'
 
 const {Text} = Typography 
 const {TabPane} = Tabs
@@ -24,7 +25,6 @@ const {TabPane} = Tabs
 function LeftModalContainer() {
     const [edit_description, set_edit_description] = useState<boolean>(false)
     const [visible, set_visible] = useAtom(LeftModalVisibility)
-    const [comment, set_comment] = useState<string>("")
     const [active_comment, set_active_comment] = useState<number>(999)
 
     useEffect(()=>{
@@ -47,25 +47,7 @@ function LeftModalContainer() {
     const {creator, comments, severity, status, tags, description, summary, type, assignees, _id} = useIssue()
     const {members} = useTeam()
 
-    const submit_comment = () =>{
-        axios.post(`${backend_url}/comment/${_id}`, {
-            description: comment
-        }, {
-            withCredentials: true
-        }).then(()=>{
-            notification.success({
-                message: "Comment added successfully",
-                key: "comment_success"
-            })
-            set_comment("")
-        }).catch((e)=>{
-            console.log(e)
-            notification.error({
-                message: "An error occured",
-                key: "add_comment_error"
-            })
-        })
-    }
+    
 
   return (
     <BaseModalContainer  hide={()=>{set_visible(false)}} className='flex-row items-start justify-end' isVisible={visible} >
@@ -163,8 +145,8 @@ function LeftModalContainer() {
                                     ))
                                 }
                                 <Dropdown arrow overlay={<div className="p-5 bg-white shadow-xl " >
-                                    {members[0]?.filter(({user_name}) => !assignees?.map((val)=>val.user_name).includes(user_name as any)).length > 0 ? <Checkbox.Group>
-                                        {members[0].map(({user_name})=>(
+                                    {members?.filter(({user_name}) => !assignees?.map((val)=>val.user_name).includes(user_name as any)).length > 0 ? <Checkbox.Group>
+                                        {members.map(({user_name})=>(
                                             !assignees?.map(({user_name})=>user_name).includes(user_name as any) &&
                                             <Checkbox value={user_name} >
                                                 {user_name}
@@ -200,7 +182,6 @@ function LeftModalContainer() {
                                 "Improvement"
                                 ]} />
                             </div>
-                            
                         </div>
 
                 </div>
@@ -215,20 +196,7 @@ function LeftModalContainer() {
                         </div>
                     } >
                         <div className="flex flex-col w-full h-full pt-5 pb-8">
-                            <div className="flex flex-col mb-3 items-start justify-start w-full">
-                                <Text className='!text-black mb-3 ' >
-                                   Add a comment
-                                </Text>
-                                <div className="flex flex-row w-full mb-10">
-                                <ReactQuill value={comment} defaultValue="" onChange={set_comment} theme="snow" preserveWhitespace={true} className='w-full' />
-                                </div>
-                                
-                                <div className="flex flex-row w-full items-center justify-start mt-2">
-                                    <Button onClick={submit_comment} icon={<SaveOutlined/>} className="flex mr-4 flex-row items-center justify-between" >
-                                        Save
-                                    </Button>
-                                </div>
-                            </div>
+                           <CommentInput/>
                             <div className="flex flex-col items-start justify-start mt-4 w-full">
                                 <Steps direction='vertical' current={comments?.length} status='finish' >
                                     {
@@ -236,7 +204,7 @@ function LeftModalContainer() {
                                         return (
                                             <Steps.Step icon={
                                                 <div className="flex flex-row items-center h-[40px] w-[40px] overflow-hidden  rounded-full " >
-                                                    <Image src={typeof author.avatar !== "undefined" ? author.avatar : `https://joeschmoe.io/api/v1/${author?.name}` } width={40} height={40} />
+                                                    <Image src={typeof author.avatar !== "undefined" ? author.avatar : `https://joeschmoe.io/api/v1/${author?.user_name}` } width={40} height={40} />
                                                 </div>
                                             } description={
                                                 <div className={`flex flex-col items-center transition-all duration-300 justify-start relative ${ active_comment !== key ? "h-[150px]": "h-full"} overflow-hidden rounded-md border-[0.2px]  border-gray-100 !bg-[#F2F5FA]   w-full`}>

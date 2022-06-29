@@ -1,17 +1,32 @@
 import { Col, Row, Select, Typography } from 'antd'
-import React from 'react'
+import { isUndefined } from 'lodash'
+import React, { useState } from 'react'
 import styled from 'styled-components'
+import EmptyAndLoading from '../../components/Containers/EmptyAndLoading'
 import Hero from '../../components/Containers/Hero'
 import IllustrationExplanation from '../../components/Containers/IllustrationExplanation'
 import BugCard from '../../components/DataDisplay/Bugs/BugCard'
 import BugUpdate from '../../components/DataDisplay/Bugs/BugUpdate'
+import UpdatesCard from '../../components/DataDisplay/Cards/UpdatesCard'
 import IssueCard from '../../components/DataDisplay/IssueCard'
 import ProjectCard from '../../components/DataDisplay/Projects/ProjectCard'
+import ProjectCardWithActions from '../../components/DataDisplay/Projects/ProjectCardWithActions'
+import useIssues from '../../hooks/useIssues'
+import useProjects from '../../hooks/useProjects'
+import useTeams from '../../hooks/useTeams'
 
 const {Text} = Typography
 const {Option} = Select
 
 function Dashboard() {
+  const [team, select_team] = useState<string>("all")
+  const {total_issues, ongoing_issues, closed_issues, issues, is_loading, is_error} = useIssues()
+
+  const {projects, loading, is_error: project_error} = useProjects()
+
+  const {teams} = useTeams()
+
+
   return (
     <CustomDash className="flex pt-[60px] flex-col !items-center   justify-start w-full pl-[60px] pr-[20px] h-screen overflow-x-hidden child-container" >
       
@@ -24,34 +39,26 @@ function Dashboard() {
         <Row className="min-w-full" align="top" justify='space-between' gutter={[16, 24]} >
           <Col span={16}  >
               <Row className="w-full !ml-0 " align="top" justify='space-between' gutter={[16, 16]} >
-                <IssueCard content='Total' num={4} color={"#2D55E8"} />
-                <IssueCard content='Opened' num={4} color={"#FD9A27"} />
-                <IssueCard content='Closed' num={0} color={"#31C433"} />
+                <IssueCard content='Total' num={total_issues} color={"#2D55E8"} />
+                <IssueCard content='Opened' num={ongoing_issues} color={"#FD9A27"} />
+                <IssueCard content='Closed' num={closed_issues} color={"#31C433"} />
               </Row>
-              <div className="flex bugs-col flex-col items-center justify-start pt-9 w-full h-full">
-                <BugCard/>
-                <BugCard/>
-                <BugCard/>
-                <BugCard/>
-              </div>
+                <EmptyAndLoading showLoading={true} loading={is_loading} className="flex bugs-col flex-col items-center justify-start pt-9 w-full h-full" >
+                  { 
+                    issues.map((issue, key)=>(
+                      <BugCard issue={issue} count={key} />  
+                    ))
+                  }
+                </EmptyAndLoading>
+               
           </Col>
-          <UpdatesContainer className=" bg-white h-full p-[10px] " span={7} >
-              <div className="flex flex-row items-center mb-1 justify-start w-full">
-                  <Text className='!text-black text-lg ' >
-                    Updates
-                  </Text>
-              </div>
-              <div className="flex pl-2 pt-5 flex-col updates-container w-full">
-                  {/* <IllustrationExplanation illustration='empty' >
-                        No recent updates
-                  </IllustrationExplanation> */}
-                  <BugUpdate/>
-                  <BugUpdate/>
-                  <BugUpdate/>
-              </div>
-          </UpdatesContainer>
+          <Col span={7} >
+            <UpdatesCard/>
+          </Col>
+                 
+            
         </Row>
-        <Col span={24} className="w-full h-auto p-[20px_25px_5px_20px]  bg-white rounded-[5px]  border-[0.7px] border-[#e2e2e2] overflow-hidden " >
+        <Col span={24} className="w-full !min-h-[500px] h-auto p-[20px_25px_5px_20px]  bg-white rounded-[5px]  border-[0.7px] border-[#e2e2e2] overflow-hidden " >
               <Row className="w-full" align="middle" justify='space-between'  >
                 <Col span={4} >
                   <Text className="text-md !text-black font-semibold " >
@@ -61,48 +68,32 @@ function Dashboard() {
                 </Col>
                 <Col  span={12} ></Col>
                 <Col span={3} >
-                  <Select className="!w-[150px]" defaultValue={["all_teams"]} >
-                    <Option value="all_teams" key="all_teams" >
+                  <Select onChange={(val)=>{
+                    select_team(val as any)
+                  }} className="!w-[150px]" defaultValue={["all_teams"]} >
+                    <Option value="all" key="all" >
                       All Teams
                     </Option>
-                    <Option value="d_house_dev" key="d_house_dev" >
-                      d_house_dev
-                    </Option>
-                  </Select>
-                </Col>
-                <Col span={3} >
-                  <Select defaultValue={["active"]} className="!w-[150px]" defaultActiveFirstOption >
-                    <Option value="active" key="active" >
-                      Active
-                    </Option>
-                    <Option value="all" key="all" >
-                      All
-                    </Option>
-                    <Option value="archived" key="archived" >
-                      Archived
-                    </Option>
+                    {
+                      teams.map(({team_name})=>(
+                        <Option value={team_name} key={team_name} >
+                          {team_name}
+                        </Option>
+                      ))
+                    }
                   </Select>
                 </Col>
               </Row>
 
-              <div className="flex projects-list flex-row flex-wrap pt-5 items-start justify-center ">
-                    <ProjectCard project_name='bugtracker' project_type='site' />
-                    <ProjectCard project_name='bugtracker' project_type='server' />
-                    <ProjectCard project_name='bugtracker' project_type='database' />
-                    <ProjectCard project_name='bugtracker' project_type='app' />
-                    <ProjectCard project_name='bugtracker' project_type='site' />
-                    <ProjectCard project_name='bugtracker' project_type='server' />
-                    <ProjectCard project_name='bugtracker' project_type='database' />
-                    <ProjectCard project_name='bugtracker' project_type='app' />
-                    <ProjectCard project_name='bugtracker' project_type='site' />
-                    <ProjectCard project_name='bugtracker' project_type='server' />
-                    <ProjectCard project_name='bugtracker' project_type='database' />
-                    <ProjectCard project_name='bugtracker' project_type='app' />
-                    <ProjectCard project_name='bugtracker' project_type='site' />
-                    <ProjectCard project_name='bugtracker' project_type='server' />
-                    <ProjectCard project_name='bugtracker' project_type='database' />
-                    <ProjectCard project_name='bugtracker' project_type='app' />
-              </div>
+              <EmptyAndLoading showLoading={true} loading={loading}  className="flex projects-list flex-row flex-wrap pt-5 items-start justify-center ">
+              {
+                  projects.filter(({team: _team})=>_team == team || team == "all").map(({_id, project_name, team, platform, issues: proj_issues})=>(
+                    <Col className=' !flex  !h-[280px]' span={7} >
+                      <ProjectCardWithActions issues={isUndefined(issues) ? [] : proj_issues as any} project_name={project_name} platform={platform} team={team} _id={_id} />
+                    </Col>
+                  ))
+                }
+              </EmptyAndLoading>
         </Col>
       </Col>
     </CustomDash>

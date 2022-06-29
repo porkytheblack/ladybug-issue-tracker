@@ -63,6 +63,7 @@ export interface CustomizedFormProps {
                 lastModified?: Date,
                 _id: string
             }[],
+            platform: String,
 
     }[]
 }
@@ -108,6 +109,7 @@ export interface IssueInterface {
                 _id: string,
                 issue_id?: string
             }[],        
+            platform?: string,
 }
 
 

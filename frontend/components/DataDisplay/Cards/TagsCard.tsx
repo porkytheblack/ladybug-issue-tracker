@@ -1,5 +1,8 @@
-import React, { useState } from 'react'
+import { Empty, Tag } from 'antd'
+import React, { useEffect, useState } from 'react'
 import { tagStat } from '../../../globaltypes'
+import { generateRandomColor } from '../../../helpers/randomColor'
+import useIssues from '../../../hooks/useIssues'
 import { Text } from '../../../pages/_app'
 import BaseDoughnutChart from '../../Charts/BaseDoughnutChart'
 import BaseCard from '../../Containers/BaseCard'
@@ -29,30 +32,32 @@ const TagStats: tagStat[] = [
 
 function TagsCard() {
     const [active_tag, set_active_tag] = useState<string>("all")
-    const Tag = (tag: string, color: string) =>(
-        <button onClick={()=>{set_active_tag(tag)}} style={{borderColor: color}} className="!bg-none border-[.07px] min-w-[60px] max-w-[100%]  flex-wrap m-[2px] !outline-none rounded-[2px] !p-[2px]  " >
-            <Text style={{color}}  >
-                {tag}
-            </Text>
-        </button>
+    const [colors, set_colors] = useState<string[]>([])
+    const MTag = (tag: string, color: string) =>(
+        <Tag color={color} className="!mb-2" >
+            {tag}
+        </Tag>
     )
+    const {tags, tag_names, tag_colors} = useIssues()
+        useEffect(()=>{
+            set_colors(tag_names.map(()=>generateRandomColor() ))
+        }, [])
   return (
     <BaseCard className="bg-white !h-full" span={8} >
-        <BaseDoughnutChart    data={ 
+        {tag_names.length > 0 ? (<BaseDoughnutChart labels={tag_names}   data={ 
             [
                 {
                     label: "Tags",
-                    data: TagStats.map(({count})=>count),
-                    backgroundColor: TagStats.map(({color})=>color),
-                   borderColor: TagStats.map(({color})=>color)
+                    data: tag_names.map((name)=>tags.filter(({tag_name})=>tag_name == name).length),
+                    backgroundColor: tag_colors,
+                    borderColor: "none",
+                    borderWidth: 0,
                 }
             ]
-        }  />
-        <div className="flex flex-row items-center flex-wrap w-full justify-start pt-4">
-            {
-                TagStats.map(({tag, count, color})=>(Tag(tag, color)))
-            }
-        </div>
+        }  />): (
+            <Empty description="No Issues" />
+        )
+    }
     </BaseCard>
   )
 }

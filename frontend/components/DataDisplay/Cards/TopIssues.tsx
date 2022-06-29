@@ -1,10 +1,31 @@
 import { Col, Divider, Progress, Row, Select } from 'antd'
-import React from 'react'
+import { atom, useAtom } from 'jotai'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { is_def_string } from '../../../helpers'
+import useIssues from '../../../hooks/useIssues'
 import { Option, Text } from '../../../pages/_app'
 import BaseCard from '../../Containers/BaseCard'
+import EmptyAndLoading from '../../Containers/EmptyAndLoading'
+
 
 function TopIssues() {
+    const [filter, set_filter] = useState<string>("all")
+    const {top_issues} = useIssues()
+    const p = (s: string): number =>{
+        if(s == "new") return 0
+        if(s == "in progress") return 40
+        if(s == "fixed") return 100
+        if(s == "closed") return 100
+        if(s == "not fixed") return 0
+        if(s == "cancelled") return 0
+        if(s == "released") return 100
+        return 10
+    }
+    useEffect(()=>{
+        console.log(filter)
+        console.log(top_issues)
+    }, [filter])
   return (
     <BaseCard span={24} className="bg-white mt-4 " >
         <Row align="middle" justify='space-between' className="w-full" >
@@ -15,53 +36,52 @@ function TopIssues() {
             </Col>
             <Col span={16} ></Col>
             <Col span={4} >
-                <Select className="w-full" size='small' defaultValue={["all"]} >
+                <Select onChange={(val )=>{
+                    console.log(val)
+                    set_filter(val as any)
+                }} className="w-full" size='small' defaultValue={["all"]} >
                     <Option value="all" >
                         All
+                    </Option>
+                    <Option value="critical" >
+                        Critical
                     </Option>
                     <Option value="high" >
                         High
                     </Option>
+                    <Option value="medium" >
+                        Medium
+                    </Option>
                     <Option value="low" >
                         Low
                     </Option>
-                    <Option value="Medium" >
-                        Medium
-                    </Option>
+                   
                 </Select>
             </Col>
         </Row>
         <Row align="top" justify='space-between' className='mt-5' >
-            <Col className="!flex !flex-row items-center " span={24} >
-            <Text className="text-sm mr-5 !flex flex-row items-center  font-semibold !text-black" >
-                    <Text>
-                        BUG1
-                    </Text>
-                    <Divider  type='vertical' />
-                    <Text>
-                        Ongoing
-                    </Text>
-                    
-                </Text>
-                <Progress percent={45} showInfo={false} />
-                
-            </Col>
-            <Divider/>
-            <Col className="!flex !flex-row items-center " span={24} >
-            <Text className="text-sm mr-5 !flex flex-row items-center  font-semibold !text-black" >
-                    <Text className="uppercase" >
-                        BUG2
-                    </Text>
-                    <Divider  type='vertical' />
-                    <Text>
-                        Ongoing
-                    </Text>
-                    
-                </Text>
-                <Progress percent={45} showInfo={false} />
-                
-            </Col>
-            <Divider/>
+            <EmptyAndLoading empty_description='No issuess' className="w-full h-full flex flex-col items-center justify-start" >
+            {
+                top_issues?.filter(({severity})=> filter == severity || filter == "all" ).map(({summary, status})=>(
+                    <>
+                        <Col className="!flex !flex-row items-center w-full" span={24} >
+                        <Text className="text-sm mr-5 !flex flex-row items-center  font-semibold !text-black" >
+                                <Text>
+                                    {summary}
+                                </Text>
+                                <Divider  type='vertical' />
+                                <Text>
+                                    {status}
+                                </Text>
+                                
+                            </Text>
+                            <Progress percent={p(is_def_string(status))} showInfo={false} />
+                        </Col>
+                        <Divider/>
+                    </>
+                ))
+            }
+            </EmptyAndLoading>
         </Row>
     </BaseCard>
   )
