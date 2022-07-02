@@ -1,19 +1,23 @@
 import { MoreOutlined } from '@ant-design/icons'
 import { Avatar, Button, Divider, Dropdown, Menu, Tooltip } from 'antd'
+import { useAtom } from 'jotai'
 import { isUndefined } from 'lodash'
 import Image from 'next/image'
 import React from 'react'
 import styled from 'styled-components'
 import { generateRandomColor } from '../../../helpers/randomColor'
+import { userAtom } from '../../../jotai/state'
 import { Text } from '../../../pages/_app'
 import BaseCard from '../../Containers/BaseCard'
+import GeneralAvatar from '../../OneJob/GeneralAvatar'
 
 function TeamCard({
     onClickEdit,
     team_creator,
     team_name,
     members,
-    _id
+    _id,
+    
     }:{
     onClickEdit?: ()=>void,
     team_name?: string,
@@ -24,7 +28,7 @@ function TeamCard({
         avatar?: string
     }[]
 }) {
-
+    const [user, ] = useAtom(userAtom)
     const DropDownMenu = () =>(
         <Menu >
             <Menu.Item key="remove" >
@@ -41,15 +45,15 @@ function TeamCard({
             <Text className="text-lg font-semibold !text-black uppercase " >
                 {team_name}
             </Text>
-            <Dropdown overlay={DropDownMenu} >
+            { team_creator == user?.user_name && <Dropdown overlay={DropDownMenu} >
                 <a onClick={(e)=>e.preventDefault()} className="flex flex-row items-center justify-center p-2 cursor-pointer">
                     <MoreOutlined/>
                 </a>
-            </Dropdown>
+            </Dropdown>}
         </div>
         <div className="flex flex-col items-center justify-center w-full pt-4">
             <div className="flex flex-row rounded-full h-10 w-10 overflow-hidden ">
-                { !isUndefined(members) && <Image src={(isUndefined(members[0]?.avatar) || members[0]?.avatar.length == 0)? `https://joeschmoe.io/api/v1/${members[0]?.user_name}` : members[0]?.avatar } height={40} width={40} />}
+            <GeneralAvatar avatar={!isUndefined(members) ?  members[0]?.avatar : ""} user_name={!isUndefined(members) ?  members[0]?.user_name : ""} />
             </div>
             <Text className="pt-2" >
                     {team_creator}
@@ -60,11 +64,7 @@ function TeamCard({
         <Avatar.Group>
               {
                 !isUndefined(members) && members.map(({user_name, avatar})=>(
-                  <Tooltip title={user_name} >
-                  {isUndefined(avatar) || avatar.length == 0 ? <Avatar src={`https://joeschmoe.io/api/v1/${user_name}`} />  : <div className="flex flex-row h-10 w-10 items-center justify-center rounded-full overflow-hidden">
-                    <Image src={isUndefined(avatar) ? `https://joeschmoe.io/api/v1/${user_name}` : avatar } height={40} width={40} />
-                  </div>}
-                  </Tooltip>
+                  <GeneralAvatar user_name={user_name} avatar={avatar} />
                 ))
               }
             </Avatar.Group>

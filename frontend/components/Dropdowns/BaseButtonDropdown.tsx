@@ -1,13 +1,15 @@
 import { BugOutlined, BulbOutlined, QuestionOutlined, SearchOutlined, StarOutlined, ToolOutlined } from '@ant-design/icons'
 import { Button, Checkbox, Divider, Dropdown, Radio } from 'antd'
 import { CheckboxValueType } from 'antd/lib/checkbox/Group'
-import React, { ReactNode, useState } from 'react'
+import { isUndefined } from 'lodash'
+import React, { ForwardRefExoticComponent, ReactNode, useState } from 'react'
+import { IssueTypesType } from '../../globals'
 import { Text } from '../../pages/_app'
 
 function BaseButtonDropdown({default_val, options, get_current_val, title, onClick, onChange}: {onClick: ()=>void ,default_val: {
     name: string,
-    current_icon: ReactNode
-    }; options: {name: string, icon: ReactNode}[] ; get_current_val: (val: string)=>void; title: string; 
+    current_icon: ReactNode 
+    }; options: {name: string, icon?: ForwardRefExoticComponent<any>   }[]  ; get_current_val: (val: string)=>void; title: string; 
     onChange?: (val: any)=>void
     }) {
     const [menu_open, set_menu_open] = useState<boolean>(false)
@@ -36,17 +38,18 @@ function BaseButtonDropdown({default_val, options, get_current_val, title, onCli
                         get_current_val(n)
                     }
                    
-            }} defaultValue={[name.toLocaleLowerCase()]}  className="w-full !flex !flex-col items-center justify-start" >
-                <Radio className='invisible' ></Radio>
+            }} defaultValue={["choose"]}  className="w-full !flex !flex-col items-center justify-start" >
+                <Radio className='invisible' value="choose" ></Radio>
                 {
                     
-                   options.map(({name, icon})=>(
+                   options.map(({name, icon: Icon})=>(
                         <Radio className=" justify-start" value={name.toLocaleLowerCase()} >
                             <div className="flex flex-row items-center justify-between w-[140px]">
                                 <Text className='ml-2 capitalize ' >
                                     {name}
                                 </Text>
-                                {icon}
+                                
+                                {!isUndefined(Icon) ? <Icon/> : <></>}
                             </div>
                         </Radio>
                     ))
@@ -60,7 +63,9 @@ function BaseButtonDropdown({default_val, options, get_current_val, title, onCli
   return (
     <Dropdown   overlay={DropdownMenu}  >
         <Button onMouseOver={onClick} className="!rounded-md flex flex-row w-full items-center capitalize justify-between" icon={current_icon} >
-            {name}
+            {name} 
+            
+            <div className="flex invisible"></div>
         </Button>
     </Dropdown>
   )

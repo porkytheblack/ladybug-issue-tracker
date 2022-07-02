@@ -29,5 +29,10 @@ export const tick_up = atom(null, (get, set, _)=>{set(issue_fetch_tick, get(issu
 export const tick_up_team = atom(null, (get, set, _)=>{set(team_fetch_tick, get(team_fetch_tick)+1)})
 export const tick_up_project = atom(null, (get, set, _)=>{set(project_fetch_tick, get(project_fetch_tick)+1)})
 
+export const tick_issue = atom<number>(0)
+export const tick_up_issue = atom(null, (get, set, _)=>{set(tick_issue, get(tick_issue)+1)})
+
+
+
 
 

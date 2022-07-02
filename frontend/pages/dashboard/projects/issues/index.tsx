@@ -20,7 +20,7 @@ import { is_def_string } from '../../../../helpers'
 import { Text } from '../../../_app'
 import { generateRandomColor } from '../../../../helpers/randomColor'
 import axios from 'axios'
-import { backend_url } from '../../../../globals'
+import { backend_url, general_statuses, global_tags, IssueTypes, severity_levels } from '../../../../globals'
 import { activeProjectAtom, tick_up } from '../../../../jotai/state'
 import useIssues from '../../../../hooks/useIssues'
 import EmptyAndLoading from '../../../../components/Containers/EmptyAndLoading'
@@ -112,6 +112,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
       axios.post(`${backend_url}/issue/${current_project}`, {
         summary: vals.summary,
         description: vals.description,
+        system_details: vals.system_details,
         platform: vals.platform,
         type: current_option[0],
         severity: current_option[1],
@@ -217,92 +218,10 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
                         
                     </div>
                     <div className="flex pt-7 flex-col space-y-2 items-start justify-start w-1/4 ">
-                              <BaseButtonDropdown  onClick={()=>set_active(0)} get_current_val={change_current_option} title="Issue Type" default_val={{name: "bug", current_icon: <BugOutlined/>}} options={[
-                                {
-                                  icon: <BugOutlined/>,
-                                  name: "bug"
-                                },
-                                {
-                                  icon: <SearchOutlined/>,
-                                  name: "observations"
-                                },
-                                {
-                                  icon: <QuestionOutlined/>,
-                                  name: "question"
-                                },
-                                {
-                                  icon: <BulbOutlined/>,
-                                  name: "suggestion"
-                                },
-                                {
-                                  icon: <ToolOutlined/>,
-                                  name: "improvements"
-                                },
-                                {
-                                  icon: <StarOutlined/>,
-                                  name: "New Features"
-                                }
-                              ]} />
-                              <BaseButtonDropdown onClick={()=>set_active(1)} get_current_val={change_current_option} title="Severity" default_val={{name: "low", current_icon: <></>}} options={[
-                                {
-                                  icon: <></>,
-                                  name: "Low"
-                                },
-                                {
-                                  icon: <></>,
-                                  name: "Medium"
-                                },
-                                {
-                                  icon: <></>,
-                                  name: "High"
-                                },
-                                {
-                                  icon: <></>,
-                                  name: "Critical"
-                                }
-                              ]} />
-                              <BaseButtonDropdown onClick={()=>set_active(2)} get_current_val={change_current_option} title="Status" default_val={{name: "New", current_icon: <></>}} options={[
-                                    {
-                                      icon: <></>,
-                                      name: "New"
-                                    },
-                                    {
-                                      icon: <></>,
-                                      name: "In Progress"
-                                    },
-                                    {
-                                      icon: <></>,
-                                      name: "Fixed"
-                                    },
-                                    {
-                                      icon: <></>,
-                                      name: "Not Fixed"
-                                    },
-                                    {
-                                      icon: <></>,
-                                      name: "Closed"
-                                    },
-                                    {
-                                      icon: <></>,
-                                      name: "Cancelled"
-                                    },
-                                    {
-                                      icon: <></>,
-                                      name: "Released"
-                                    },
-                              ]} />
-                            <MultipleSelectDropdown get_active={update_active_tags} tags={[
-                              "New",
-                              "Functionality",
-                              "Improvement",
-                              "Bug",
-                              "Issue",
-                              "Task",
-                              "Question",
-                              "Suggestion",
-                              "UI",
-                              "UX"
-                            ]} />
+                              <BaseButtonDropdown  onClick={()=>set_active(0)} get_current_val={change_current_option} title="Issue Type" default_val={{name: "bug", current_icon: <BugOutlined/>}} options={IssueTypes} />
+                              <BaseButtonDropdown onClick={()=>set_active(1)} get_current_val={change_current_option} title="Severity" default_val={{name: "low", current_icon: <></>}} options={severity_levels} />
+                              <BaseButtonDropdown onClick={()=>set_active(2)} get_current_val={change_current_option} title="Status" default_val={{name: "New", current_icon: <></>}} options={general_statuses} />
+                            <MultipleSelectDropdown get_active={update_active_tags} tags={global_tags} />
                     </div>  
               </div>
         </Modal>

@@ -1,4 +1,4 @@
-import { CloseOutlined, EditOutlined, PaperClipOutlined, SaveOutlined, SyncOutlined, UserAddOutlined } from '@ant-design/icons'
+import { BugOutlined, BulbOutlined, CloseOutlined, EditOutlined, PaperClipOutlined, QuestionOutlined, SaveOutlined, SearchOutlined, StarOutlined, SyncOutlined, ToolOutlined, UserAddOutlined } from '@ant-design/icons'
 import { Avatar, Button, Checkbox, Divider, Dropdown, Empty, notification, Select, Steps, Tabs, Tag, Tooltip, Typography } from 'antd'
 import React, { ReactNode, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
@@ -14,18 +14,28 @@ import Image from 'next/image'
 import MultipleSelectDropdown from '../Dropdowns/MultipleSelectDropdown'
 import { generateRandomColor } from '../../helpers/randomColor'
 import { useAtom } from 'jotai'
-import { LeftModalVisibility } from '../../jotai/state'
+import { LeftModalVisibility, tick_issue, tick_up_issue } from '../../jotai/state'
 import axios from 'axios'
-import { backend_url } from '../../globals'
+import { backend_url, global_tags } from '../../globals'
 import CommentInput from '../Input/CommentInput'
+import BaseButtonDropdown from '../Dropdowns/BaseButtonDropdown'
+import LeftModalTopBar from './LeftModalTopBar'
+import DescriptionInput from '../Input/DescriptionInput'
+import { isUndefined } from 'lodash'
+import TagContainer from '../Tags/TagContainer'
+import ModalLeft from './ModalLeft'
 
 const {Text} = Typography 
 const {TabPane} = Tabs
 
 function LeftModalContainer() {
     const [edit_description, set_edit_description] = useState<boolean>(false)
-    const [visible, set_visible] = useAtom(LeftModalVisibility)
+    const [visible, set_visible] = useAtom(LeftModalVisibility)      
     const [active_comment, set_active_comment] = useState<number>(999)
+    const {creator, comments, severity, status, tags, description, summary, type, assignees, _id, loading, is_error} = useIssue()
+    const {members} = useTeam()
+    const [, up] = useAtom(tick_up_issue)
+   
 
     useEffect(()=>{
         const target = document.querySelector("#leftmodal")
@@ -42,94 +52,20 @@ function LeftModalContainer() {
             }
         }
        
-    }, [])
+    }, [,loading, is_error, _id])
 
-    const {creator, comments, severity, status, tags, description, summary, type, assignees, _id} = useIssue()
-    const {members} = useTeam()
 
     
 
   return (
     <BaseModalContainer  hide={()=>{set_visible(false)}} className='flex-row items-start justify-end' isVisible={visible} >
         <div id="leftmodal" className="flex flex-col items-center relative justify-start  !bg-[#F2F5FA]   w-[90%] h-full ">
-            <div  className="flex flex-row items-center   justify-between w-full bg-[#F3F3F3] p-[10px_20px]  border-[1px] border-solid border-[#D3D3D3]  ">
-                <a onClick={()=>set_visible(false)} className="flex absolute top-2 right-2 flex-row items-center justify-center">
-                    <CloseOutlined/>
-                </a>
-                <div className="flex flex-col w-1/2 h-full items-start justify-start">
-                    <div className="flex flex-row items-center mb-3 justify-start">
-
-                        <Tag className="!bg-blue-800 mr-2 "  color="blue" >
-                            <Text className="!text-white uppercase " >
-                                    Issue
-                            </Text>
-                        </Tag>
-                        <StatusTag>
-                            {status}
-                        </StatusTag>
-
-
-                    </div>
-
-                    <div className="flex flex-row items-center justify-start">
-                        <Text className="text-xl !font-medium !text-black "  >
-                                {summary}
-                        </Text>
-                    </div>
-                    <div className="flex flex-row items-center justify-start mb-2">
-                        <Text className="mr-2" >
-                            Project Type
-                        </Text>
-                        <Select defaultValue={type} >
-                            <Select.Option key="bug" >
-                                Bug
-                            </Select.Option>
-                            <Select.Option key="observation" >
-                                Observation
-                            </Select.Option>
-                            <Select.Option key="feature" >
-                                Feature
-                            </Select.Option>
-
-                        </Select>
-                    </div>
-
-                </div>
-
-                <div className="flex flex-col items-end justify-start w-1/2 " >
-                    <Text>
-                        By  {creator?.user_name}
-                        <Divider className='bg-black' type="vertical" />
-                        <Text>
-                            On Monday 20th June
-                        </Text>
-                    </Text>
-                </div>
-            </div>
+            <LeftModalTopBar/>
         <ChildrenContainer className="flex  overflow-y-scroll flex-col with-scrollbar items-center h-[83vh] w-full p-3  m-0 justify-start bg-white">
-        <div  className="flex flex-row w-full pb-10 h-full !bg-white items-start jusitfy-start">
-            <div className="flex flex-col items-center justify-start w-3/4 ">
-                <div className="flex flex-row mt-2 w-full items-center justify-start">
-                {!edit_description && <Button icon={<EditOutlined/>} onClick={()=>set_edit_description(true)}>
-                        Edit Description
-                    </Button>}
-                </div>
-                <Divider className="!mt-0 !pt-0" />
-                <div className="flex flex-col with-scrollbar w-full items-center justify-start h-[400px] overflow-y-scroll ">
-                <ReactQuill  theme="bubble" preserveWhitespace={true} readOnly={true} value={ typeof description == "undefined" ? "" : description }  />
-                </div>
-                <Divider className='!mb-2' />
-                {edit_description && <div className="flex flex-row items-center justify-end w-full">
-                    <Button icon={<SaveOutlined/>} className="mr-3 !flex !flex-row !items-center !justify-between" >
-                        Save
-                    </Button>
-                    <Button className="mr-3 !flex !flex-row !items-center !justify-between" >
-                        Cancel
-                    </Button>
-                </div>}
+        <div  className="flex flex-row w-full pb-10 h-full !bg-white items-start justify-between">
+            <div className="flex flex-col items-center justify-start w-[60%] ">
+                <DescriptionInput/>
                 <div className="flex flex-row w-full items-center justify-between mt-2 p-2 ">
-
-
                         <div className="flex flex-col items-start justify-start">
                             <Text className="font-medium text-lg !text-black mb-2 " >
                                 Assignees
@@ -139,7 +75,7 @@ function LeftModalContainer() {
                                     assignees?.map(({avatar, user_name})=>(
                                         <Tooltip title={user_name} >
                                             <div className="!flex !flex-row !items-center justify-center overflow-hidden rounded-full h-[40px] w-[40px] ">
-                                                <Image src={typeof avatar !== "undefined" ? avatar : `https://joeschmoe.io/api/v1/${user_name}`} width={40} height={40} referrerPolicy="no-referrer" />
+                                                <Image src={typeof avatar !== "undefined" && avatar.length !== 0 ? avatar : `https://joeschmoe.io/api/v1/${user_name}`} width={40} height={40} referrerPolicy="no-referrer" />
                                             </div>
                                         </Tooltip>
                                     ))
@@ -160,29 +96,10 @@ function LeftModalContainer() {
                             
                         </div>
                         
-                        <div className="flex flex-col items-stat justify-start w-1/4 ">
-                            <Text className="font-medium text-lg !text-black mb-2 " >
-                                Tags
-                            </Text>
-                            <div className="flex flex-row w-full items-center justify-start flex-wrap ">
-                                {
-                                    tags?.map(({tag_name, tag_color})=>(
-                                        <Tag  color={tag_color} >
-                                            {tag_name}
-                                        </Tag>
-                                    ))
-                                }
-                            </div>
-                            <div className="flex flex-row mt-2">
-                                <MultipleSelectDropdown get_active={(vals)=>{
-                                    console.log(vals)
-                                }} tags={[
-                                "New",
-                                "Functionality",
-                                "Improvement"
-                                ]} />
-                            </div>
-                        </div>
+                            
+                            <TagContainer />
+                            
+                        
 
                 </div>
 
@@ -204,7 +121,7 @@ function LeftModalContainer() {
                                         return (
                                             <Steps.Step icon={
                                                 <div className="flex flex-row items-center h-[40px] w-[40px] overflow-hidden  rounded-full " >
-                                                    <Image src={typeof author.avatar !== "undefined" ? author.avatar : `https://joeschmoe.io/api/v1/${author?.user_name}` } width={40} height={40} />
+                                                    <Image src={typeof author.avatar !== "undefined" && author.avatar.length !== 0 ? author.avatar : `https://joeschmoe.io/api/v1/${author?.user_name}` } width={40} height={40} />
                                                 </div>
                                             } description={
                                                 <div className={`flex flex-col items-center transition-all duration-300 justify-start relative ${ active_comment !== key ? "h-[150px]": "h-full"} overflow-hidden rounded-md border-[0.2px]  border-gray-100 !bg-[#F2F5FA]   w-full`}>
@@ -235,7 +152,9 @@ function LeftModalContainer() {
                 </Tabs>
                 
             </div>
-            
+            <div className="flex flex-col min-w-[30%]  h-full items-center justify-start">
+                    <ModalLeft/>
+            </div>
         </div>
         
         </ChildrenContainer>  

@@ -9,17 +9,19 @@ import { SaveOutlined } from '@ant-design/icons'
 import axios from 'axios'
 import { backend_url } from '../../globals'
 import { useAtom } from 'jotai'
-import { activeIssueAtom } from '../../jotai/state'
+import { activeIssueAtom, tick_up } from '../../jotai/state'
 
 function CommentInput() {
     const [comment, set_comment] = useState<string>("")
     const [current_issue, ] = useAtom(activeIssueAtom)
+    const [, up] = useAtom(tick_up)
     const submit_comment = () =>{
         axios.post(`${backend_url}/comment/${current_issue}`, {
             description: comment
         }, {
             withCredentials: true
         }).then(()=>{
+            up()
             notification.success({
                 message: "Comment added successfully",
                 key: "comment_success"

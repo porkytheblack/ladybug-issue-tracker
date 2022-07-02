@@ -127,3 +127,24 @@ export interface CommentInterface {
 export interface extCommentInterface extends CommentInterface {
     summary: string
 }
+
+
+export interface InboxSchema {
+    from: {
+        user_name: string,
+        avatar: string,
+    },
+    to: String,
+    type: String,
+    invite_type?: String,
+    accepted: boolean,
+    read: boolean,
+    invite_content?:{
+        team_id?: string,
+        team_name?: string
+    },
+    subject?: string,
+    msg_content?: string,
+    createdAt: Date,
+    _id: string
+}

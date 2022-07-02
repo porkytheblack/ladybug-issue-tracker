@@ -20,7 +20,13 @@ function useProject() {
 
   return (
     {
-      project
+      project,
+      is_loading: project_query.isLoading,
+      is_error: project_query.isError,
+      name: project.project_name,
+      project_team: project.team,
+      platform: project.platform,
+      _id: project._id
     }
   )
 }

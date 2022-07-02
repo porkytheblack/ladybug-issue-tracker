@@ -3,14 +3,18 @@ import { Avatar, Button, Form, Input, Modal, notification, Row } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import { useAtom } from 'jotai'
+import { isUndefined } from 'lodash'
+import Image from 'next/image'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import EmptyAndLoading from '../../../components/Containers/EmptyAndLoading'
 import PageBaseContainer from '../../../components/Containers/PageBaseContainer'
 import TeamCard from '../../../components/DataDisplay/Cards/TeamCard'
 import { backend_url } from '../../../globals'
+import { is_def_string } from '../../../helpers'
 import useTeams from '../../../hooks/useTeams'
-import { tick_up_team } from '../../../jotai/state'
+import { tick_up_team, userAtom } from '../../../jotai/state'
+import { Text } from '../../_app'
 
 function Teams() {
   const [{
@@ -20,6 +24,11 @@ function Teams() {
     visible: false,
     action: "add"
   })
+    const [user, set_user] = useAtom(userAtom)
+    const [team_name, set_team_name] = useState<string>("")
+    const [editable_name, set_editable_name] = useState<string>("")
+    const [team_member, set_team_member] = useState<string>("")
+    const [active_team, set_active_team] = useState<string>("")
     const show_modal = () =>{
       set_modal_config(({visible, action})=>({visible: true, action}))
     }
@@ -64,7 +73,50 @@ function Teams() {
 
     const {teams} = useTeams()
 
-    /////
+    const send_invitation = () =>{
+      axios.post(`${backend_url}/inbox`,  {
+        to: team_member,
+        type: "invite",
+        invite_type: "team",
+        invite_content: {
+          team_id: active_team,
+          team_name
+        }
+      }, {
+        withCredentials: true
+      }).then(()=>{
+        notification.success({
+          message: "Success",
+          key: "inbox_success"
+        })
+      }).catch((e)=>{
+        console.log(e)
+        notification.error({
+          message: "An Error Occured",
+          key: "inbox_error"
+        })
+      })
+    }
+
+    const update_team = () =>{
+      if(editable_name == team_name) return ()=>{}
+      axios.put(`${backend_url}/team/${active_team}`, {
+        team_name: editable_name
+      }, {
+        withCredentials: true
+      }).then(()=>{
+        notification.success({
+          message: "Success",
+          key: "update_team_success"
+        })
+      }).catch((e)=>{
+        console.log(e)
+        notification.error({
+          message: "An Error Occured",
+          key: "update_team_name_error"
+        })
+      })
+    }
 
   return (
     <PageBaseContainer  >
@@ -92,14 +144,55 @@ function Teams() {
                 {
                   action == "edit" && (
                     <div className="flex flex-col items-center w-full justify-start">
-                      <Input placeholder="Team name" type="text" />
-
+                      <Input.Group compact >
+                        <Input value={editable_name} onChange={(e)=>{
+                          set_editable_name(e.target.value)
+                        }} className="!w-[60%]" placeholder="Team name" type="text" />
+                        <Button onClick={update_team} >
+                          Submit
+                        </Button>
+                      </Input.Group>
+                      
+                      
+                      <div className="flex w-full flex-col items-center">
+                        
+                        <Input.Group className='mt-5' compact >
+                         <Input value={team_member} onChange={(e)=>{
+                          set_team_member(e.target.value)
+                         }}  style={{
+                          width: "60%"
+                         }} placeholder='Enter username or Email' />
+                         <Button onClick={send_invitation} >
+                            Add
+                         </Button>
+                        </Input.Group>
+                        <div className="flex flex-col mt-5 w-full items-start justify-start">
+                          <Text className='!text-black font-semibold text-xl ' >
+                            Members
+                          </Text>
+                          {
+                            teams.filter((team)=>team.team_name == team_name)[0].members?.map(({user_name, avatar})=>(
+                              <div className="flex flex-row w-full items-center justify_start">
+                                <div className="flex w-[40px] h-[40px] rounded-full flex-row items-center justify-center">
+                                    <Image  width={40} height={40} referrerPolicy='no-referrer' src={ isUndefined(avatar) || avatar.length == 0 ? `https://joeschmoe.io/api/v1/${user_name}` :is_def_string(avatar)} />
+                                </div>
+                                <Text className='!text-black ml-5 ' >
+                                     @ {user_name}
+                                </Text>
+                              </div>
+                            ))
+                          }
+                        </div>
+                      </div>
                       
                     </div>  
 
                   )
                 }
           </Modal>
+          
+          
+
           <div className="flex flex-row w-[90%] mt-5 items-center justify-between">
             <Input.Search placeholder='Search Teams' className="w-1/4"  />
             <Button onClick={(e)=>{
@@ -111,8 +204,13 @@ function Teams() {
           <EmptyAndLoading className=" flex flex-row mt-8 w-[90%] h-full flex-wrap items-start justify-start  " >
             
             {
-              teams.map(({team_name, team_creator, members})=>(
-                <TeamCard team_creator={team_creator} team_name={team_name} members={members}  />
+              teams.map(({team_name, team_creator, members, _id})=>(
+                <TeamCard onClickEdit={()=>{
+                  change_action("edit")
+                  set_team_name(is_def_string(team_name))
+                  set_active_team(is_def_string(_id))
+                  set_editable_name(is_def_string(team_name))
+                }} team_creator={team_creator} team_name={team_name} members={members}  />
               ))
             }
           </EmptyAndLoading>

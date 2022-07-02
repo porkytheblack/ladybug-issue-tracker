@@ -1,4 +1,4 @@
-import { AppstoreOutlined, BarChartOutlined, BugOutlined, CheckCircleOutlined, DashboardFilled, DashboardOutlined, ExclamationCircleOutlined, LeftOutlined, LogoutOutlined, MailOutlined, RightOutlined, SettingOutlined, TeamOutlined, ToolOutlined, UserOutlined } from '@ant-design/icons'
+import { AppstoreOutlined, BarChartOutlined, BugOutlined, CheckCircleOutlined, DashboardFilled, DashboardOutlined, ExclamationCircleOutlined, InboxOutlined, LeftOutlined, LogoutOutlined, MailOutlined, RightOutlined, SettingOutlined, TeamOutlined, ToolOutlined, UserOutlined } from '@ant-design/icons'
 import { useAuth0 } from '@auth0/auth0-react'
 import { Avatar, Menu, Typography } from 'antd'
 import { motion } from 'framer-motion'
@@ -150,6 +150,9 @@ function SideMenu() {
                 </Menu.Item>
                 <Menu.Item icon={<TeamOutlined/>} onClick={()=>{call_change_active("teams")}}   key="settings"  >
                     Teams
+                </Menu.Item>
+                <Menu.Item icon={<InboxOutlined/>} onClick={()=>{call_change_active("inbox")}}   key="inbox"  >
+                    Inbox
                 </Menu.Item>
                 
                 <Menu.Item key="user" className="!p-0 !flex !flex-col !items-center !w-full  !justify-center" onClick={()=>{call_change_active("user")}}  icon={<Avatar className="!overflow-visible !absolute " src="https://joeschmoe.io/api/v1/jess"  shape='circle' />} >

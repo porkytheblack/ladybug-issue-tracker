@@ -16,7 +16,7 @@ function BugUpdateItem({comment}:{comment: extCommentInterface}) {
     <li className="w-full mt-3 flex flex-col items-start justify-start" >
         <div className="flex flex-row items-center justify-start">
             <div className="flex flex-row rounded-full h-10 w-10 overflow-hidden ">
-            <Image src={isUndefined(comment?.author?.avatar) ? `https://joeschmoe.io/api/v1/${comment?.author?.avatar}` : comment?.author?.avatar } height={40} width={40} />
+            <Image src={isUndefined(comment?.author?.avatar) || comment?.author?.avatar.length == 0 ? `https://joeschmoe.io/api/v1/${comment?.author?.user_name}` : comment?.author?.avatar } height={40} width={40} />
             </div>
             <Text className="text-sm !text-black ml-5 font-medium" >
                 @ {comment?.author?.user_name}

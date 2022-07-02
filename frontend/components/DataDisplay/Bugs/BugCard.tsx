@@ -36,8 +36,6 @@ function BugCard({issue, count}:{issue: IssueInterface, count: number}) {
         show()
     }
 
-    console.log(issue)
-
     
     
   return (
