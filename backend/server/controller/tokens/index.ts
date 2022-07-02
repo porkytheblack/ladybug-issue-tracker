@@ -40,7 +40,8 @@ export const login = (req: Request, res: Response) =>{
                                 const {user_name, email, authType, avatar} = results
                                 res.cookie("access_token", jwt.sign({
                                     user_name: user_name,
-                                    avatar: avatar
+                                    avatar: avatar,
+                                    email: email
                                 }, process.env.access_token), {
                                     secure: false,
                                     httpOnly:false,
@@ -93,7 +94,8 @@ export const login = (req: Request, res: Response) =>{
                         console.log(data, 88)
                         res.cookie("access_token", jwt.sign({
                             user_name: `${user_name}`,
-                            avatar: `${avatar}`
+                            avatar: `${avatar}`,
+                            email: email
                         }, process.env.access_token), {
                             secure: false,
                             httpOnly: false,

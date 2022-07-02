@@ -27,7 +27,16 @@ const expected_keys = [
     "role",
     "project_id",
     "issue_id",
-    "team"
+    "team",
+    "to",
+    "msg_content",
+    "invite_type",
+    "invite_content",
+    "read",
+    "accepted",
+    "from",
+    "subject",
+    "to"
 ]
 
 const action_types = [

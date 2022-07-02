@@ -5,7 +5,6 @@ import userModel from "./user_schema"
 const TeamSchema = new Schema({
     team_name: {
         type: String,
-        unique: true,
         require: true
     },
     team_creator: {

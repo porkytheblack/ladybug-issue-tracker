@@ -1,7 +1,22 @@
-GET http://localhost:8080/issue/62bbfdd3c46c01fbb2041103
-Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJwb3JreXRoZWJsYWNrIiwiYXZhdGFyIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2hmajRiYkMwczQzVnhpT3ZpcENGZ2RaamtmaFQ1MUI4Sm1RNlpMPXM5Ni1jIiwiaWF0IjoxNjU2NDgzNzI0fQ.KvRLq8pQmvt1CVRrDCKRnwHwqzcDzhBvshQWC7yWAbM
+POST http://localhost:8080/inbox
+Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJjaGxvZSIsImF2YXRhciI6IiIsImlhdCI6MTY1NjU4OTYzNH0.2yrrNMLwgTgPZzWGsoolNHXO06-Bzgg7KLqNEMg4Z5s
 Content-Type: application/json
 
 {
+    "to": "porkytheblack@gmail.com",
+    "type": "invite",
+    "invite_type": "project",
+    "invite_content": {
+        "project_id": "62be960e7e0a7d5691ce4896"
+    }
+}
 
+
+###
+GET http://localhost:8080/inbox 
+Cookie: access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJwb3JreXRoZWJsYWNrIiwiYXZhdGFyIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EtL0FPaDE0R2hmajRiYkMwczQzVnhpT3ZpcENGZ2RaamtmaFQ1MUI4Sm1RNlpMPXM5Ni1jIiwiZW1haWwiOiJwb3JreXRoZWJsYWNrQGdtYWlsLmNvbSIsImlhdCI6MTY1Njc3MDgwMX0.BgpskN1w690hgbHFMtWXi8isvgr3kQzycF_mwjO5-7g
+Content-Type: application/json
+
+{
+    
 }

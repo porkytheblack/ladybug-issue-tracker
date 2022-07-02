@@ -2,6 +2,7 @@ import e, { Request, Response } from "express";
 import { check_for_required_fields, verify_body } from "../helpers";
 import ProjectModel from "../../models/project_schema";
 import { extRequest } from "../../middleware/auth";
+import _ from "lodash"
 
 
 export const create_project = (req: extRequest, res: Response)=>{
@@ -189,13 +190,23 @@ export const update_issue = (req: Request, res: Response) =>{
     const issue_id = req.params.issue_id
     if(typeof issue_id !== "undefined" && issue_id.length > 0 ){
         verify_body(req.body).then((body)=>{
-            ProjectModel.updateOne({"issues._id": issue_id}, 
-                {
-                    $set: body
-                }
-            )
+            var _body = Object.fromEntries(Object.entries(body).map(([key, val])=>(
+                [`issues.$.${key}`, val]
+            )))
+            
+            ProjectModel.updateOne({
+                "issues._id": issue_id
+            }, {
+                $set: _body
+            }).exec((err, doc)=>{
+                if(err) return res.status(500).send({Error: err, message: "Unable to update the issue"})
+                res.status(200).send(doc)
+            })
+            
         }).catch((e)=>{
-            res.status(500).send(e)
+            res.status(400).send({
+                Error: e
+            })
         })
     }else{
         res.status(400).send({
@@ -204,12 +215,20 @@ export const update_issue = (req: Request, res: Response) =>{
     }
 }
 
-export const update_project = (req: Request, res: Response) =>{
+
+
+
+export const update_project = (req: extRequest, res: Response) =>{
     const project_id = req.params.project_id 
+    
     if(typeof project_id !== "undefined" && project_id.length > 0){
         verify_body(req.body).then((body)=>{
-            ProjectModel.updateOne({"_id": project_id}, {
-                $set: body
+            ProjectModel.updateOne({
+                "_id": project_id,
+                project_creator: req.user.user_name
+            }, {
+                $set: body,
+
             }, (err, results)=>{
                 if(err){
                     res.status(500).send(err)
@@ -311,12 +330,13 @@ export const update_comment = (req: Request, res: Response) =>{
 
 
 export const update_tag = (req: Request, res: Response) =>{
-    var tag_name = req.params.tag_name 
-    tag_name = typeof tag_name !== "undefined" ? tag_name : ""
-    if(tag_name.length > 0){
+    var {tag_id, issue_id} = req.params
+    tag_id = typeof tag_id !== "undefined" ? tag_id : ""
+    if(tag_id.length  ==  24){
         verify_body(req.body).then((body)=>{
+            
             ProjectModel.updateOne({
-                "issues.$.tags.tag_name": tag_name 
+                "issues._id": issue_id
             }, {
                 $set: body
             })
@@ -328,6 +348,25 @@ export const update_tag = (req: Request, res: Response) =>{
             Error: "Invalid tag provided"
         })
     }
+}
+
+export const update_tags = (req: extRequest, res: Response) =>{
+    const {issue_id} = req.params
+    if(_.isUndefined(issue_id) || issue_id.length !== 24) return res.status(400).send({Error:  "Invalid or No Issue id was provided"})
+    verify_body(req.body).then((body)=>{
+        console.log(body)
+        ProjectModel.updateOne({"issues._id": issue_id}, {
+            $set: {
+                "issues.$.tags": body.tags
+            }
+        }).lean().exec((err, result)=>{
+            if(err) return res.status(500).send(err)
+            res.status(200).send(result)
+        })
+    }).catch((e)=>{
+        res.status(400).send(e)
+    })
+    
 }
 
 export const delete_assignee = (req: Request, res: Response)=>{
@@ -381,6 +420,11 @@ export const get_user_issues = (req: extRequest, res: Response)=>{
 }   
 
 export const get_user_projects = (req: extRequest, res: Response)=>{
+    ProjectModel.find({}).lean().exec((err, project_docs)=>{
+        if(err) return res.status(500).send({Error: err, message: "Unable to get projects"})
+        var m = project_docs.map(({_id, team}:{ _id: any, team: string})=>({id: _id, team}))
+        
+    })
     ProjectModel.find({
         $or: [
             {
@@ -408,12 +452,15 @@ export const get_project_by_id = (req: extRequest, res: Response) =>{
 
 export const get_issue_by_id = (req: extRequest, res: Response) =>{
     const  id = req.params.issue_id 
+    const {user_name} = req.user
+    console.log(id.toString().length)
     if(typeof id == "undefined" || id.length == 0) return res.status(400).send({Error: "issue id not specified"})
-    ProjectModel.findOne({
-        "issues.$._id": id,
+    ProjectModel.find({
+        "issues._id": id,
     }, (err, result)=>{
         if(err)return res.status(500).send({Error: err, message: "An error occured"})
-        res.status(200).send(result.issues.filter(({_id})=>_id == id))
+        var data = result[0]?.issues.filter(({_id})=>_id.toString() == id)
+        res.status(200).send(data)
     })
 }
 

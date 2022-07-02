@@ -14,6 +14,7 @@ const ProjectSchema = new Schema({
         type: String,
         required: true
     },
+    team_id: String,
     platform: {
         type: String
     },
