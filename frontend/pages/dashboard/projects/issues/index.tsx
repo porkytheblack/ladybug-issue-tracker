@@ -26,6 +26,7 @@ import useIssues from '../../../../hooks/useIssues'
 import EmptyAndLoading from '../../../../components/Containers/EmptyAndLoading'
 import { flatten, isUndefined } from 'lodash'
 import { IssueInterface } from '../../../../globaltypes'
+import GeneralAvatar from '../../../../components/OneJob/GeneralAvatar'
 
 
 
@@ -193,14 +194,13 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
                           <Form.Item name={"assignees"} label="Assignees" >
                             
                                   <Checkbox.Group>
+                                    <Checkbox className='invisible' />
                                   {
                                    typeof members !== "undefined" && members.map(({user_name, avatar})=>{
                                       return (
                                         <Checkbox className="!flex !flex-row items-center !w-full !h-full justify-between" value={user_name} >
                                       <div className="flex flex-row items-center w-[250px] justify-between">
-                                        <div style={{backgroundColor: generateRandomColor()}} className="flex flex-row h-[40px] w-[40px] rounded-full overflow-hidden ">
-                                          <Image src={(typeof avatar !== "undefined" && avatar.length !== 0 )? avatar : `https://joeschmoe.io/api/v1/${user_name}`} referrerPolicy="no-referrer" height="40px" width="40px" />
-                                        </div>  
+                                        <GeneralAvatar avatar={avatar} user_name={user_name} />
                                         <Text className=' !text-black' >
                                           @{user_name}
                                         </Text>
@@ -230,14 +230,10 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
             <Avatar.Group>
               {
                 flatten(members).map(({user_name, avatar})=>(
-                  <Tooltip title={user_name} >
-                  {isUndefined(avatar) || avatar.length == 0 ? <Avatar src={`https://joeschmoe.io/api/v1/${user_name}`} />  : <div className="flex flex-row h-10 w-10 items-center justify-center rounded-full overflow-hidden">
-                    <Image src={(isUndefined(avatar) || avatar.length == 0 ) ? `https://joeschmoe.io/api/v1/${user_name}` : avatar } height={40} width={40} />
-                  </div>}
-                  </Tooltip>
+                  <GeneralAvatar user_name={user_name} avatar={avatar} />
                 ))
               }
-              <Avatar size="large" icon={<UserAddOutlined/>} className="bg-blue-800 cursor-pointer !flex flex-row items-center justify-center "  />
+            
             </Avatar.Group>
             <Button size='large' onClick={()=>{set_issue_modal_visible(true)}}  icon={<PlusOutlined/>} className="mr-5 !bg-blue-800 !text-white " >
                 Add Issue

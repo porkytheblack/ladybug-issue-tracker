@@ -12,6 +12,8 @@ import useTeams from '../../hooks/useTeams'
 import { backend_url } from '../../globals'
 import axios from 'axios'
 import { tick_up_project } from '../../jotai/state'
+import { is_def_string } from '../../helpers'
+import { isUndefined } from 'lodash'
 
 const {Option} = Select
 
@@ -71,12 +73,18 @@ function TopSearchContainer({}: {}) {
     const [{create_project_modal_open, chosen_team, platform}, ] = useAtom(topSearchContainerAtom)
     const [submission_error, set_submission_error] = useState<boolean>(false)
     const [project_form] = useForm()
-    const {team_names} = useTeams()
+    const {team_names, teams_plus_ids} = useTeams()
     const [, up] = useAtom(tick_up_project)
+    const [active_team_id, set_active_team_id] = useState<string>("")
 
     const handleSubmit = () =>{
+        console.log(active_team_id)
         project_form.validateFields().then((vals)=>{
-            axios.post(`${backend_url}/project`, vals, {
+            axios.post(`${backend_url}/project`, {
+                ...vals,
+                team: teams_plus_ids.filter(({team_name, _id})=>_id == vals.team)[0]?.team_name,
+                team_id: vals.team
+            }, {
                 withCredentials: true
             }).then(({})=>{
                 up()
@@ -152,7 +160,11 @@ function TopSearchContainer({}: {}) {
             </Col>
             <Modal visible={create_project_modal_open} onCancel={()=>{handleModalVisibility(false)}} title="New Project" footer={null}  >
                 <div className="flex flex-col w-full h-full items-center justify-start">
-                    <Form onChange={()=>{
+                    <Form initialValues={[
+                        {
+                            platform: "android"
+                        }
+                    ]} onChange={()=>{
                         set_submission_error(false)
                     }} onError={(e)=>{
                                 console.log(e)
@@ -166,23 +178,25 @@ function TopSearchContainer({}: {}) {
                         ]} name="project_name" >
                             <Input placeholder='New project name'  />
                         </Form.Item>
-                        <Form.Item className="!w-1/2" label="Team" rules={[
+                        <Form.Item   className="!w-1/2" label="Team" rules={[
                             {
                                 required: true,
                                 message: "Select a team to continue"
                             }
                         ]} name="team" >
-                            <Select defaultValue={team_names[0]} >
+                            <Select onChange={(val)=>{
+                                console.log(val)
+                            }} >
                                 {
-                                    team_names.map((team_name)=>(
-                                        <Select.Option key={team_name} >
+                                    teams_plus_ids.map(({team_name, _id}, key)=>(
+                                        <Select.Option key={_id} >
                                             {team_name}
                                         </Select.Option>
                                     ))
                                 }
                             </Select>
                         </Form.Item>
-                        <Form.Item className="!w-1/2" label="Platform" rules={[
+                        <Form.Item initialValue={"android"} className="!w-1/2" label="Platform" rules={[
                             {
                                 required: true,
                                 message: "Select a platform to continue"

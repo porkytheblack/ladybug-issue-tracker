@@ -88,3 +88,32 @@ export const global_tags: string[] = [
     "UI",
     "UX"
 ]
+
+export const the_schmoes: string[] = [
+  "jaqueline",
+  "jake",
+  "jacques",
+  "jana",
+  "joe",
+  "jeri",
+  "jess",
+  "jon",
+  "jenni",
+  "jolee",
+  "jerry",
+  "jude",
+  "jabala",
+  "jeane",
+  "jodi",
+  "josh",
+  "jed",
+  "jane",
+  "jai",
+  "james",
+  "jack",
+  "jazebelle",
+  "jean",
+  "josephine",
+  "jia",
+  "julie"
+]

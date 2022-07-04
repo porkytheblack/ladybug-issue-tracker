@@ -10,6 +10,7 @@ import useIssue from '../../../hooks/useIssue'
 import useProject from '../../../hooks/useProject'
 import { activeIssueAtom, LeftModalVisibility } from '../../../jotai/state'
 import LeftModalContainer from '../../Containers/LeftModal'
+import GeneralAvatar from '../../OneJob/GeneralAvatar'
 import BaseTag from '../../Tags/BaseTag'
 import StatusTag from '../../Tags/StatusTag'
 
@@ -88,14 +89,10 @@ function BugCard({issue, count}:{issue: IssueInterface, count: number}) {
                         </StatusTag>
                 </Col>
                 <Col span={3} >
-                <Avatar.Group>
+                <Avatar.Group maxCount={3} >
                     {
                         issue?.assignees?.map(({user_name, avatar})=>(
-                            <Tooltip title={user_name} >
-                                <div className="flex flex-row items-center justify-center overflow-hidden rounded-full h-[40px] w-[40px] ">
-                                    <Image src={(typeof avatar !== "undefined" && avatar.length !== 0 ) ? avatar : `https://joeschmoe.io/api/v1/${user_name}`} width={40} height={40} referrerPolicy="no-referrer" />
-                                </div>
-                            </Tooltip>
+                            <GeneralAvatar user_name={user_name} avatar={avatar} />
                         ))
                     }
                 </Avatar.Group>

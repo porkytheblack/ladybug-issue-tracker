@@ -84,11 +84,10 @@ function Dashboard() {
                   </Select>
                 </Col>
               </Row>
-
-              <EmptyAndLoading showLoading={true} loading={loading}  className="flex projects-list flex-row flex-wrap pt-5 items-start justify-center ">
-              {
+              <EmptyAndLoading showLoading={true} loading={loading}  className="flex  flex-row flex-wrap pt-5 items-start justify-center ">
+               {
                   projects.filter(({team: _team})=>_team == team || team == "all").map(({_id, project_name, team, platform, issues: proj_issues})=>(
-                    <Col className=' !flex  !h-[280px]' span={7} >
+                    <Col className=' !flex !mt-0 !ml-0 !pt-0 !h-[280px]' span={7} >
                       <ProjectCardWithActions issues={isUndefined(issues) ? [] : proj_issues as any} project_name={project_name} platform={platform} team={team} _id={_id} />
                     </Col>
                   ))
@@ -114,11 +113,6 @@ const CustomDash = styled.div`
       margin-bottom: 20px;
     }
   }
-  .projects-list{
-    >*{
-      margin-right: 20px;
-      margin-bottom: 10px;
-    }
   }
 `
 

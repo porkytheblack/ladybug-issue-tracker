@@ -44,12 +44,12 @@ function Inbox() {
     }
   }
 
-  const submit_invite_choice = (val: any[]) =>{
+  const submit_invite_choice = (val: any[], team: string) =>{
     axios.put(`${backend_url}/inbox/${active_inbox}`, Object.fromEntries([val]), {
       withCredentials: true
     }).then(()=>{
       if(val[0] == "accepted" && val[1]){
-        axios.post(`${backend_url}/team/${active_team}`, {
+        axios.post(`${backend_url}/team/${team}`, {
           user_name: user?.user_name,
           avatar: user?.avatar
         }, {
@@ -133,12 +133,12 @@ function Inbox() {
                             <div className="flex mt-8  flex-row items-center justify-center">
                                 <Button onClick={()=>{
                                   set_active_team(is_def_string(invite_content?.team_id))
-                                  submit_invite_choice(["accepted", true])
+                                  submit_invite_choice(["accepted", true], is_def_string(invite_content?.team_id) )
                                 }} >
                                   Accept
                                 </Button>
                                 <Button onClick={()=>{
-                                  submit_invite_choice(["accepted", false])
+                                  submit_invite_choice(["accepted", false], is_def_string(invite_content?.team_id))
                                 }} className="ml-5" >
                                   Decline
                                 </Button>

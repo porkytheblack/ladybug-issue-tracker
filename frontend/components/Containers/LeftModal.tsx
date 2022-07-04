@@ -24,6 +24,8 @@ import DescriptionInput from '../Input/DescriptionInput'
 import { isUndefined } from 'lodash'
 import TagContainer from '../Tags/TagContainer'
 import ModalLeft from './ModalLeft'
+import GeneralAvatar from '../OneJob/GeneralAvatar'
+import CommentsSection from './CommentsSection'
 
 const {Text} = Typography 
 const {TabPane} = Tabs
@@ -31,7 +33,6 @@ const {TabPane} = Tabs
 function LeftModalContainer() {
     const [edit_description, set_edit_description] = useState<boolean>(false)
     const [visible, set_visible] = useAtom(LeftModalVisibility)      
-    const [active_comment, set_active_comment] = useState<number>(999)
     const {creator, comments, severity, status, tags, description, summary, type, assignees, _id, loading, is_error} = useIssue()
     const {members} = useTeam()
     const [, up] = useAtom(tick_up_issue)
@@ -73,11 +74,7 @@ function LeftModalContainer() {
                             <Avatar.Group>
                                 {
                                     assignees?.map(({avatar, user_name})=>(
-                                        <Tooltip title={user_name} >
-                                            <div className="!flex !flex-row !items-center justify-center overflow-hidden rounded-full h-[40px] w-[40px] ">
-                                                <Image src={typeof avatar !== "undefined" && avatar.length !== 0 ? avatar : `https://joeschmoe.io/api/v1/${user_name}`} width={40} height={40} referrerPolicy="no-referrer" />
-                                            </div>
-                                        </Tooltip>
+                                        <GeneralAvatar avatar={avatar} user_name={user_name}  />
                                     ))
                                 }
                                 <Dropdown arrow overlay={<div className="p-5 bg-white shadow-xl " >
@@ -90,7 +87,7 @@ function LeftModalContainer() {
                                         ))}
                                     </Checkbox.Group> : <Empty/> }
                                 </div>} >
-                                    <Avatar className="!flex flex-row cursor-pointer items-center justify-center" size="large" icon={<UserAddOutlined/>} style={{backgroundColor: generateRandomColor()}} />
+                                    <Avatar className="!flex flex-row cursor-pointer !bg-yellow-600 items-center justify-center" size="large" icon={<UserAddOutlined/>} />
                                 </Dropdown>
                             </Avatar.Group>
                             
@@ -98,9 +95,6 @@ function LeftModalContainer() {
                         
                             
                             <TagContainer />
-                            
-                        
-
                 </div>
 
                 <Tabs defaultActiveKey='activity' defaultChecked={true} className="w-full h-full" >
@@ -112,32 +106,7 @@ function LeftModalContainer() {
                             </Text>
                         </div>
                     } >
-                        <div className="flex flex-col w-full h-full pt-5 pb-8">
-                           <CommentInput/>
-                            <div className="flex flex-col items-start justify-start mt-4 w-full">
-                                <Steps direction='vertical' current={comments?.length} status='finish' >
-                                    {
-                                        comments?.map(({author, description}, key)=>{
-                                        return (
-                                            <Steps.Step icon={
-                                                <div className="flex flex-row items-center h-[40px] w-[40px] overflow-hidden  rounded-full " >
-                                                    <Image src={typeof author.avatar !== "undefined" && author.avatar.length !== 0 ? author.avatar : `https://joeschmoe.io/api/v1/${author?.user_name}` } width={40} height={40} />
-                                                </div>
-                                            } description={
-                                                <div className={`flex flex-col items-center transition-all duration-300 justify-start relative ${ active_comment !== key ? "h-[150px]": "h-full"} overflow-hidden rounded-md border-[0.2px]  border-gray-100 !bg-[#F2F5FA]   w-full`}>
-                                                    <ReactQuill className='w-full' defaultValue={""} theme="bubble" value={typeof description !== "undefined" ? description : ""} readOnly  />
-                                                    {active_comment !== key && <div className="absolute bottom-3 right-[50%] flex flex-row items-center bg-gradient-to-b bg-transparent">
-                                                            <Button onClick={()=>set_active_comment(key)} style={{backgroundColor: "blue", color: "white"}} >
-                                                                Read More
-                                                            </Button>
-                                                    </div>}
-                                                </div>
-                                            } />
-                                        )})
-                                    }
-                                </Steps>
-                            </div>
-                        </div>
+                        <CommentsSection/>
                     </TabPane>
                     <TabPane key="attachments" tabKey="attachments" tab={
                         <div className='flex flex-row items-center justify-center' >

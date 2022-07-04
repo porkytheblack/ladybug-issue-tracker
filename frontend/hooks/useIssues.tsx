@@ -7,18 +7,20 @@ import { useQuery } from 'react-query'
 import axios from 'axios'
 import { backend_url } from '../globals'
 import { useAtom } from 'jotai'
-import { activeProjectAtom, issue_fetch_tick } from '../jotai/state'
+import { activeProjectAtom, issue_fetch_tick, tick_up } from '../jotai/state'
 import { generateRandomColor } from '../helpers/randomColor'
 import { useRouter } from 'next/router'
 
 function useIssues() {
     const [tick, ] = useAtom(issue_fetch_tick)
-    const {project} = useProject()
+    const {project, _id} = useProject()
     const [issues, set_issues] = useState<IssueInterface[]>([])
     const [comments, set_comments] = useState<extCommentInterface[]>()
-    const issues_query = useQuery(["issues", tick], ()=>axios.get(`${backend_url}/issues`, {withCredentials: true}).then(({data})=>data))
+    const issues_query = useQuery(["issues", tick, _id], ()=>axios.get(`${backend_url}/issues`, {withCredentials: true}).then(({data})=>data))
     const {pathname} = useRouter()
     const [current_project, ] = useAtom(activeProjectAtom) 
+
+    const [, up] = useAtom(tick_up)
 
     useEffect(()=>{
         if(issues_query.isError || issues_query.isLoading || typeof issues_query.data == "undefined" || issues_query.data == null)  return ()=>{}
@@ -65,7 +67,8 @@ function useIssues() {
         top_issues: _.slice(_.reverse(_.sortBy(issues, (issue)=>issue.comments.length)), 0, 5) ,
         is_loading: issues_query.isLoading,
         is_error: issues_query.isError,
-        comments
+        comments,
+        up,tick
     }
   )
 }

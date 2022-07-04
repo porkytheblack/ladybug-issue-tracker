@@ -7,7 +7,9 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { IssueInterface } from '../../../globaltypes'
 import { is_def_string } from '../../../helpers'
-import { activeProjectAtom } from '../../../jotai/state'
+import useProjects from '../../../hooks/useProjects'
+import { activeProjectAtom, userAtom } from '../../../jotai/state'
+import Platform from '../../OneJob/Platform'
 import { project_type } from './ProjectCard'
 
 const {Text} = Typography
@@ -15,7 +17,8 @@ const {Text} = Typography
 function ProjectCardWithActions({project_name, platform, team, _id, issues}:{project_name?: string, platform?: string, _id?: string, team?: string, issues: IssueInterface[]}) {
   const [dropdown, set_dropdown] = useState<"visible" | "colapsed" >("colapsed")
   const [current_project, set_current_project] = useAtom(activeProjectAtom)
-  
+  const [user, ] = useAtom(userAtom)
+  const {projects} = useProjects()
   const DropDownMenu = () =>(
     <Menu mode="vertical" className='!min-w-[200px]'   >
       <Menu.Item onClick={()=>{push("/dashboard/projects/sprints")}} key="sprints" >
@@ -36,8 +39,8 @@ function ProjectCardWithActions({project_name, platform, team, _id, issues}:{pro
   const {pathname, push} = useRouter()
 
   return (
-    <CardContainer  className="bg-[#fcfcfc] !w-full !h-full flex flex-col  items-center justify-between overflow-hidden  cursor-pointer rounded-[8px] border-[.0.7px] border-[#eaeaea] group " >
-        <div className="flex p-[10px] flex-row items-center mb-5 justify-end w-full pl-[10px]">
+    <CardContainer  className="bg-[#fcfcfc] !w-full !h-full flex flex-col  mr-4 mb-4 items-center justify-between overflow-hidden  cursor-pointer rounded-[8px] border-[.0.7px] border-[#eaeaea] group " >
+        { projects.filter((project)=>project._id == _id)[0]?.project_creator == user?.user_name && <div className="flex p-[10px] flex-row items-center mb-5 justify-end w-full pl-[10px]">
           <Tooltip title="Pin project" >
             <a  className=" invisible mr-[10px] group-hover:visible flex  hover:bg-[#eaeaea]  flex-row items-center justify-center rounded-full p-[5px] ">
                 <PushpinOutlined color="primary" />
@@ -49,18 +52,19 @@ function ProjectCardWithActions({project_name, platform, team, _id, issues}:{pro
             </a>
           </Dropdown>
           
-        </div>
+        </div>}
+        { projects.filter((project)=>project._id == _id)[0]?.project_creator !== user?.user_name && <div className="flex p-[20px] h-6 flex-row items-center mb-5 justify-end w-full pl-[10px]"></div>}
         <div onClick={()=>{
           push("/dashboard/projects/overview")
           set_current_project(is_def_string(_id))
-          }}  className="flex flex-row items-center justify-center w-full">
-          <Image src={`/icons/${platform}.svg`}  height={100} width={110}  />
+          }}  className="flex flex-row items-center justify-center w-full h-full">
+          <Platform platform={platform} />
         </div>
         <div onClick={()=>{
           push("/dashboard/projects/overview")  
           set_current_project(is_def_string(_id))          
           }} className="flex p-[10px] flex-row items-center justify-center w-full">
-          <Text className="font-medium flex flex-row items-center justify-center text-lg" >
+          <Text className="font-medium flex flex-row items-center justify-center text-sm" >
             <Text className="!text-black mr-5 capitalize" >
               {project_name}
             </Text>

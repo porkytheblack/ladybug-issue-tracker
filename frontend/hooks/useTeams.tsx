@@ -17,10 +17,12 @@ function useTeams () {
         if(typeof team_query.data == "undefined" || team_query.data == null) return ()=>{}
         set_teams(team_query.data)
         set_team_names(team_query.data.map(({team_name})=>team_name as string))
+
     }, [,team_query.isLoading, team_query.isError, team_query.data?.length])
     return ({
         teams,
-        team_names
+        team_names,
+        teams_plus_ids: teams.map(({team_name, _id})=>({team_name, _id}))
     }
   )
 }

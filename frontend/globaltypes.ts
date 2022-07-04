@@ -30,6 +30,7 @@ export interface CustomizedFormProps {
     _id?: string,
     project_name?: string,
     project_creator?: string,
+    team_id?: string,
     team?: string,
     platform?: string,
     description?: string,

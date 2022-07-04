@@ -10,6 +10,7 @@ import { ItemType } from 'rc-menu/lib/interface'
 import React, { Key, ReactNode, useContext, useState } from 'react'
 import { useCookies } from 'react-cookie'
 import styled from 'styled-components'
+import GeneralAvatar from '../../../components/OneJob/GeneralAvatar'
 import { userAtom, userAuthTypeAtom } from '../../../jotai/state'
 import { deauthenticate_user } from '../../../redux/actions/user.actions'
 import { useAppDispatch } from '../../../redux/hooks'
@@ -73,7 +74,7 @@ const secondary_menu_items: sub_mens[]  = [
 
 function SideMenu() {
     const {expanded, active, change_active, active_sub} = useContext(DashboardContext)
-    const [, set_user_atom] = useAtom(userAtom)
+    const [user, set_user_atom] = useAtom(userAtom)
     const [getUserAuthType, setUserAuthType] = useAtom(userAuthTypeAtom)
     const [sub_menu, set_submenu] = useState<"open" | "closed">("open") 
     const router = useRouter()
@@ -155,8 +156,11 @@ function SideMenu() {
                     Inbox
                 </Menu.Item>
                 
-                <Menu.Item key="user" className="!p-0 !flex !flex-col !items-center !w-full  !justify-center" onClick={()=>{call_change_active("user")}}  icon={<Avatar className="!overflow-visible !absolute " src="https://joeschmoe.io/api/v1/jess"  shape='circle' />} >
-                    User
+                <Menu.Item 
+                key="user" 
+                className="!p-0 !flex !flex-col !items-center !w-full  !justify-center" 
+                onClick={()=>{call_change_active("user")}}  icon={<GeneralAvatar avatar={user?.avatar} user_name={user?.user_name}  />} >
+                    <GeneralAvatar avatar={user?.avatar} user_name={user?.user_name}  />
                 </Menu.Item>
                 <Menu.Item key="logout" onClick={logUserOut} icon={<LogoutOutlined/>} >
                     Logout

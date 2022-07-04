@@ -26,12 +26,6 @@ function Projects() {
 
   ///////////////////get projects 
   const {projects, loading, error, len} = useProjects()
-  
-  ///////////////////end of get projects
-
-  
-
-
 
 
 
@@ -49,10 +43,10 @@ function Projects() {
           </div>
       </div>
      
-      <EmptyAndLoading showLoading={true} loading={loading}  className="h-full pt-5 flex w-4/5 flex-row items-start justify-start flex-wrap space-y-2 space-x-1">
+      <EmptyAndLoading showLoading={true} loading={loading}  className="h-full pt-5 flex w-4/5 flex-row items-start justify-start flex-wrap">
           {
                   projects.filter(({team, platform})=> (chosen_team == team && platform == p) || (chosen_team == "all" && platform == p) || (chosen_team == team && p == "all") || (chosen_team == "all" && p == "all")  ).map(({_id, project_name, team, platform, issues})=>(
-                    <Col className=' !flex  !h-[280px]' span={7} >
+                    <Col className=' !flex !mr-2 !mb-2   !h-[280px]' span={7} >
                       <ProjectCardWithActions issues={isUndefined(issues) ? [] : issues as any} project_name={project_name} platform={platform} team={team} _id={_id} />
                     </Col>
                   ))

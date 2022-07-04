@@ -1,11 +1,14 @@
 import { MoreOutlined } from '@ant-design/icons'
-import { Avatar, Button, Divider, Dropdown, Menu, Tooltip } from 'antd'
+import { Avatar, Button, Divider, Dropdown, Menu, notification, Tooltip } from 'antd'
+import axios from 'axios'
 import { useAtom } from 'jotai'
 import { isUndefined } from 'lodash'
 import Image from 'next/image'
 import React from 'react'
 import styled from 'styled-components'
+import { backend_url } from '../../../globals'
 import { generateRandomColor } from '../../../helpers/randomColor'
+import useProjects from '../../../hooks/useProjects'
 import { userAtom } from '../../../jotai/state'
 import { Text } from '../../../pages/_app'
 import BaseCard from '../../Containers/BaseCard'
@@ -17,7 +20,7 @@ function TeamCard({
     team_name,
     members,
     _id,
-    
+    up
     }:{
     onClickEdit?: ()=>void,
     team_name?: string,
@@ -26,13 +29,40 @@ function TeamCard({
     members?: {
         user_name?: string,
         avatar?: string
-    }[]
+    }[],
+    up?: ()=>void
 }) {
+    const {projects} = useProjects()
     const [user, ] = useAtom(userAtom)
+    const delete_team = () =>{
+        if( projects.filter(({team_id})=>team_id == _id).length == 0 ){
+            axios.delete(`${backend_url}/team/${_id}`, {
+                withCredentials: true
+            }).then(()=>{
+                if(!isUndefined(up)) up()
+                notification.success({
+                    message: "Deleted team successfully",
+                    key: "deletion success"
+                })
+            }).catch((e)=>{
+                console.log(e)
+                notification.error({
+                    message: "An error occured",
+                    key: "delete_team_error"
+                })
+            })
+        }else{
+            notification.info({
+                message: "This team is still being used",
+                key: "team_being used"
+            })
+        }
+        
+    }
     const DropDownMenu = () =>(
         <Menu >
-            <Menu.Item key="remove" >
-                    Remove
+            <Menu.Item onClick={delete_team} key="remove" >
+                    Delete
             </Menu.Item>
             <Menu.Item onClick={onClickEdit} key="edit" >
                     Edit

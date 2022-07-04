@@ -10,6 +10,7 @@ import React, { useEffect, useState } from 'react'
 import EmptyAndLoading from '../../../components/Containers/EmptyAndLoading'
 import PageBaseContainer from '../../../components/Containers/PageBaseContainer'
 import TeamCard from '../../../components/DataDisplay/Cards/TeamCard'
+import GeneralAvatar from '../../../components/OneJob/GeneralAvatar'
 import { backend_url } from '../../../globals'
 import { is_def_string } from '../../../helpers'
 import useTeams from '../../../hooks/useTeams'
@@ -173,9 +174,7 @@ function Teams() {
                           {
                             teams.filter((team)=>team.team_name == team_name)[0].members?.map(({user_name, avatar})=>(
                               <div className="flex flex-row w-full items-center justify_start">
-                                <div className="flex w-[40px] h-[40px] rounded-full flex-row items-center justify-center">
-                                    <Image  width={40} height={40} referrerPolicy='no-referrer' src={ isUndefined(avatar) || avatar.length == 0 ? `https://joeschmoe.io/api/v1/${user_name}` :is_def_string(avatar)} />
-                                </div>
+                                <GeneralAvatar avatar={avatar} user_name={user_name} />
                                 <Text className='!text-black ml-5 ' >
                                      @ {user_name}
                                 </Text>
@@ -210,7 +209,7 @@ function Teams() {
                   set_team_name(is_def_string(team_name))
                   set_active_team(is_def_string(_id))
                   set_editable_name(is_def_string(team_name))
-                }} team_creator={team_creator} team_name={team_name} members={members}  />
+                }} up={up} team_creator={team_creator} _id={_id} team_name={team_name} members={members}  />
               ))
             }
           </EmptyAndLoading>
