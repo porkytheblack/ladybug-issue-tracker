@@ -36,7 +36,8 @@ const expected_keys = [
     "accepted",
     "from",
     "subject",
-    "to"
+    "to",
+    "team_id"
 ]
 
 const action_types = [

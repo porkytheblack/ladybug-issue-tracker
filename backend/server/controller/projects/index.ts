@@ -1,8 +1,11 @@
 import e, { Request, Response } from "express";
 import { check_for_required_fields, verify_body } from "../helpers";
 import ProjectModel from "../../models/project_schema";
+import TeamModel from "../../models/team_schema"
 import { extRequest } from "../../middleware/auth";
 import _ from "lodash"
+
+var user_projects = []
 
 
 export const create_project = (req: extRequest, res: Response)=>{
@@ -247,12 +250,20 @@ export const update_project = (req: extRequest, res: Response) =>{
     }
 }
 
-export const delete_project = (req: Request, res: Response) =>{
-    var project_name  = req.params.project_name 
-    project_name = typeof project_name !== "undefined" ? project_name : ""
-    if(project_name.length > 0){
+export const delete_project = (req: extRequest, res: Response) =>{
+    var project_id  = req.params.project_id
+    const {user_name} = req.user
+    project_id = typeof project_id !== "undefined" ? project_id : ""
+    if(project_id.length > 0){
         ProjectModel.deleteOne({
-            project_name: project_name
+            $and: [
+                {
+                    _id: project_id
+                },
+                {
+                    project_creator: user_name
+                }
+            ]
         }, (err, results)=>{
             if(err){
                 res.status(500).send(err)
@@ -420,11 +431,7 @@ export const get_user_issues = (req: extRequest, res: Response)=>{
 }   
 
 export const get_user_projects = (req: extRequest, res: Response)=>{
-    ProjectModel.find({}).lean().exec((err, project_docs)=>{
-        if(err) return res.status(500).send({Error: err, message: "Unable to get projects"})
-        var m = project_docs.map(({_id, team}:{ _id: any, team: string})=>({id: _id, team}))
-        
-    })
+    
     ProjectModel.find({
         $or: [
             {
@@ -437,6 +444,44 @@ export const get_user_projects = (req: extRequest, res: Response)=>{
     }, (err, result)=>{
         if(err) return res.status(500).send({Error: e, message: "An error occured while retrieving projects"})
         res.status(200).send(result)
+    })
+}
+
+export const get_all_user_projects = (req: extRequest, res: Response) =>{
+    const {user_name} = req.user   
+
+    
+    ProjectModel.find({}).exec((err, projects)=>{
+        if(err) res.status(500).send({Error: err, message: "Unable to retrieve all projects"})
+        Promise.all(projects.map(async (project)=>{
+            if (project.team_id.length == 0) return null
+            
+            return TeamModel.findOne({
+                $and: [
+                    {
+                        team_name: project.team
+                    },
+                    {
+                        _id: project.team_id
+                    },
+                    {
+                        "members.user_name": user_name
+                    }
+                ]
+            }).then((data)=>{
+                if(data == null) return null 
+                return project
+            }).catch((e)=>{
+                res.status(500).send({
+                    Error: e,
+                    message: "Unable to find team"
+                })
+            })
+        })).then((data)=>{
+            res.status(200).send(data.filter((d)=>d !== null))
+        }).catch((e)=>{
+            res.status(500).send({Error: e})
+        })
     })
 }
 

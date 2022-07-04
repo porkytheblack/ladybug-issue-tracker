@@ -79,3 +79,26 @@ export const update_team = (req: extRequest, res: Response) =>{
         res.status(400).send({Error: e})
     })
 }
+
+export const delete_team = (req: extRequest, res: Response) =>{
+    const {team_id} = req.params
+    const {user_name} = req.user 
+    if(_.isUndefined(team_id) || team_id.length == 0) return res.status(400).send({message: "No or invalid team id was provided"})
+    TeamModel.deleteOne({
+        $and:[
+            {
+                _id: team_id
+            },
+            {
+                team_creator: user_name
+            }
+        ]
+    }).then((doc)=>{
+        res.status(200).send(doc)
+    }).catch((e)=>{
+        res.status(500).send({
+            Error: e,
+            message: "Unable to delete the team"
+        })
+    })
+}

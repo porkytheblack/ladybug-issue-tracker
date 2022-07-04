@@ -1,10 +1,10 @@
 import { Router } from "express";
 import { ping } from "../controller";
 import { add_inbox, get_user_inbox, update_inbox } from "../controller/Inbox";
-import { add_assignee, add_tag, create_comment, create_project, create_project_issue, delete_assignee, delete_comment, delete_issues, delete_project, delete_tag, get_comments, get_issue_by_id, get_project_by_id, get_user_issues, get_user_projects, update_comment, update_issue, update_project, update_system_details, update_tag, update_tags } from "../controller/projects";
-import { add_team_member, create_team, get_user_teams, update_team } from "../controller/team";
+import { add_assignee, add_tag, create_comment, create_project, create_project_issue, delete_assignee, delete_comment, delete_issues, delete_project, delete_tag, get_all_user_projects, get_comments, get_issue_by_id, get_project_by_id, get_user_issues, get_user_projects, update_comment, update_issue, update_project, update_system_details, update_tag, update_tags } from "../controller/projects";
+import { add_team_member, create_team, delete_team, get_user_teams, update_team } from "../controller/team";
 import { login } from "../controller/tokens";
-import { add_user_project, create_auth0_user, create_user, update_user_project } from "../controller/user";
+import { add_user_project, create_auth0_user, create_user, update_user, update_user_project } from "../controller/user";
 import { auth_middleware } from "../middleware/auth";
 
 
@@ -19,13 +19,15 @@ router.post("/user", create_user)
 router.post("/user/project/:user_name", add_user_project)
 router.put("/user/project/:user_name", update_user_project)
 router.post("/user/auth0", create_auth0_user)
+router.put("/user", update_user)
 
 
 router.post("/project", create_project)
-router.delete("/project/:project_name", delete_project)
+router.delete("/project/:project_id", delete_project)
 router.put("/project/:project_id", update_project)
-router.get("/projects", get_user_projects)
+// router.get("/projects", get_user_projects)
 router.get("/project/:project_id", get_project_by_id)
+router.get("/projects", get_all_user_projects)
 
 router.post("/issue/:project_id", create_project_issue)
 router.put("/issue/:issue_id", update_issue)
@@ -57,6 +59,7 @@ router.get("/teams", get_user_teams)
 
 router.post("/team/:team_id", add_team_member)
 router.put("/team/:team_id", update_team)
+router.delete("/team/:team_id", delete_team)
 
 
 router.post("/login", login)

@@ -1,7 +1,13 @@
 import axios from "axios";
 import { Request, Response } from "express";
+import { extRequest } from "../../middleware/auth";
 import UserModel from "../../models/user_schema"
+import TeamModel from "../../models/team_schema"
+import InboxModel from "../../models/inbox_schema"
+import ProjectModel from "../../models/project_schema"
 import { check_for_required_fields, verify_body } from "../helpers";
+import _ from "lodash"
+import {hashSync} from "bcrypt"
 
 
 export const create_user = (req: Request, res: Response) =>{
@@ -26,22 +32,61 @@ export const create_user = (req: Request, res: Response) =>{
     })
 }
 
-export const update_user = (req: Request, res: Response) =>{
-    var user_name  = req.params.user_name 
-    user_name = typeof user_name !== "undefined" ? user_name : ""
+export const update_user = (req: extRequest, res: Response) =>{
+    const {user_name} = req.user
 
     if(user_name.length > 0){
         verify_body(req.body).then((body)=>{
+            console.log(body)
+            if(typeof body.password !== "undefined") body.password = hashSync(body.password, 15)
             UserModel.updateOne({
                 user_name: user_name
             }, {
                 $set: body
-            }, (err, result)=>{
-                if(err){
-                    res.status(500).send(err)
-                }else{
-                    res.status(200).send(result)
-                }
+            }).then((doc)=>{
+                if( !Object.keys(body).includes("avatar") || !Object.keys(body).includes("user_name")  ) return res.status(200).send(doc)
+                
+                Promise.all([
+                ProjectModel.updateMany({
+                    "issues.assignees.user_name": user_name
+                },{
+                    $set: _.isUndefined(body.avatar)  ? {"issues.$[].assignees.$[element].user_name": body.user_name} : {"issues.$[].assignees.$[element].avatar": body.avatar}
+                },
+                {
+                    arrayFilters: [
+                        {
+                            "element.user_name": user_name
+                        }
+                    ]
+                }).then(()=>true).catch((e)=>{
+                    return e
+                }),
+                ProjectModel.updateMany({
+                    "issues.comments.author.user_name": user_name
+                },{
+                    $set: _.isUndefined(body.avatar) ?  { "issues.$[].comments.$[element].author.user_name": body.user_name } : {"issues.$[].comments.$[element].author.avatar": body.avatar}
+                }, {
+                    arrayFilter: [
+                        {
+                            "element.author.user_name": user_name
+                        }
+                    ]
+                }).then(()=> true).catch((e)=>{
+                    return e
+                }),
+                TeamModel.updateMany({
+                    "members.user_name": user_name
+                }, {
+                    $set: _.isUndefined(body.avatar) ? {"members.$.user_name": body.user_name}:{"members.$.avatar": body.avatar}
+                }).then(()=> true).catch((e)=>{
+                    return e
+                })]).then((doc)=>{
+                    res.status(200).send({message: "Success"})
+                }).catch((e)=>{
+                    res.status(500).send({Error: e})
+                })
+            }).catch((e)=>{
+                res.status(500).send(e)
             })
         }).catch((e)=>{
             res.status(400).send(e)
@@ -53,8 +98,8 @@ export const update_user = (req: Request, res: Response) =>{
     }
 }
 
-export const add_user_project = (req: Request, res: Response) =>{
-    var user_name  = req.params.user_name 
+export const add_user_project = (req: extRequest, res: Response) =>{
+    var {user_name } = req.user 
     user_name = typeof user_name !== "undefined" ? user_name : ""
 
     if(user_name.length > 0){
@@ -89,8 +134,8 @@ export const add_user_project = (req: Request, res: Response) =>{
 }   
 
 
-export const update_user_project = (req: Request, res: Response) => {
-    var user_name  = req.params.user_name 
+export const update_user_project = (req: extRequest, res: Response) => {
+    var user_name  = req.user.user_name 
     user_name = typeof user_name !== "undefined" ? user_name : ""
 
     if(user_name.length > 0){
