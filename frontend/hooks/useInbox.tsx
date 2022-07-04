@@ -1,13 +1,16 @@
 import axios from 'axios'
+import { useAtom } from 'jotai'
 import _ from 'lodash'
 import React, { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import { backend_url } from '../globals'
 import { InboxSchema } from '../globaltypes'
+import { inbox_tick } from '../jotai/state'
 
 function useInbox() {
+    const [tick, ] = useAtom(inbox_tick)
     const [inbox, set_inbox] = useState<InboxSchema[]>([])
-    const inbox_query = useQuery(["inbox"], ()=>axios.get(`${backend_url}/inbox`, {
+    const inbox_query = useQuery(["inbox", tick], ()=>axios.get(`${backend_url}/inbox`, {
         withCredentials: true
     }).then(({data})=>data), {
         initialData: []

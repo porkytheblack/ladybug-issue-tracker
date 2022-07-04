@@ -41,16 +41,7 @@ function ProjectCardWithActions({project_name, platform, team, _id, issues}:{pro
   return (
     <CardContainer  className="bg-[#fcfcfc] !w-full !h-full flex flex-col  mr-4 mb-4 items-center justify-between overflow-hidden  cursor-pointer rounded-[8px] border-[.0.7px] border-[#eaeaea] group " >
         { projects.filter((project)=>project._id == _id)[0]?.project_creator == user?.user_name && <div className="flex p-[10px] flex-row items-center mb-5 justify-end w-full pl-[10px]">
-          <Tooltip title="Pin project" >
-            <a  className=" invisible mr-[10px] group-hover:visible flex  hover:bg-[#eaeaea]  flex-row items-center justify-center rounded-full p-[5px] ">
-                <PushpinOutlined color="primary" />
-            </a>
-          </Tooltip>
-          <Dropdown trigger={["click"]}  overlay={DropDownMenu} >
-            <a  className=" invisible mr-[10px] group-hover:visible flex  hover:bg-[#eaeaea]  flex-row items-center justify-center rounded-full p-[5px] ">
-                <MoreOutlined/>
-            </a>
-          </Dropdown>
+         
           
         </div>}
         { projects.filter((project)=>project._id == _id)[0]?.project_creator !== user?.user_name && <div className="flex p-[20px] h-6 flex-row items-center mb-5 justify-end w-full pl-[10px]"></div>}

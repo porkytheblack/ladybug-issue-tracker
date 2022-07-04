@@ -8,8 +8,6 @@ import GeneralAvatar from '../../OneJob/GeneralAvatar'
 
 function InboxCard({inbox, onClick}: {inbox: InboxSchema, onClick: (val: string)=>void}) {
     const {teams} = useTeams()
-    console.table(teams)
-    console.table(inbox)
   return (
     <CardContainer onClick={()=>{
         onClick(inbox._id)
@@ -23,6 +21,11 @@ function InboxCard({inbox, onClick}: {inbox: InboxSchema, onClick: (val: string)
                     }
                 </Text>
             </Text>}
+            {
+                inbox.type == "message" && <Text  className="!text-black ml-5  " ellipsis={true} >
+                    {inbox.subject}
+                </Text>
+            }
         </div>
         <GeneralAvatar avatar={inbox.from.avatar} user_name={inbox.from.user_name}  />
     </CardContainer>

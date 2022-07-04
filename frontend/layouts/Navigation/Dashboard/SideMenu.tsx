@@ -85,11 +85,15 @@ function SideMenu() {
     const call_change_active = (a: active_type) =>{
         if(typeof change_active !== "undefined"){
             if( a !== active ){
-                change_active(a)
+                
                 if(a == "dashboard"){
-                    router.push(`/${a}`)
+                    router.push(`/${a}`).then(()=>{
+                        change_active(a)
+                    })
                 }else {
-                    router.push(`/dashboard/${a}`)
+                    router.push(`/dashboard/${a}`).then(()=>{
+                        change_active(a)
+                    })
                 }
                 
             }
@@ -122,16 +126,13 @@ function SideMenu() {
 
     const logUserOut = () =>{
         if(getUserAuthType == "auth0"){
-            set_user_atom(null)
             logout()
-            setUserAuthType("unauthenticated")
-        }else{
-            set_user_atom(null)
-            setUserAuthType("unauthenticated")
         }
-        set_access_token("access_token", "")
-        setUserAuthType("unauthenticated")
-        router.push("/auth")
+        router.push("/auth").then(()=>{
+            set_user_atom(null)
+            set_access_token("access_token", "")
+            setUserAuthType("unauthenticated")
+        })
     }
  
      

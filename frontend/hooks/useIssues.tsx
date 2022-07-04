@@ -25,10 +25,16 @@ function useIssues() {
     useEffect(()=>{
         if(issues_query.isError || issues_query.isLoading || typeof issues_query.data == "undefined" || issues_query.data == null)  return ()=>{}
         var is;
-        if(pathname.includes("projects/")) is = _.flatten(issues_query.data.filter((proj: any)=>proj?._id == current_project ).map((proj: any)=>Object.values(proj?.issues)))
+        if(pathname.includes("projects/")){
+            is = _.flatten(issues_query.data.filter((proj: any)=>proj?._id == current_project ).map((proj: any)=>Object.values(proj?.issues)))
+            set_issues(is as IssueInterface[])
+        }else{
+            is = _.flatten(issues_query.data.map((proj: any)=>Object.values(proj?.issues)))
+            set_issues(is as IssueInterface[])
+        }
         
-        is = _.flatten(issues_query.data.map((proj: any)=>Object.values(proj?.issues)))
-        set_issues(is as IssueInterface[])
+        
+        
     }, [,issues_query.isLoading, issues_query.isError])
 
     useEffect(()=>{

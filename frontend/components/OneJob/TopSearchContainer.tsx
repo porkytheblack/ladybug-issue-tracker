@@ -66,7 +66,7 @@ export const change_platform = atom (
 
 
 
-function TopSearchContainer({}: {}) {
+function TopSearchContainer({change_filter}: {change_filter: (val: string)=>void}) {
     const [, set_platform] = useAtom(change_platform)
     const [, set_team] = useAtom(change_team)
     const [, handleModalVisibility] = useAtom(handleModalVisibilityAtom)
@@ -110,7 +110,9 @@ function TopSearchContainer({}: {}) {
   return (
         <CustomContainer align="middle" justify='space-between' className="w-full " >
             <Col span={4} >
-                    <SearchBox/>
+                    <Input.Search onChange={(e)=>{
+                        change_filter(e.target.value)
+                    }} placeholder='Search...' />
             </Col>
             <Col span={3}  >
                 <Select onChange={(val)=>{

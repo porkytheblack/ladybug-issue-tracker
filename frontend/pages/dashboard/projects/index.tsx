@@ -18,6 +18,7 @@ const {Text} = Typography
 function Projects() {
   const [isModalVisible, handleModalVisibility] = useState<boolean>(true)
   const [{chosen_team, platform: p}, ] = useAtom(topSearchContainerAtom)
+  const [search_filter, set_search_filter] = useState<string>("")
   const hide = () =>{
 
     handleModalVisibility(false)
@@ -39,13 +40,15 @@ function Projects() {
       </div>
       <div className="flex flex-row pb-4 items-center justify-center w-full bg-white">
           <div className="flex flex-row items-center h-full bg-white justify-start w-4/5">
-            <TopSearchContainer/>
+            <TopSearchContainer change_filter={(val: string)=>{
+              set_search_filter(val)
+            }} />
           </div>
       </div>
      
       <EmptyAndLoading showLoading={true} loading={loading}  className="h-full pt-5 flex w-4/5 flex-row items-start justify-start flex-wrap">
           {
-                  projects.filter(({team, platform})=> (chosen_team == team && platform == p) || (chosen_team == "all" && platform == p) || (chosen_team == team && p == "all") || (chosen_team == "all" && p == "all")  ).map(({_id, project_name, team, platform, issues})=>(
+                  projects.filter(({project_name})=>search_filter.trim().length == 0 ? true : project_name?.toLocaleLowerCase().includes(search_filter.toLocaleLowerCase())).filter(({team, platform})=> (chosen_team == team && platform == p) || (chosen_team == "all" && platform == p) || (chosen_team == team && p == "all") || (chosen_team == "all" && p == "all")  ).map(({_id, project_name, team, platform, issues})=>(
                     <Col className=' !flex !mr-2 !mb-2   !h-[280px]' span={7} >
                       <ProjectCardWithActions issues={isUndefined(issues) ? [] : issues as any} project_name={project_name} platform={platform} team={team} _id={_id} />
                     </Col>

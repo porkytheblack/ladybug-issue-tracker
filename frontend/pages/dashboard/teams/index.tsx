@@ -3,7 +3,7 @@ import { Avatar, Button, Form, Input, Modal, notification, Row } from 'antd'
 import { useForm } from 'antd/lib/form/Form'
 import axios from 'axios'
 import { useAtom } from 'jotai'
-import { isUndefined } from 'lodash'
+import { flatten, isUndefined } from 'lodash'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
@@ -30,6 +30,7 @@ function Teams() {
     const [editable_name, set_editable_name] = useState<string>("")
     const [team_member, set_team_member] = useState<string>("")
     const [active_team, set_active_team] = useState<string>("")
+    const [search_filter, set_search_filter] = useState<string>("")
     const show_modal = () =>{
       set_modal_config(({visible, action})=>({visible: true, action}))
     }
@@ -42,6 +43,10 @@ function Teams() {
     const edit_team = () =>{
       change_action("edit")
     }
+
+    useEffect(()=>{
+      console.log(teams.filter(({team_name})=> search_filter.trim().length > 0 ? team_name?.includes(search_filter.trim()): true))
+    }, [,search_filter])
 
     const [,up] = useAtom(tick_up_team)
 
@@ -75,6 +80,7 @@ function Teams() {
     const {teams} = useTeams()
 
     const send_invitation = () =>{
+      if (flatten(teams.filter((team)=>team.team_name == team_name)[0].members?.filter(({user_name})=>user_name == team_name)).length !== 0) return null
       axios.post(`${backend_url}/inbox`,  {
         to: team_member,
         type: "invite",
@@ -162,9 +168,9 @@ function Teams() {
                           set_team_member(e.target.value)
                          }}  style={{
                           width: "60%"
-                         }} placeholder='Enter username or Email' />
+                         }} placeholder='Enter username' />
                          <Button onClick={send_invitation} >
-                            Add
+                            Invite
                          </Button>
                         </Input.Group>
                         <div className="flex flex-col mt-5 w-full items-start justify-start">
@@ -193,7 +199,9 @@ function Teams() {
           
 
           <div className="flex flex-row w-[90%] mt-5 items-center justify-between">
-            <Input.Search placeholder='Search Teams' className="w-1/4"  />
+            <Input.Search value={search_filter} onChange={(e)=>{
+              set_search_filter(e.target.value)
+            }} placeholder='Search Teams' className="w-1/4"  />
             <Button onClick={(e)=>{
                 change_action("add")
             }} className=" !text-black !flex items-center justify-center " icon={<PlusOutlined/>} >
@@ -203,7 +211,7 @@ function Teams() {
           <EmptyAndLoading className=" flex flex-row mt-8 w-[90%] h-full flex-wrap items-start justify-start  " >
             
             {
-              teams.map(({team_name, team_creator, members, _id})=>(
+              teams.filter(({team_name})=> search_filter.trim().length > 0 ? team_name?.toLocaleLowerCase().includes(search_filter.toLocaleLowerCase(), 0): true).map(({team_name, team_creator, members, _id})=>(
                 <TeamCard onClickEdit={()=>{
                   change_action("edit")
                   set_team_name(is_def_string(team_name))
