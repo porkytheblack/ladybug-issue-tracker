@@ -43,7 +43,7 @@ function Dashboard() {
                 <IssueCard content='Opened' num={ongoing_issues} color={"#FD9A27"} />
                 <IssueCard content='Closed' num={closed_issues} color={"#31C433"} />
               </Row>
-                <EmptyAndLoading showLoading={true} loading={is_loading} className="flex bugs-col flex-col items-center justify-start pt-9 w-full h-full" >
+                <EmptyAndLoading showLoading={true} loading={is_loading} className="flex bugs-col flex-col items-center justify-start pt-9 w-full " >
                   { 
                     issues.map((issue, key)=>(
                       <BugCard issue={issue} count={key} />  
@@ -52,8 +52,8 @@ function Dashboard() {
                 </EmptyAndLoading>
                
           </Col>
-          <Col span={7} >
-            <UpdatesCard/>
+          <Col className="pt-5 pb-5 mb-5" span={7} >
+            <UpdatesCard maxHeight='100vh' />
           </Col>
                  
             
@@ -117,22 +117,7 @@ const CustomDash = styled.div`
 `
 
 const UpdatesContainer = styled(Col)`
-  border-radius: 8px;
-  border: .7px solid #E2E2E2;
-  overflow: hidden;
-  padding: 15px;
-  height: 100%;
-  .updates-container{
-    height: 100%;
-    overflow-y: scroll;
-    &::-webkit-scrollbar{
-      background: none;
-      width: 5px;
-    }
-    &::-webkit-scrollbar-thumb{
-      background: #f5f5f5;
-      border-radius: 2.5px;
-    }
-  }
+    
+
 `
 

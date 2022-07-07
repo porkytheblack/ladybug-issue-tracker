@@ -19,6 +19,19 @@ function TagContainer({}: {}) {
 
     const {_id, tags} = useIssue()
 
+    const delete_tag = (tag_id: string)=>{
+            axios.delete(`${backend_url}/tag/${_id}/${tag_id}`, {
+                withCredentials: true
+            }).then(()=>{
+                up()
+            }).catch((e)=>{
+                notification.error({
+                    message: "An error occured while deleting the tag",
+                    key: "delete_tag_succes"
+                })
+            })
+    }
+
 
     const change_tags = (vals: string[]) =>{
         var origi_tags = tags?.map(({tag_name}) => tag_name)
@@ -53,14 +66,16 @@ function TagContainer({}: {}) {
 
 
   return (
-    <div className="flex flex-col items-stat justify-start w-1/4 ">
+    <div className="flex flex-col items-stat justify-start w-1/2 ">
         <Text className="font-medium text-lg !text-black mb-2 " >
             Tags
         </Text>
         <div className="flex flex-row w-full items-center justify-start flex-wrap ">
             {
-                tags?.map(({tag_name, tag_color})=>(
-                    <Tag  className="!mr-1 !mb-1" color={tag_color} >
+                tags?.map(({tag_name, tag_color, _id: tag_id})=>(
+                    <Tag closable  onClose={()=>{
+                        delete_tag(tag_id)
+                    }} className="!mr-1 !flex !flex-row !items-center !justify-between !mb-1" color={tag_color} >
                         {tag_name}
                     </Tag>
                 ))

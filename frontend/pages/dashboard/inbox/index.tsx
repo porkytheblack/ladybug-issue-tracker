@@ -42,7 +42,9 @@ function Inbox() {
         {
           withCredentials: true
         }
-      ).catch((e)=>{
+      ).then(()=>{
+        up()
+      }).catch((e)=>{
         console.log(e)
         notification.error({
           message: "An error occured",
@@ -67,6 +69,7 @@ function Inbox() {
             message: "Success",
             key: "invite_success"
           })
+          up()
         }).catch((e)=>{
           console.log(e)
           notification.error({
@@ -141,7 +144,7 @@ function Inbox() {
                         ...unread_messages,
                         ...read_messages,
                         ...read_invites
-                      ].filter(({read, accepted})=> filter == "read" ? read : filter == "unread"  ? !read : filter == "accepted" ? accepted : !accepted  ).map((inbox, key)=>(
+                      ].filter(({read, accepted})=> filter == "read" ? read : filter == "unread"  ? !read : filter == "accepted" ? accepted : filter == "pending" ?  !read && !accepted : !accepted  ).map((inbox, key)=>(
                         <InboxCard onClick={open_inbox_item} inbox={inbox} key={key} />
                       ))
                     }
@@ -170,6 +173,7 @@ function Inbox() {
                                 <Button onClick={()=>{
                                   set_active_team(is_def_string(invite_content?.team_id))
                                   submit_invite_choice(["accepted", true], is_def_string(invite_content?.team_id) )
+
                                 }} >
                                   Accept
                                 </Button>
@@ -179,6 +183,7 @@ function Inbox() {
                                 <CheckCircleOutlined className='text-green-600 text-3xl ' />
                               </div>
                             }
+                            
                           </div>}
                           {
                             type == "message" && <Message subject={is_def_string(subject)} msg_content={is_def_string(msg_content)} />

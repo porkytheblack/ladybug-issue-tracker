@@ -11,6 +11,7 @@ import React, { Key, ReactNode, useContext, useState } from 'react'
 import { useCookies } from 'react-cookie'
 import styled from 'styled-components'
 import GeneralAvatar from '../../../components/OneJob/GeneralAvatar'
+import userAuth from '../../../hooks/userAuth'
 import { userAtom, userAuthTypeAtom } from '../../../jotai/state'
 import { deauthenticate_user } from '../../../redux/actions/user.actions'
 import { useAppDispatch } from '../../../redux/hooks'
@@ -78,14 +79,13 @@ function SideMenu() {
     const [getUserAuthType, setUserAuthType] = useAtom(userAuthTypeAtom)
     const [sub_menu, set_submenu] = useState<"open" | "closed">("open") 
     const router = useRouter()
-    const dispatch = useAppDispatch()
     const {logout} = useAuth0()
     const [{access_token}, set_access_token] = useCookies(["access_token"])
+    const {user: authed} = userAuth()
 
     const call_change_active = (a: active_type) =>{
         if(typeof change_active !== "undefined"){
             if( a !== active ){
-                
                 if(a == "dashboard"){
                     router.push(`/${a}`).then(()=>{
                         change_active(a)
@@ -130,14 +130,15 @@ function SideMenu() {
         }
         router.push("/auth").then(()=>{
             set_user_atom(null)
-            set_access_token("access_token", "")
+            document.cookie =  ""
+            localStorage.clear()
             setUserAuthType("unauthenticated")
         })
     }
  
      
   return (
-    <MenuContainer className="flex flex-row items-start justify-start h-screen  " >
+    <MenuContainer suppressHydrationWarning={true} className="flex flex-row items-start justify-start h-screen  " >
         <SideMenuContainer theme="dark" activeKey={active}  defaultSelectedKeys={["dashboard"]}  inlineCollapsed={true} className="h-screen " mode="inline" >
                 <li className="w-full   flex flex-col items-center justify-center  !h-[30%]" >
                         <Text className="font-sans font-bold text-lg " >
@@ -160,8 +161,8 @@ function SideMenu() {
                 <Menu.Item 
                 key="user" 
                 className="!p-0 !flex !flex-col !items-center !w-full  !justify-center" 
-                onClick={()=>{call_change_active("user")}}  icon={<GeneralAvatar avatar={user?.avatar} user_name={user?.user_name}  />} >
-                    <GeneralAvatar avatar={user?.avatar} user_name={user?.user_name}  />
+                onClick={()=>{call_change_active("user")}}  icon={<GeneralAvatar avatar={authed?.avatar} user_name={authed?.user_name}  />} >
+                    <GeneralAvatar avatar={authed?.user_name} user_name={authed?.user_name}  />
                 </Menu.Item>
                 <Menu.Item key="logout" onClick={logUserOut} icon={<LogoutOutlined/>} >
                     Logout
@@ -190,15 +191,14 @@ export default SideMenu
 
 const SideMenuContainer = styled(Menu)`
     z-index: 5;
-    max-width: 200px;
     min-width: 0px;
     
 `
 const SecondaryMenu = styled(Menu)<{menu_state: "open"  | "closed" }>`
-    width: 250px;
+    
     min-width: 0px;
     box-shadow: 0 0 17px 1px rgba(32,33,36,.1) !important;
-    margin-left: ${({menu_state})=>menu_state == "closed" ? "-75.9%" : "0%"};
+    margin-left: ${({menu_state})=>menu_state == "closed" ? "-100%" : "0%"};
     .icon-container {
         border-radius: 10px;
         background: rgba(201, 232, 255, 0.9);

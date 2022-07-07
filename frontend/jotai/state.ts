@@ -19,12 +19,15 @@ export const activeProjectAtom = atomWithStorage<string | null>("current_project
 
 export const activeIssueAtom = atomWithStorage<string | null>("current_issue", null)
 
+export const refreshToken = atomWithStorage<string>("xThy2", "")
+
 export const LeftModalVisibility = atom<boolean>(false)
 
 export const issue_fetch_tick  = atom<number>(0)
 export const team_fetch_tick = atom<number>(0)
 export const project_fetch_tick = atom<number>(0)
 export const inbox_tick = atom<number>(0)
+export const user_tick = atom<number>(0)
 
 export const tick_up = atom(null, (get, set, _)=>{set(issue_fetch_tick, get(issue_fetch_tick)+1)})
 export const tick_up_team = atom(null, (get, set, _)=>{set(team_fetch_tick, get(team_fetch_tick)+1)})
@@ -34,6 +37,8 @@ export const tick_issue = atom<number>(0)
 export const tick_up_issue = atom(null, (get, set, _)=>{set(tick_issue, get(tick_issue)+1)})
 
 export const tick_up_inbox = atom(null, (get, set, _)=>set(inbox_tick, get(inbox_tick)+1)  )
+
+export const tick_up_user = atom(null, (get, set, _)=>set(user_tick, get(user_tick)+1))
 
 
 

@@ -1,11 +1,14 @@
 import { BugOutlined } from '@ant-design/icons'
 import { Button, Dropdown, Input, notification, Radio, Select } from 'antd'
 import axios from 'axios'
+import { useAtom } from 'jotai'
 import React, { useEffect, useState } from 'react'
 import { backend_url, general_statuses, IssueTypes, severity_levels } from '../../globals'
 import { is_def_string } from '../../helpers'
 import useIssue from '../../hooks/useIssue'
+import { tick_up_issue } from '../../jotai/state'
 import { Text } from '../../pages/_app'
+import UploadAction from '../Actions/UploadAction'
 import BaseButtonDropdown from '../Dropdowns/BaseButtonDropdown'
 
 function ModalLeft() {
@@ -14,11 +17,11 @@ function ModalLeft() {
     const [i_status, set_status] = useState<string>("")
     const [i_severity, set_severity] = useState<string>("")
     const [details, set_details] = useState<string>("")
+    const [attachments, set_attachments] = useState([])
+    const [, up] = useAtom(tick_up_issue)
 
     useEffect(()=>{
-        console.log(severity)
-        console.log(status)
-        console.log(type)
+        set_details(system_details)
     }, [, loading, is_error ])
 
     const submit=(vals: any)=>{
@@ -59,7 +62,7 @@ function ModalLeft() {
     }
 
   return (
-    <div className="flex flex-col w-full h-full items-start !space-y-2 justify-start">
+    <div className="flex flex-col mt-5 w-full h-full items-start !space-y-2 justify-start">
         <Dropdown className='w-[150px]' arrow overlay={
             <Radio.Group defaultValue={type}   onChange={(e)=>{
                 set_type(e.target.value)
@@ -128,9 +131,40 @@ function ModalLeft() {
         </Dropdown>
                     
         <div className="flex flex-row items-center justify-start">
-            <Input placeholder='System details' value={system_details} defaultValue={system_details} onPressEnter={submit_details}  onChange={(e)=>{
-                console.log(e.target.value)
+            <Input.Group compact >
+            <Input className="!w-[63%]" placeholder='System details' value={details} defaultValue={system_details} onPressEnter={submit_details}  onChange={(e)=>{
+             
                 set_details(e.target.value)
+            }} />
+            <Button onClick={submit_details} >
+                Save
+            </Button>
+            </Input.Group>
+        </div>
+        <div className="flex flex-col items-start justify-start w-full mt-3">
+            <UploadAction onChange={(vals)=>{
+                
+                var n = vals.length -1
+                if(vals.length > 0 && (attachments.length < vals.length || attachments.length == 0) ){
+                    axios.put(`${backend_url}/assets/${_id}`, {
+                        attachment: vals[n]
+                    },
+                    {
+                        withCredentials: true
+                    }).then(()=>{
+                        set_attachments(vals)
+                        notification.info({
+                            message: "Attachment added to issue successfully",
+                            key: "added_attachment_to_issue"
+                        })
+                        up()
+                    }).catch((e)=>{
+                        notification.info({
+                            message: "Unable to add attachment to issue",
+                            key: "Unable to add attachment to issue"
+                        })
+                    })
+                }
             }} />
         </div>
     </div>

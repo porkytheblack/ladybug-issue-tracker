@@ -7,7 +7,7 @@ import { useQuery } from 'react-query'
 import axios from 'axios'
 import { backend_url } from '../globals'
 import { useAtom } from 'jotai'
-import { activeProjectAtom, issue_fetch_tick, tick_up } from '../jotai/state'
+import { activeIssueAtom, activeProjectAtom, issue_fetch_tick, tick_up, userAtom } from '../jotai/state'
 import { generateRandomColor } from '../helpers/randomColor'
 import { useRouter } from 'next/router'
 
@@ -19,6 +19,8 @@ function useIssues() {
     const issues_query = useQuery(["issues", tick, _id], ()=>axios.get(`${backend_url}/issues`, {withCredentials: true}).then(({data})=>data))
     const {pathname} = useRouter()
     const [current_project, ] = useAtom(activeProjectAtom) 
+    const [user,] = useAtom(userAtom)
+    const [current_issue, set_current_issue] = useState(activeIssueAtom)
 
     const [, up] = useAtom(tick_up)
 
@@ -27,9 +29,14 @@ function useIssues() {
         var is;
         if(pathname.includes("projects/")){
             is = _.flatten(issues_query.data.filter((proj: any)=>proj?._id == current_project ).map((proj: any)=>Object.values(proj?.issues)))
+            is = _.remove(is, (_is: any)=>_is.assignees.map(({user_name}: {user_name: string})=>user_name).includes(user?.user_name))
+            console.log(is)
+            is = _.reverse(_.sortBy(is, [({updatedAt}: {updatedAt: Date})=>new Date(updatedAt)]))
             set_issues(is as IssueInterface[])
         }else{
             is = _.flatten(issues_query.data.map((proj: any)=>Object.values(proj?.issues)))
+            is = _.remove(is, (_is: any)=>_is.assignees.map(({user_name}: {user_name: string})=>user_name).includes(user?.user_name))
+            is = _.reverse(_.sortBy(is, [({updatedAt}: {updatedAt: Date})=>new Date(updatedAt)]))
             set_issues(is as IssueInterface[])
         }
         
@@ -74,6 +81,7 @@ function useIssues() {
         is_loading: issues_query.isLoading,
         is_error: issues_query.isError,
         comments,
+        issue_comments: comments?.filter(({issue_id})=>is_def_string(issue_id) == is_def_string(current_issue)) ,
         up,tick
     }
   )

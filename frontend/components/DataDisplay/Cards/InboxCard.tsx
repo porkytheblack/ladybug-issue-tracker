@@ -11,7 +11,7 @@ function InboxCard({inbox, onClick}: {inbox: InboxSchema, onClick: (val: string)
   return (
     <CardContainer onClick={()=>{
         onClick(inbox._id)
-    }} className='w-full bg-slate-100 flex cursor-pointer min-h-[80px] flex-row items-center justify-between rounded-lg p-[10px_20px] border-l-2 border-red-600 ' >
+    }} className={`w-full ${inbox.read ? "bg-slate-200" : "bg-slate-100"}  flex cursor-pointer min-h-[80px] flex-row items-center justify-between rounded-lg p-[10px_20px] border-l-2 border-red-600 `} >
         <div className="flex flex-row items-center justify-start">
             <MailOutlined/>
             {inbox.type == "invite" && <Text className="!text-black ml-5  " >

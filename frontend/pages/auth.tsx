@@ -8,7 +8,8 @@ import { useRouter } from 'next/router'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { backend_url } from '../globals'
-import { userAtom, userAuthTypeAtom } from '../jotai/state'
+import userAuth from '../hooks/userAuth'
+import { refreshToken, userAtom, userAuthTypeAtom } from '../jotai/state'
 
 const {Text, Title, Link} = Typography
 
@@ -19,6 +20,9 @@ function Auth() {
     const [user_atom, set_user_atom] = useAtom(userAtom)
     const [, set_auth_type] = useAtom(userAuthTypeAtom)
     const {push} = useRouter()
+    const [loading, set_loading] = useState<boolean>(false)
+    const [, set_refresh_token] = useAtom(refreshToken)
+    const {up} = userAuth()
 
    
     const [auth_state, set_auth_state] = useState<"login"| "signup" | "forgot" >("login")
@@ -38,8 +42,8 @@ function Auth() {
         }
     }
     const SubmitForm = () =>{
+        set_loading(true)
         auth_form.validateFields().then((values)=>{
-            console.log(values)
             if(auth_state == "signup"){
                 axios.post(`${backend_url}/user`, values).then((_res)=>{
                     set_auth_state("login")
@@ -47,18 +51,20 @@ function Auth() {
                         message: "Success",
                         key: "signup_success"
                     })
+                    set_loading(false)
                 }).catch((e)=>{
                     notification.error({
                         message: "An error occured",
                         key: "auth_error"
                     })
+                    set_loading(false)
                 })
             }
             if(auth_state == "login"){
                 axios.post(`${backend_url}/login`, {...values, authType: "normal"}, {
                     withCredentials: true
                 }).then((_res)=>{
-                    const {user_name, email, authType, avatar} = _res.data 
+                    const {user_name, email, authType, avatar, token} = _res.data 
                     set_user_atom({
                         user_email: email,
                         user_name,
@@ -68,23 +74,25 @@ function Auth() {
                     })
 
                     set_auth_type(authType)
-
+                    set_refresh_token(token)
                     notification.success({
                         message: "Success",
                         key: "auth_success"
                     })
-                    push("/dashboard")
+                    push("/dashboard").then(()=>{
+                        up()
+                    })
+                    set_loading(false)
                 }).catch((e)=>{
                     notification.error({
                         message: "An error occured",
                         key: "auth_error"
                     })
+                    set_loading(false)
                 })
             }
             
         }).catch((e)=>{
-
-            console.log(e)
         })
     }
 
@@ -92,25 +100,24 @@ function Auth() {
         if( typeof user !== "undefined" &&  user !== null){
             if(user_atom == null){
                 if(auth_state == "signup"){
-                    console.log("Signup")
-                    axios.post("http://localhost:8080/user/auth0", {
+                    axios.post(`${backend_url}/user/auth0`, {
                         user_sub: user.sub
                     }, {
                         withCredentials: true
                     }).then((res)=>{
-                        console.log(res.data)
                         set_auth_state("login")
                         notification.success({
                             message: "User signed up successfully",
                             key: "sign_up_success"
                         })
-                        
+                       
+                        set_loading(false)
                     }).catch((e)=>{
-                        console.log(e)
                         notification.error({
                             message: "An error occured",
                             key: "signup_error"
                         })
+                        set_loading(false)
                     })
                     
                 }
@@ -121,7 +128,7 @@ function Auth() {
                     }, {
                         withCredentials: true
                     }).then(({data})=>{
-                        const {user_name, email, avatar, authTyoe} = data
+                        const {user_name, email, avatar, token} = data
                         set_user_atom({
                             user_name,
                             user_email: email,
@@ -130,17 +137,22 @@ function Auth() {
                             last_name: ""
                         })
                         set_auth_type("auth0")
+                        set_refresh_token(token)
                         notification.success({
                             message: "Login Success",
                             key: "login_success"
                         })
-                        push("/dashboard")
+                        push("/dashboard").then(()=>{
+                            up()
+                        })
+                        set_loading(false)
                     }).catch((e)=>{
                         console.log(e)
                         notification.error({
                             message: "Login Error",
                             key: "login_error"
                         })
+                        set_loading(false)
                     })
                 }
 
@@ -179,7 +191,7 @@ function Auth() {
                                 <CustomInput type="password"  placeholder="Re-enter password" />
                         </Form.Item>}
                         <Form.Item>
-                            <Button onClick={SubmitForm} htmlType='submit' >
+                            <Button loading={loading} onClick={SubmitForm} htmlType='submit' >
                                 {auth_state == "signup" ? "Sign Up" : auth_state == "forgot" ? "submit" : "Login"}
                             </Button>
                         </Form.Item>
@@ -187,7 +199,7 @@ function Auth() {
                     {auth_state !== "forgot" && <div className="w-[74%] h-[0.3px] opacity-[0.4] bg-[#3a3b45] " ></div>}
                     {auth_state !== "forgot" && <Row align="middle" justify='space-around' className="!w-[74%] pt-[10px] pb-[10px]" >
                         <Col span={4} >
-                            <Button onClick={loginWithPopup} className=" !border-none " icon={
+                            <Button  onClick={loginWithPopup} className=" !border-none " icon={
                                 <Image src="/icons/google.svg" height="36px" width="36px" />
                             } >
                             
@@ -196,9 +208,7 @@ function Auth() {
                     </Row>}
                     <div className="w-[74%] h-[0.3px] opacity-[0.4] bg-[#3a3b45] " ></div>
                     <div  className="flex flex-col items-center justify-start" >
-                            <Link onClick={toggle_forgot} >
-                                { auth_state !== "forgot" ? "Forgot password?" : "Back"}
-                            </Link>
+                            
                             {auth_state !== "forgot" && <Link onClick={change_auth_state} >
                                 { auth_state == "signup" ? "Already have an account? Login" : "Don't have an account? Create One"}
                             </Link>}

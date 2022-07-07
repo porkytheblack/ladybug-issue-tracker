@@ -12,6 +12,7 @@ import { activeIssueAtom, LeftModalVisibility, tick_up_issue } from '../../jotai
 import { Text } from '../../pages/_app'
 import BaseButtonDropdown from '../Dropdowns/BaseButtonDropdown'
 import SummaryInput from '../Input/SummaryInput'
+import GeneralAvatar from '../OneJob/GeneralAvatar'
 import StatusTag from '../Tags/StatusTag'
 
 function LeftModalTopBar() {
@@ -50,10 +51,10 @@ function LeftModalTopBar() {
     
 
   return (
-    <div  className="flex flex-row items-center   justify-between w-full bg-[#F3F3F3] p-[10px_20px]  border-[1px] border-solid border-[#D3D3D3]  ">
-                <a onClick={()=>set_visible(false)} className="flex absolute top-2 right-2 flex-row items-center justify-center">
+    <div  className="flex flex-row items-center   justify-between w-full bg-[#F3F3F3] p-[10px_20px]   ">
+                {/* <a onClick={()=>set_visible(false)} className="flex absolute top-2 right-2 flex-row items-center justify-center">
                     <CloseOutlined/>
-                </a>
+                </a> */}
                 <div className="flex flex-col w-1/2 h-full items-start justify-start">
                     <div className="flex flex-row items-center mb-3 justify-start">
 
@@ -65,7 +66,7 @@ function LeftModalTopBar() {
                         <StatusTag>
                             {status}
                         </StatusTag>
-
+     
 
                     </div>
                     <SummaryInput/>
@@ -75,9 +76,7 @@ function LeftModalTopBar() {
 
                 <div className="flex flex-col items-end justify-start w-1/2 " >
                     <div className="flex flex-row items-center justify-start">
-                        {!isUndefined(creator?.avatar)   && <div className="flex flex-row rounded-full h-10 w-10 overflow-hidden ">
-                            <Image src={typeof creator?.avatar == "undefined" || creator?.avatar.length == 0 ? `https://joeschmoe.io/api/v1/${creator?.user_name}` : creator?.avatar } height={40} width={40} />
-                        </div>}
+                        <GeneralAvatar avatar={creator?.avatar} user_name={creator?.user_name} />
                         <Text className="ml-5" >
                             By  @{creator?.user_name}
                             

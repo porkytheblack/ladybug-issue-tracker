@@ -1,10 +1,12 @@
 import { CloseOutlined, EditOutlined } from '@ant-design/icons'
 import { Input, notification } from 'antd'
 import axios from 'axios'
+import { useAtom } from 'jotai'
 import React, { useEffect, useState } from 'react'
 import { backend_url } from '../../globals'
 import { is_def_string } from '../../helpers'
 import useIssue from '../../hooks/useIssue'
+import { tick_up_issue } from '../../jotai/state'
 import { Text } from '../../pages/_app'
 
 
@@ -13,6 +15,7 @@ function SummaryInput() {
     const [new_summary, set_new_summary] = useState<string>(is_def_string(summary))
     const [edit, set_edit] = useState<boolean>(false)
     const [editing, set_editing] = useState<boolean>(true)
+    const [,up] = useAtom(tick_up_issue)
 
 
     useEffect(()=>{
@@ -30,6 +33,7 @@ function SummaryInput() {
                 message: "Success",
                 key: "success"
             })
+            up()
         }).catch((e)=>{
             set_edit(false)
             notification.error({
@@ -49,7 +53,7 @@ function SummaryInput() {
                 <EditOutlined onClick={()=>set_edit(true)} className='ml-2' />
             </div>}
             {edit && <div className="flex flex-row items-center justify-start">
-                <Input onPressEnter={handle_submit} defaultValue={new_summary} bordered={false} value={new_summary} onChange={(e)=>set_new_summary(e.target.value)}  />
+                <Input placeholder="Replace your summary, this field cannot be empt" onPressEnter={handle_submit} defaultValue={new_summary} bordered={false} value={new_summary} onChange={(e)=>set_new_summary(e.target.value)}  />
                 <CloseOutlined onClick={handle_submit} className="ml-2" />
             </div>}
         </div>

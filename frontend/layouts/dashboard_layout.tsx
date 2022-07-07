@@ -36,7 +36,6 @@ function DashboardLayout({children}: {children: ReactNode | ReactNode[]}) {
   const {pathname, isReady, query, basePath} = useRouter()
 
   useEffect(()=>{
-    console.log(pathname)
     if(pathname == "/dashboard/teams"){
       set_active("teams")
     }else if(pathname == "/dashboard/inbox"){
@@ -62,7 +61,7 @@ function DashboardLayout({children}: {children: ReactNode | ReactNode[]}) {
 
   return (
     <DashboardContext.Provider value={{expanded, toggle_menu, active, change_active, active_sub,  current_project_type: project_type}} >
-      <DashboardLayoutContainer className=" !bg-[#F2F5FA] flex flex-row items-start justify-start w-screen relative h-screen overflow-x-hidden overflow-y-hidden" >
+      <DashboardLayoutContainer suppressHydrationWarning className=" !bg-[#F2F5FA] flex flex-row items-start justify-start w-screen relative h-screen overflow-x-hidden overflow-y-hidden" >
           <SideMenu/>
           <div className="w-full flex flex-col items-center justify-start h-full" >
           {children}

@@ -8,7 +8,8 @@ import useTeams from './useTeams'
 function useTeam() {
     const [members, set_members] = useState<{
         user_name?: string,
-        avatar?: string
+        avatar?: string,
+        _id: string
     }[]> ([])
     
     const [current_project, ] = useAtom(activeProjectAtom)

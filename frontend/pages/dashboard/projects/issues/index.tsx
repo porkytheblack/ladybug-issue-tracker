@@ -1,5 +1,5 @@
 import { BugOutlined, BulbOutlined, DownOutlined, ExclamationCircleOutlined, FileOutlined, FilterOutlined, IssuesCloseOutlined, LoadingOutlined, PlusOutlined, QuestionOutlined, SearchOutlined, StarOutlined, ToolOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons'
-import { Avatar, Button, Checkbox, Dropdown, Empty, Form, Input, Menu, Modal, notification, Select, Tooltip } from 'antd'
+import { Avatar, Button, Checkbox, Drawer, Dropdown, Empty, Form, Input, Menu, Modal, notification, Select, Tooltip } from 'antd'
 import { atom, useAtom, useAtomValue } from 'jotai'
 import React, { useEffect, useState } from 'react'
 const ReactQuill = dynamic(()=>import("react-quill"), {
@@ -115,6 +115,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
         description: vals.description,
         system_details: vals.system_details,
         platform: vals.platform,
+
         type: current_option[0],
         severity: current_option[1],
         status: current_option[2],
@@ -123,7 +124,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
           tag_name: tag,
           tag_color: generateRandomColor()
         })),
-        attachments: []
+        attachments: vals.attachments
       }, {
         withCredentials: true
       }).then(()=>{
@@ -152,7 +153,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
 
   return (
     <PageBaseContainer  >
-        <Modal   title="Add Issue" width="60vw" onCancel={()=>{set_issue_modal_visible(false)}} visible={issue_modal_visible} footer={[
+        <Drawer  destroyOnClose   title="Add Issue" width="60vw" onClose={()=>{set_issue_modal_visible(false)}} visible={issue_modal_visible} footer={[
           <Button onClick={handleSubmit} >
             Save
           </Button>,
@@ -224,7 +225,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
                             <MultipleSelectDropdown get_active={update_active_tags} tags={global_tags} />
                     </div>  
               </div>
-        </Modal>
+        </Drawer>
 
         <div className="flex flex-row items-center p-[10px] justify-between w-full">
             <Avatar.Group>

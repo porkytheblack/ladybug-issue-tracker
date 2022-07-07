@@ -117,3 +117,15 @@ export const the_schmoes: string[] = [
   "jia",
   "julie"
 ]
+
+export const dashboard_routes = [
+  "/dashboard",
+  "/dashboard/user",
+  "/dashboard/teams",
+  "/dashboard/inbox",
+  "/dashboard/projects",
+  "/dashboard/activity",
+  "/dashboard/issues",
+  "/dashboard/overview",
+  "/dashboard/settings",
+]

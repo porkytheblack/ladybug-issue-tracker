@@ -10,6 +10,7 @@ import PageBaseContainer from '../../../components/Containers/PageBaseContainer'
 import SelectAvatar from '../../../components/Input/SelectAvatar'
 import { backend_url, the_schmoes } from '../../../globals'
 import { is_def_string } from '../../../helpers'
+import userAuth from '../../../hooks/userAuth'
 import { userAtom, userAuthTypeAtom, userInterface } from '../../../jotai/state'
 import { Text } from '../../_app'
 
@@ -17,6 +18,7 @@ function User() {
   const [user_atom, set_user_atom] = useAtom(userAtom)
   const [authType,] = useAtom(userAuthTypeAtom)
   const {pathname} = useRouter()
+  const {user, up} = userAuth()
   const handle_change = (type: "user_email" | "user_name" | "first_name" | "last_name", val: any) => {
     var m, n, o, p
     if(user_atom){
@@ -24,15 +26,12 @@ function User() {
     }
     
   }
-  useEffect(()=>{ 
-    console.log(user_atom)
-  }, [,user_atom, pathname])
+ 
 
   const [form] = useForm()
 
   const handleSubmit= ()=>{
     form.validateFields().then((vals)=>{
-      console.log()
       var nvals = {
         user_name:  vals.username,
         first_name: vals.first_name,
@@ -40,7 +39,6 @@ function User() {
         email:  vals.email,
         password:   vals.pass
       }
-      console.log(nvals)
       axios.put(`${backend_url}/user`, Object.fromEntries(Object.entries(nvals).filter(([key, val]:[key: string, val: string])=>val !== undefined && val.length !== 0)), {
         withCredentials: true
       }).then(()=>{
@@ -74,66 +72,18 @@ function User() {
     <PageBaseContainer>
       <BaseCard span={24} className="h-full !flex !flex-row !items-start !justify-between w-full bg-white rounded-[8px]  " >
           <Form form={form}
-           fields={[
-            {
-              name: "username",
-              value: user_atom !== null ?  user_atom.user_name : ""
-            },
-            {
-              name: "email",
-              value: user_atom?.user_email
-            },
-            {
-              name: "first_name",
-              value: user_atom?.first_name
-            },
-            {
-              name: "last_name",
-              value: user_atom?.last_name
-            }
-          ]}  onFieldsChange={(changedFields)=>{
-            changedFields.forEach(({value, name}, i: number)=>{
-                var val: string[] =  name as string[]
-                if(user_atom){
-                  if(["user_email", "user_name", "last_name", "first_name"].indexOf(val[0]) !== -1){
-
-
-                    if(val[0] == "user_email"){
-                      user_atom[val[0]] = value
-                      set_user_atom(user_atom)
-                    }
-                    if(val[0] == "user_name"){
-                      user_atom[val[0]] = value
-                      set_user_atom(user_atom)
-                    }
-                    if(val[0] == "first_name"){
-                      user_atom[val[0]] = value
-                      set_user_atom(user_atom)
-                    }
-                    if(val[0] == "last_name"){
-                      user_atom[val[0]] = value
-                      set_user_atom(user_atom)
-                    }
-
-
-                  }
-                  
-                }
-                
-            })
-            
-          }} layout='vertical' className="w-1/2" name="user_details_form" >
-              <Form.Item rules={[{required: true, message: "This is a required field"}]} label="User Name" name="username" >
-                <Input disabled={true} type="text" value={user_atom?.user_name} onChange={(e)=>handle_change("user_name", e.target.value)}  placeholder='User Name' />
+            layout='vertical' className="w-1/2" name="user_details_form" >
+              <Form.Item initialValue={user?.user_name} rules={[{required: true, message: "This is a required field"}]} label="User Name" name="username" >
+                <Input disabled={true} type="text"   placeholder='User Name' />
               </Form.Item>
-              <Form.Item label="First Name" name="first_name" >
-                <Input type="text" onChange={(e)=>handle_change("first_name", e.target.value)} placeholder='First Name' />
+              <Form.Item initialValue={user?.first_name} label="First Name" name="first_name" >
+                <Input type="text"  placeholder='First Name' />
               </Form.Item>
-              <Form.Item label="Last Name" name="last_name" >
-                <Input type="text" onChange={(e)=>handle_change("last_name", e.target.value)} placeholder='Last Name' />
+              <Form.Item initialValue={user?.last_name} label="Last Name" name="last_name" >
+                <Input type="text"  placeholder='Last Name' />
               </Form.Item>
-              <Form.Item rules={[{required: true, message: "This is a required field"}]} label="Email" name="email" >
-                <Input type="email" onChange={(e)=>handle_change("user_email", e.target.value)} value={user_atom?.user_email} placeholder='Email' />
+              <Form.Item initialValue={user?.email} label="Email" name="email" >
+                <Input type="email"  placeholder='Email' />
               </Form.Item>
               <Form.Item  label="New Password" name="pass" >
                 <Input disabled={authType !== "normal"} type="password" placeholder='Enter New Password' />

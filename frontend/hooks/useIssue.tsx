@@ -36,7 +36,8 @@ function useIssue() {
         _id: issue?._id,
         loading: isLoading,
         is_error: isError,
-        system_details: issue?.system_details
+        system_details: issue?.system_details,
+        attachments: issue?.attachments
     }
   )
 }

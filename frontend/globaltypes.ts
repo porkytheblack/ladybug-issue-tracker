@@ -44,11 +44,13 @@ export interface CustomizedFormProps {
             }[],
             attachments?: {
                 attachment_name: string,
-                attachment: Buffer
+                attachment_key: string,
+                file_type:  string
             }[],
             tags: {
                 tag_name: string,
-                tag_color: string
+                tag_color: string,
+                _id: string
             }[],
             type?: string,
             severity?: string,
@@ -65,7 +67,7 @@ export interface CustomizedFormProps {
                 _id: string
             }[],
             platform: String,
-
+            updatedAt: Date
     }[]
 }
 
@@ -74,7 +76,8 @@ export interface TeamSchema {
     team_creator?: string,
     members: {
         user_name?: string,
-        avatar?: string
+        avatar?: string,
+        _id: string
     }[],
     _id?: string
 }
@@ -85,15 +88,19 @@ export interface IssueInterface {
             description: string,
             assignees?: {
                 user_name: string,
-                avatar: string
+                avatar: string,
+                _id: string
             }[],
             attachments?: {
                 attachment_name: string,
-                attachment: Buffer
+                attachment_key: string,
+                file_type:  string,
+                _id: string
             }[],
             tags?: {
                 tag_name: string,
-                tag_color: string
+                tag_color: string,
+                _id: string
             }[],
             type?: string,
             severity?: string,
@@ -111,6 +118,7 @@ export interface IssueInterface {
                 issue_id?: string
             }[],        
             platform?: string,
+            updatedAt: Date
 }
 
 

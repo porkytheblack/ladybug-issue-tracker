@@ -1,5 +1,6 @@
 import { EditOutlined, MessageFilled, PaperClipOutlined, SaveOutlined, SyncOutlined, UserAddOutlined } from '@ant-design/icons'
 import { Avatar, Button, Checkbox, Col, Divider, Dropdown, Empty, Row, Tabs, Tag, Tooltip, Typography } from 'antd'
+import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
@@ -13,6 +14,8 @@ import LeftModalContainer from '../../Containers/LeftModal'
 import GeneralAvatar from '../../OneJob/GeneralAvatar'
 import BaseTag from '../../Tags/BaseTag'
 import StatusTag from '../../Tags/StatusTag'
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime)
 
 
 
@@ -80,7 +83,7 @@ function BugCard({issue, count}:{issue: IssueInterface, count: number}) {
                     </div>
 
                     <Text className='!text-xs' >
-                        Added 11hrs ago
+                        Updated {dayjs(issue?.updatedAt).fromNow()}
                     </Text>
                 </Col>
                 <Col span={3} >
@@ -99,10 +102,16 @@ function BugCard({issue, count}:{issue: IssueInterface, count: number}) {
                 </Col>
             </Row>
             <Row align='middle'  justify="start" className="p-[10px] w-full" >
-                <Col className="!flex flex-row items-center justify-start" >
+                <Col className="!flex flex-row mr-3 items-center justify-start" >
                     <MessageFilled style={{color: "var(--ceruleanblue)"}} />
                     <Text className="ml-2 !text-black " >
                         {issue?.comments?.length}
+                    </Text>
+                </Col>
+                <Col className="!flex flex-row mr-3 items-center justify-start" >
+                    <PaperClipOutlined style={{color: "var(--ceruleanblue)"}} />
+                    <Text className="ml-2 !text-black " >
+                        {issue?.attachments?.length}
                     </Text>
                 </Col>
             </Row>
