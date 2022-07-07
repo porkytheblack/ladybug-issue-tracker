@@ -37,7 +37,9 @@ const expected_keys = [
     "from",
     "subject",
     "to",
-    "team_id"
+    "team_id",
+    "attachments",
+    "token"
 ]
 
 const action_types = [
@@ -50,7 +52,7 @@ const action_types = [
     "add_tag",
     "add_team",
     "add_user_project",
-    
+    "refresh_token"
 ]
 
 const required_fields = [
@@ -89,6 +91,9 @@ const required_fields = [
         "role",
         "platform",
         "project_id"
+    ],
+    [
+        "token"
     ]
 ]
 
@@ -115,7 +120,7 @@ export const verify_body = (body: any): Promise<any> =>{
     })
 }
 
-export const check_for_required_fields = (data: any, action_type: "signup" | "login" | "create_project" | "add_issue" | "add_comment" | "add_assignee" | "add_tag"| "add_team" | "add_user_project"): Promise<any> =>{
+export const check_for_required_fields = (data: any, action_type: "signup" | "login" | "create_project" | "add_issue" | "add_comment" | "add_assignee" | "add_tag"| "add_team" | "add_user_project" | "refresh_token"): Promise<any> =>{
     return new Promise((res, rej)=>{
         if(typeof data !== "undefined"){
             if(Object.keys(data).length > 0){

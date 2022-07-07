@@ -3,7 +3,7 @@ import { check_for_required_fields, verify_body } from "../helpers";
 import ProjectModel from "../../models/project_schema";
 import TeamModel from "../../models/team_schema"
 import { extRequest } from "../../middleware/auth";
-import _ from "lodash"
+import _, { isString } from "lodash"
 
 var user_projects = []
 
@@ -27,7 +27,9 @@ export const create_project = (req: extRequest, res: Response)=>{
 export const create_project_issue = (req: extRequest, res: Response) =>{
     const proj_id = req.params.project_id
     const {user_name} = req.user
+    
     verify_body(req.body).then((body)=>{
+        console.log(body)
         check_for_required_fields(body, "add_issue").then((data)=>{
             if(typeof proj_id == "string"){
                 ProjectModel.updateOne({_id: proj_id}, {
@@ -381,43 +383,53 @@ export const update_tags = (req: extRequest, res: Response) =>{
 }
 
 export const delete_assignee = (req: Request, res: Response)=>{
-    var user_name = req.params.user_name 
-    user_name = typeof user_name !== "undefined" ? user_name : ""
-    if(user_name.length > 0){
-        ProjectModel.deleteOne({
-            "issues.$.assignees.$.user_name": user_name
-        }, (err, results)=>{
-            if(err){
-                res.status(500).send(err)
-            }else{
-                res.status(200).send(results)
+    var {issue_id, assignee_id} = req.params
+    if(!isString(issue_id) || !isString(assignee_id) || issue_id.length == 0 || assignee_id.length == 0 ) return res.status(400).send({message: "Unable to delete item"})
+    ProjectModel.updateOne({
+        "issues._id": issue_id
+    }, {
+        $pull: {
+            "issues.$.assignees": {
+                _id: assignee_id
             }
+        }
+    }).then((doc)=>{
+        res.status(200).send({
+            message: "Deleted assignee successfully",
+            ...doc
         })
-    }else{
-        res.status(400).send({
-            Error: "Invalid username provided"
+    }).catch((e)=>{
+        res.status(500).send({
+            ...e,
+            message: "An error occured while deleting the assignee"
         })
-    }
+    })
 }
 
 export const delete_tag = (req: Request, res: Response)=>{
-    var tag_name = req.params.tag_name 
-    tag_name = typeof tag_name !== "undefined" ? tag_name : ""
-    if(tag_name.length > 0){
-        ProjectModel.deleteOne({
-            "issues.$.tags.$.tag_name": tag_name
-        }, (err, results)=>{
-            if(err){
-                res.status(500).send(err)
-            }else{
-                res.status(200).send(results)
+    const {tag_id, issue_id} = req.params
+    if(!isString(tag_id) || tag_id.length == 0 || !isString(issue_id) || issue_id.length == 0) return res.status(400).send({
+        Error: "Tag or Issue invalid or not provided"
+    })
+    ProjectModel.updateOne({
+        "issues._id": issue_id
+    }, {
+        $pull: {
+            "issues.$.tags": {
+                _id: tag_id
             }
+        }
+    }).then((doc)=>{
+        res.status(200).send({
+            ...doc,
+            message: "Deleted tag successfully"
         })
-    }else{
+    }).catch((e)=>{
         res.status(400).send({
-            Error: "Invalid tagname provided"
+            ...e,
+            message: "An error occured"
         })
-    }
+    })
 }
 
 

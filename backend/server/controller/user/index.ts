@@ -6,7 +6,7 @@ import TeamModel from "../../models/team_schema"
 import InboxModel from "../../models/inbox_schema"
 import ProjectModel from "../../models/project_schema"
 import { check_for_required_fields, verify_body } from "../helpers";
-import _ from "lodash"
+import _, { isNull } from "lodash"
 import {hashSync} from "bcrypt"
 
 
@@ -208,3 +208,22 @@ export const create_auth0_user = (req: Request, res: Response) =>{
 
 }
 
+
+export const get_user = (req: extRequest, res: Response)=>{
+        const {user_name} = req.user
+        UserModel.findOne({
+            user_name: user_name
+        }).then((doc)=>{
+            if(isNull(doc)) return res.sendStatus(404)
+            const {user_name, email, avatar, first_name, last_name} = doc
+            res.status(200).send({
+                user_name,
+                email,
+                first_name,
+                last_name,
+                avatar
+            })
+        }).catch((e)=>{
+            res.sendStatus(500)
+        })
+}

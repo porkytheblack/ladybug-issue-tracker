@@ -28,7 +28,8 @@ const ProjectSchema = new Schema({
             })],
             attachments: [{
                 attachment_name: String,
-                attachment: SchemaTypes.Buffer
+                attachment_key: String,
+                file_type: String
             }],
             tags: [{
                 tag_name: String,
