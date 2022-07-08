@@ -162,11 +162,11 @@ function Auth() {
 
   return (
     <AuthContainer className="flex flex-col  items-center justify-center h-screen overflow-hidden w-screen  bg-[#4e73df]" >
-            <Row gutter={[0, 0]} align="middle"  justify='start' className="w-4/5 !h-[500px] bg-white card  " >
-                <Col  className="!flex !flex-col !items-center !justify-center h-full " span={12} >
+            <div  className="w-4/5 flex flex-row items-center justify-between !h-[500px] bg-white card  " >
+                <div  className=" hidden md:!flex w-1/2 !flex-col !items-center !justify-center h-full  "  >
                         <Image width="300px" height="400px" src={`/illustrations/${processing == "none" ? (auth_state == "login" ? "login" : auth_state == "forgot" ? "forgot_password" : "join"): processing == "loading" ? "loading" : processing == "error" ? "server_error" : "access_denied"}.svg`} />
-                </Col>
-                <Col className="!flex !flex-col bg-yellow-50 !items-center !justify-center !h-full" span={12} >
+                </div>
+                <div className="!flex !flex-col w-full md:w-1/2 bg-yellow-50 !items-center !justify-center !h-full"  >
                     <Text className="text-lg text-[#3a3b45] "  >
                        { processing == "none" ? (auth_state == "login" ?  "Welcome Back!" : auth_state == "forgot" ? "Forgot password?" :  "Hey 👋") : processing == "error" ? "An Error Occured" : processing == "invalid" ? "Invalid Credentials Added" : processing == "loading" ? "Working On it" : "" }
                     </Text>
@@ -213,8 +213,8 @@ function Auth() {
                                 { auth_state == "signup" ? "Already have an account? Login" : "Don't have an account? Create One"}
                             </Link>}
                     </div>
-                </Col>
-            </Row>
+                </div>
+            </div>
     </AuthContainer>
   )
 }

@@ -14,4 +14,5 @@ function BaseLayout({children}:{children: ReactNode | ReactNode[]}) {
 export default BaseLayout
 
 const BaseLayoutContainer = styled.div`
+
 `

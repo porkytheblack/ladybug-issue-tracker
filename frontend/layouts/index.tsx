@@ -65,9 +65,8 @@ function Layout({children}: {children: ReactNode | ReactNode[]}) {
         )
     }else{
         return (
-            <div>
+            
                 {children}
-            </div>
             
         )
     }
