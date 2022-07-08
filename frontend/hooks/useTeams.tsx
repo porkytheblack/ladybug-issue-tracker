@@ -4,13 +4,16 @@ import React, { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import { backend_url } from '../globals'
 import { TeamSchema } from '../globaltypes'
-import { team_fetch_tick } from '../jotai/state'
+import { team_fetch_tick, userAuthTypeAtom } from '../jotai/state'
 
 function useTeams () {
     const [tick, ] = useAtom(team_fetch_tick)
+    const [authType, setAuthType] = useAtom(userAuthTypeAtom)
     const [teams, set_teams] = useState<TeamSchema[]>([])
     const [team_names, set_team_names] = useState<string[]>([])
-    const team_query = useQuery(["teams", tick], ()=>axios.get(`${backend_url}/teams`, {withCredentials: true}).then(({data})=>data as TeamSchema[]))
+    const team_query = useQuery(["teams", tick], ()=>axios.get(`${backend_url}/teams`, {withCredentials: true}).then(({data})=>data as TeamSchema[]), {
+        enabled: authType !== "unauthenticated"
+    })
     useEffect(()=>{
         if(team_query.isLoading) ()=>{}
         if(team_query.isError) () =>{}

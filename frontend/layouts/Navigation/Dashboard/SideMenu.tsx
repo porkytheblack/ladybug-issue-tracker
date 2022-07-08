@@ -1,6 +1,7 @@
 import { AppstoreOutlined, BarChartOutlined, BugOutlined, CheckCircleOutlined, DashboardFilled, DashboardOutlined, ExclamationCircleOutlined, InboxOutlined, LeftOutlined, LogoutOutlined, MailOutlined, RightOutlined, SettingOutlined, TeamOutlined, ToolOutlined, UserOutlined } from '@ant-design/icons'
 import { useAuth0 } from '@auth0/auth0-react'
-import { Avatar, Menu, Typography } from 'antd'
+import { Avatar, Menu, notification, Typography } from 'antd'
+import axios from 'axios'
 import { motion } from 'framer-motion'
 import { useAtom } from 'jotai'
 import Image from 'next/image'
@@ -11,8 +12,9 @@ import React, { Key, ReactNode, useContext, useState } from 'react'
 import { useCookies } from 'react-cookie'
 import styled from 'styled-components'
 import GeneralAvatar from '../../../components/OneJob/GeneralAvatar'
+import { backend_url } from '../../../globals'
 import userAuth from '../../../hooks/userAuth'
-import { userAtom, userAuthTypeAtom } from '../../../jotai/state'
+import { refreshToken, userAtom, userAuthTypeAtom } from '../../../jotai/state'
 import { deauthenticate_user } from '../../../redux/actions/user.actions'
 import { useAppDispatch } from '../../../redux/hooks'
 import { active_sub, active_type, DashboardContext } from '../../dashboard_layout'
@@ -82,6 +84,7 @@ function SideMenu() {
     const {logout} = useAuth0()
     const [{access_token}, set_access_token] = useCookies(["access_token"])
     const {user: authed} = userAuth()
+    const [token, ] = useAtom(refreshToken)
 
     const call_change_active = (a: active_type) =>{
         if(typeof change_active !== "undefined"){
@@ -129,10 +132,26 @@ function SideMenu() {
             logout()
         }
         router.push("/auth").then(()=>{
-            set_user_atom(null)
-            document.cookie =  ""
-            localStorage.clear()
-            setUserAuthType("unauthenticated")
+            axios.post(`${backend_url}/logout`, {
+                token
+            }, {
+                withCredentials: true
+            }).then(()=>{
+                set_user_atom(null)
+                document.cookie =  ""
+                localStorage.clear()
+                setUserAuthType("unauthenticated")
+                notification.success({
+                    message: "Logout Successfully",
+                    key: "logout success"
+                })
+            }).catch((e)=>{
+                set_user_atom(null)
+                document.cookie =  ""
+                localStorage.clear()
+                setUserAuthType("unauthenticated")
+            })
+            
         })
     }
  
@@ -162,7 +181,7 @@ function SideMenu() {
                 key="user" 
                 className="!p-0 !flex !flex-col !items-center !w-full  !justify-center" 
                 onClick={()=>{call_change_active("user")}}  icon={<GeneralAvatar avatar={authed?.avatar} user_name={authed?.user_name}  />} >
-                    <GeneralAvatar avatar={authed?.user_name} user_name={authed?.user_name}  />
+                    <GeneralAvatar avatar={authed?.avatar} user_name={authed?.user_name}  />
                 </Menu.Item>
                 <Menu.Item key="logout" onClick={logUserOut} icon={<LogoutOutlined/>} >
                     Logout

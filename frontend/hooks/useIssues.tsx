@@ -7,16 +7,19 @@ import { useQuery } from 'react-query'
 import axios from 'axios'
 import { backend_url } from '../globals'
 import { useAtom } from 'jotai'
-import { activeIssueAtom, activeProjectAtom, issue_fetch_tick, tick_up, userAtom } from '../jotai/state'
+import { activeIssueAtom, activeProjectAtom, issue_fetch_tick, tick_up, userAtom, userAuthTypeAtom } from '../jotai/state'
 import { generateRandomColor } from '../helpers/randomColor'
 import { useRouter } from 'next/router'
 
 function useIssues() {
+    const [authType, setAuthType] = useAtom(userAuthTypeAtom)
     const [tick, ] = useAtom(issue_fetch_tick)
     const {project, _id} = useProject()
     const [issues, set_issues] = useState<IssueInterface[]>([])
     const [comments, set_comments] = useState<extCommentInterface[]>()
-    const issues_query = useQuery(["issues", tick, _id], ()=>axios.get(`${backend_url}/issues`, {withCredentials: true}).then(({data})=>data))
+    const issues_query = useQuery(["issues", tick, _id], ()=>axios.get(`${backend_url}/issues`, {withCredentials: true}).then(({data})=>data), {
+        enabled: authType !== "unauthenticated"
+    })
     const {pathname} = useRouter()
     const [current_project, ] = useAtom(activeProjectAtom) 
     const [user,] = useAtom(userAtom)

@@ -4,6 +4,7 @@ import axios from 'axios'
 import { useAtom } from 'jotai'
 import React, { useEffect } from 'react'
 import { backend_url } from '../../globals'
+import { is_def_string } from '../../helpers'
 import useIssue from '../../hooks/useIssue'
 import useTeam from '../../hooks/useTeam'
 import { tick_up_issue } from '../../jotai/state'
@@ -87,8 +88,8 @@ function AssigneesComponent() {
                 }}
             
             >
-                {members.map(({user_name, _id})=>(
-                    !assignees?.map(({user_name})=>user_name).includes(user_name as any) &&
+                {members.filter(({user_name})=>!assignees?.map(({user_name})=>user_name)?.includes(is_def_string(user_name))).map(({user_name, _id})=>(
+                    
                     <Checkbox value={_id} > 
                         {user_name}   
                     </Checkbox>   

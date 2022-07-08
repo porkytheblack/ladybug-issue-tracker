@@ -17,18 +17,18 @@ import { Text } from '../../_app'
 function User() {
   const [user_atom, set_user_atom] = useAtom(userAtom)
   const [authType,] = useAtom(userAuthTypeAtom)
-  const {pathname} = useRouter()
   const {user, up} = userAuth()
-  const handle_change = (type: "user_email" | "user_name" | "first_name" | "last_name", val: any) => {
-    var m, n, o, p
-    if(user_atom){
-      user_atom[type] = is_def_string(val)
-    }
-    
-  }
  
 
   const [form] = useForm()
+
+  useEffect(()=>{
+    form.setFieldsValue([
+      {
+        username: "donny"
+      }
+    ])
+  }, [,user])
 
   const handleSubmit= ()=>{
     form.validateFields().then((vals)=>{
@@ -53,15 +53,14 @@ function User() {
           message: "Success",
           key: "success_updating_user"
         })
+        up()
       }).catch((e)=>{
-        console.log(e)
         notification.error({
           message: "An error occured",
           key: "update_user_error"
         })
       })
     }).catch((e)=>{
-      console.log(e)
       
     })
   }
@@ -72,8 +71,27 @@ function User() {
     <PageBaseContainer>
       <BaseCard span={24} className="h-full !flex !flex-row !items-start !justify-between w-full bg-white rounded-[8px]  " >
           <Form form={form}
-            layout='vertical' className="w-1/2" name="user_details_form" >
-              <Form.Item initialValue={user?.user_name} rules={[{required: true, message: "This is a required field"}]} label="User Name" name="username" >
+            layout='vertical' className="w-1/2" name="user_details_form" 
+            fields={[
+              {
+                name: ["first_name"],
+                value: user?.first_name
+              },
+              {
+                name: "username",
+                value: user?.user_name
+              },
+              {
+                name: "last_name",
+                value: user?.last_name
+              },
+              {
+                name: "email",
+                value: user?.email
+              }
+            ]}
+            >
+              <Form.Item  rules={[{required: true, message: "This is a required field"}]} label="User Name" name="username" >
                 <Input disabled={true} type="text"   placeholder='User Name' />
               </Form.Item>
               <Form.Item initialValue={user?.first_name} label="First Name" name="first_name" >

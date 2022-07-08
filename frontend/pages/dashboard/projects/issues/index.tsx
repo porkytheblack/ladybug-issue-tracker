@@ -104,6 +104,10 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
     )
   }
   const [issue_form]  = useForm()
+  const [search, set_search] = useState("")
+  const [status_filter, set_status_filter] = useState("all")
+  const [severity_filter, set_severity_filter] = useState("all")
+  const [type_filter, set_type_filter] = useState("all")
 
   const handleSubmit = () =>{
     issue_form.validateFields().then((vals)=>{
@@ -249,18 +253,68 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
             <BaseIssueCard icon={<IssuesCloseOutlined className='text-blue-800' />} num={closed_issues} title={"Closed"} />
           </div>
         <div className="flex flex-row p-2 items-center justify-start bg-transparent  w-full ">
-            <Input.Search className="w-1/4" placeholder='Search issues'  />
-            <Dropdown onVisibleChange={(flag: boolean)=>{
-              handleMenuVisibleChange(flag)
-            }} overlay={FilterMenu} visible={isMenuVisible} >
-              <Button className=' !text-black !flex !flex-row !items-center !justify-center '   icon={<FilterOutlined/>}  >
-                Filter
-              </Button>
-            </Dropdown> 
+            <Input.Search className="w-1/4"  value={search} onChange={(e)=>set_search(e.target.value)} placeholder='Search issues'  />
+            
+            <Select onChange={(val)=>{
+              set_status_filter(val)
+            }} defaultValue={"all"} className="min-w-[100px]"  >
+              <Select.Option value="all" >
+                All Statuses
+              </Select.Option>
+              {
+                general_statuses.map((option)=>(
+                  <Select.Option key={option.name.toLocaleLowerCase()} value={is_def_string(option.name).toLocaleLowerCase()} >
+                    {option.name}
+                  </Select.Option>
+                ))
+              }
+            </Select>
+            <Select onChange={(val)=>{
+              set_severity_filter(val)
+            }} defaultValue={"all"} className="min-w-[100px]"  >
+              <Select.Option value="all" >
+                All Severity Levels
+              </Select.Option>
+              {
+                severity_levels.map((option)=>(
+                  <Select.Option key={option.name.toLocaleLowerCase()} value={is_def_string(option.name).toLocaleLowerCase()} >
+                    {option.name}
+                  </Select.Option>
+                ))
+              }
+            </Select>
+            <Select onChange={(val)=>{
+                set_type_filter(val)
+            }} defaultValue={"all"} className="min-w-[100px]"  >
+              <Select.Option value="all" >
+                All Issue Types
+              </Select.Option>
+              {
+                IssueTypes.map((option)=>(
+                  <Select.Option key={option.name.toLocaleLowerCase()} value={is_def_string(option.name).toLocaleLowerCase()} >
+                    {option.name}
+                  </Select.Option>
+                ))
+              }
+            </Select>
         </div>
         <EmptyAndLoading showLoading={true} loading={is_loading} className="flex flex-col space-y-2 items-center justify-start w-full h-full">
           { 
-            issues.map((issue: IssueInterface, key)=>(
+            issues.filter(({summary})=>{
+                if(search.trim().length == 0) return true 
+                
+                return summary.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())
+            }).filter(({type})=>{
+              console.log("sum", type)
+              if(type_filter == "all") return true 
+              return type == type_filter
+            }).filter(({severity})=>{
+              if(severity_filter == "all") return true 
+              return severity == severity_filter
+            }).filter(({status})=>{
+              if(status_filter == "all") return true 
+              return status == status_filter
+            }).map((issue: IssueInterface, key)=>(
               <BugCard issue={issue} count={key} />  
             ))
           }

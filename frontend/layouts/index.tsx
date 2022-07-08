@@ -19,30 +19,39 @@ import DashboardLayout from './dashboard_layout'
 function Layout({children}: {children: ReactNode | ReactNode[]}) {
     const [getUserAuthType, setUserAuthType ] =  useAtom(userAuthTypeAtom)
     const {push, pathname, } = useRouter()
-    const {user, loading_auth} = userAuth()
+    const router = useRouter()
+    const {user, loading_user, user_error} = userAuth()
 
     useEffect(()=>{
-        console.log(user)
+       
+        if(loading_user || user_error) return ()=>{}
         if(isNull(user)){
             if(dashboard_routes.includes(pathname)){
-                push("/auth").then(()=>{
-                    localStorage.clear()
-                    document.cookie = ""
-                })
+                if(getUserAuthType == "unauthenticated"){
+                    push("/auth").then(()=>{
+                        localStorage.clear()
+                        document.cookie = ""
+                        setUserAuthType("unauthenticated")
+                    })
+                }
             }
         }
-    }, [, user])
+    }, [user, loading_user, user_error])
 
-    useEffect(()=>{
-        console.log(pathname)
-    }, [,pathname])
+    
 
     
     
-    
-
-
-    if(( !isUndefined(getUserAuthType) && getUserAuthType !== "unauthenticated") && pathname.indexOf("dashboard") !== -1  ){
+    if((!isUndefined(getUserAuthType) || isUndefined(getUserAuthType)) && getUserAuthType == "unauthenticated" && dashboard_routes.includes(pathname)){
+        return (
+            <div className="flex flex-col w-screen h-screen items-center justify-center">
+                <Spin size="large" />
+                <Text className='!text-black font-semibold text-xl mt-3 ' >
+                    ladybug
+                </Text>
+            </div>
+        )
+    }else if(( !isUndefined(getUserAuthType) && getUserAuthType !== "unauthenticated") && pathname.indexOf("dashboard") !== -1  ){
         return (
             <DashboardLayout>
                 {children}

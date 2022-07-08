@@ -5,15 +5,17 @@ import React, { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import { backend_url } from '../globals'
 import { InboxSchema } from '../globaltypes'
-import { inbox_tick } from '../jotai/state'
+import { inbox_tick, userAuthTypeAtom } from '../jotai/state'
 
 function useInbox() {
+    const [authType, setAuthType] = useAtom(userAuthTypeAtom)
     const [tick, ] = useAtom(inbox_tick)
     const [inbox, set_inbox] = useState<InboxSchema[]>([])
     const inbox_query = useQuery(["inbox", tick], ()=>axios.get(`${backend_url}/inbox`, {
         withCredentials: true
     }).then(({data})=>data), {
-        initialData: []
+        initialData: [],
+        enabled: authType !== "unauthenticated"
     })
     const {isError, isLoading, data} = inbox_query
     useEffect(()=>{ 
