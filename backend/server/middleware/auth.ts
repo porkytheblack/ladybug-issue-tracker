@@ -17,12 +17,10 @@ export const auth_middleware = (req: extRequest, res: Response, next: NextFuncti
             Error: "Access token is undefined"
         })
         if(access_token.length == 0) return res.status(400).send({Error: "Invalid access token provided"})
-
         jwt.verify(access_token, process.env.access_token, (err, results)=>{
             if(err){
                 res.sendStatus(403)
             }else{
-                console.log(results)
                 const {avatar, user_name, email} = results
                 req.user = {avatar, user_name, email}
                 next()

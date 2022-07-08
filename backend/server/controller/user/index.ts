@@ -6,7 +6,7 @@ import TeamModel from "../../models/team_schema"
 import InboxModel from "../../models/inbox_schema"
 import ProjectModel from "../../models/project_schema"
 import { check_for_required_fields, verify_body } from "../helpers";
-import _, { isNull } from "lodash"
+import _, { isNull, isUndefined } from "lodash"
 import {hashSync} from "bcrypt"
 
 
@@ -34,18 +34,16 @@ export const create_user = (req: Request, res: Response) =>{
 
 export const update_user = (req: extRequest, res: Response) =>{
     const {user_name} = req.user
-
+    console.log(req.body)
     if(user_name.length > 0){
         verify_body(req.body).then((body)=>{
-            console.log(body)
             if(typeof body.password !== "undefined") body.password = hashSync(body.password, 15)
             UserModel.updateOne({
                 user_name: user_name
             }, {
                 $set: body
             }).then((doc)=>{
-                if( !Object.keys(body).includes("avatar") || !Object.keys(body).includes("user_name")  ) return res.status(200).send(doc)
-                
+                if(!(!isUndefined(body.user_name) || !isUndefined(body.avatar))) return res.sendStatus(200)
                 Promise.all([
                 ProjectModel.updateMany({
                     "issues.assignees.user_name": user_name
@@ -66,12 +64,23 @@ export const update_user = (req: extRequest, res: Response) =>{
                 },{
                     $set: _.isUndefined(body.avatar) ?  { "issues.$[].comments.$[element].author.user_name": body.user_name } : {"issues.$[].comments.$[element].author.avatar": body.avatar}
                 }, {
-                    arrayFilter: [
+                    arrayFilters: [
                         {
                             "element.author.user_name": user_name
                         }
                     ]
-                }).then(()=> true).catch((e)=>{
+                }).then(()=> {
+                    return true
+                }).catch((e)=>{
+                    return e
+                }), 
+                InboxModel.updateMany({
+                    "from.user_name": user_name
+                },{
+                    $set: _.isUndefined(body.avatar) ?  { "from.user_name": body.user_name } : {"from.avatar": body.avatar}
+                }).then(()=> {
+                    return true
+                }).catch((e)=>{
                     return e
                 }),
                 TeamModel.updateMany({

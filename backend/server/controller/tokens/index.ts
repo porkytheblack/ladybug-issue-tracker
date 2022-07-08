@@ -56,7 +56,6 @@ export const login = (req: Request, res: Response) =>{
                 ]
             }, (err, results)=>{
                 if(err){
-                    console.log("25", err)
                     res.status(500).send({
                         Error: "An error occured while retrieving the user"
                     })
