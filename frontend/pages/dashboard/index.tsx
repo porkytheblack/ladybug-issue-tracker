@@ -46,7 +46,7 @@ function Dashboard() {
                 <EmptyAndLoading showLoading={true} loading={is_loading} className="flex bugs-col flex-col items-center justify-start pt-9 w-full " >
                   { 
                     issues.map((issue, key)=>(
-                      <BugCard issue={issue} count={key} />  
+                      <BugCard key={key} issue={issue} count={key} />  
                     ))
                   }
                 </EmptyAndLoading>
@@ -87,7 +87,7 @@ function Dashboard() {
               <EmptyAndLoading showLoading={true} loading={loading}  className="flex  flex-row flex-wrap pt-5 items-start justify-center ">
                {
                   projects.filter(({team: _team})=>_team == team || team == "all").map(({_id, project_name, team, platform, issues: proj_issues})=>(
-                    <Col className=' !flex !mt-0 !ml-0 !pt-0 !h-[280px]' span={7} >
+                    <Col key={_id} className=' !flex !mt-0 !ml-0 !pt-0 !h-[280px]' span={7} >
                       <ProjectCardWithActions issues={isUndefined(issues) ? [] : proj_issues as any} project_name={project_name} platform={platform} team={team} _id={_id} />
                     </Col>
                   ))

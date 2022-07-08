@@ -158,10 +158,10 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
   return (
     <PageBaseContainer  >
         <Drawer  destroyOnClose   title="Add Issue" width="60vw" onClose={()=>{set_issue_modal_visible(false)}} visible={issue_modal_visible} footer={[
-          <Button onClick={handleSubmit} >
+          <Button key={"save"} onClick={handleSubmit} >
             Save
           </Button>,
-          <Button onClick={()=>set_issue_modal_visible(false)} >
+          <Button key={"cancel"} onClick={()=>set_issue_modal_visible(false)} >
             Cancel
           </Button>
         ]} >
@@ -203,7 +203,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
                                   {
                                    typeof members !== "undefined" && members.map(({user_name, avatar})=>{
                                       return (
-                                        <Checkbox className="!flex !flex-row items-center !w-full !h-full justify-between" value={user_name} >
+                                        <Checkbox key={user_name} className="!flex !flex-row items-center !w-full !h-full justify-between" value={user_name} >
                                       <div className="flex flex-row items-center w-[250px] justify-between">
                                         <GeneralAvatar avatar={avatar} user_name={user_name} />
                                         <Text className=' !text-black' >
@@ -235,7 +235,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
             <Avatar.Group>
               {
                 flatten(members).map(({user_name, avatar})=>(
-                  <GeneralAvatar user_name={user_name} avatar={avatar} />
+                  <GeneralAvatar key={user_name} user_name={user_name} avatar={avatar} />
                 ))
               }
             
@@ -315,7 +315,7 @@ const activeFilter = atom((get)=>get(activeFilterAtomAtom))
               if(status_filter == "all") return true 
               return status == status_filter
             }).map((issue: IssueInterface, key)=>(
-              <BugCard issue={issue} count={key} />  
+              <BugCard key={key} issue={issue} count={key} />  
             ))
           }
         </EmptyAndLoading >

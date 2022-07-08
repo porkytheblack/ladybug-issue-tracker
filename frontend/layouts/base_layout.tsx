@@ -4,7 +4,7 @@ import BaseModalContainer from '../components/Containers/BaseModalContainer'
 
 function BaseLayout({children}:{children: ReactNode | ReactNode[]}) {
   return (
-    <BaseLayoutContainer className="w-screen relative h-full min-h-screen flex  flex-col items-center justify-start" >
+    <BaseLayoutContainer suppressHydrationWarning className="w-screen relative h-full min-h-screen flex  flex-col items-center justify-start" >
             {children}
             
     </BaseLayoutContainer>

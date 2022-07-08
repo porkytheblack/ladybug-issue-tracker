@@ -44,7 +44,7 @@ function Layout({children}: {children: ReactNode | ReactNode[]}) {
     
     if((!isUndefined(getUserAuthType) || isUndefined(getUserAuthType)) && getUserAuthType == "unauthenticated" && dashboard_routes.includes(pathname)){
         return (
-            <div className="flex flex-col w-screen h-screen items-center justify-center">
+            <div suppressHydrationWarning className="flex flex-col w-screen h-screen items-center justify-center">
                 <Spin size="large" />
                 <Text className='!text-black font-semibold text-xl mt-3 ' >
                     ladybug
@@ -65,8 +65,9 @@ function Layout({children}: {children: ReactNode | ReactNode[]}) {
         )
     }else{
         return (
-            
+                <div>
                 {children}
+                </div>
             
         )
     }

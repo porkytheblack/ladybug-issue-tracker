@@ -47,7 +47,7 @@ function IssueStatusCard() {
                     val: n(not_fixed)
                 }
             ].map(({name, val})=>(
-                <Row className="w-full mb-1 " align="middle" justify='space-between' >
+                <Row  key={name} className="w-full mb-1 " align="middle" justify='space-between' >
                     <Col span={6} >
                         <Text  >
                             {name}

@@ -43,7 +43,7 @@ function BaseButtonDropdown({default_val, options, get_current_val, title, onCli
                 {
                     
                    options.map(({name, icon: Icon})=>(
-                        <Radio className=" justify-start" value={name.toLocaleLowerCase()} >
+                        <Radio key={name} className=" justify-start" value={name.toLocaleLowerCase()} >
                             <div className="flex flex-row items-center justify-between w-[140px]">
                                 <Text className='ml-2 capitalize ' >
                                     {name}

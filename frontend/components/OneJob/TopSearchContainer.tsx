@@ -123,13 +123,13 @@ function TopSearchContainer({change_filter}: {change_filter: (val: string)=>void
                     </Option>
                     {
                         team_names.map((team_name)=>(
-                            <Option  value={team_name} >
+                            <Option key={team_name}  value={team_name} >
                                 {team_name}
                             </Option>
                         ))
                     }
                     
-                </Select>
+            </Select>
             </Col>
             <Col span={3}  >
                 <Select onChange={(val)=>{

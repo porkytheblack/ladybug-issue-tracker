@@ -16,7 +16,7 @@ function GeneralAvatar({avatar, user_name}:{avatar?: string, user_name?: string}
                 
             ) : (
                 <div className="flex flex-row items-center bg-yellow-600 rounded-full justify-center rounde-full w-[40px] h-[40px] overflow-hidden " >
-                    <Image width={40} height={40} src={avatar} referrerPolicy="no-referrer" />
+                    <Image alt={user_name} width={40} height={40} src={avatar} referrerPolicy="no-referrer" />
                 </div>
             )
         }

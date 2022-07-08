@@ -179,7 +179,7 @@ function Teams() {
                           </Text>
                           {
                             teams.filter((team)=>team.team_name == team_name)[0].members?.map(({user_name, avatar})=>(
-                              <div className="flex flex-row w-full items-center justify_start">
+                              <div key={user_name} className="flex flex-row w-full items-center justify_start">
                                 <GeneralAvatar avatar={avatar} user_name={user_name} />
                                 <Text className='!text-black ml-5 ' >
                                      @ {user_name}
@@ -212,7 +212,7 @@ function Teams() {
             
             {
               teams.filter(({team_name})=> search_filter.trim().length > 0 ? team_name?.toLocaleLowerCase().includes(search_filter.toLocaleLowerCase(), 0): true).map(({team_name, team_creator, members, _id})=>(
-                <TeamCard onClickEdit={()=>{
+                <TeamCard key={_id} onClickEdit={()=>{
                   change_action("edit")
                   set_team_name(is_def_string(team_name))
                   set_active_team(is_def_string(_id))

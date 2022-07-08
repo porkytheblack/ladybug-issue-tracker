@@ -26,7 +26,7 @@ function MultipleSelectDropdown({tags, get_active, default_vals}:{tags: string[]
             }} >
                     <Checkbox className="invisible" ></Checkbox>
                     {tags.map((tag)=>(
-                        <Checkbox value={tag} className="capitalize" >
+                        <Checkbox key={tag} value={tag} className="capitalize" >
                             {tag}
                         </Checkbox>
                     ))}

@@ -12,7 +12,7 @@ function Platform({platform}:{platform?: string}) {
             plat == "desktop" ? <DesktopOutlined className='icon' /> :
             plat == "android" ? <AndroidOutlined className='icon' /> :
             plat == "ios" ? <AppleOutlined className='icon' /> :
-            plat == "web" ? <GlobalOutlined className='icon' />: <Image src="/icons/wearable.svg" width={48} height={48} />
+            plat == "web" ? <GlobalOutlined className='icon' />: <Image alt={"wearable"} src="/icons/wearable.svg" width={48} height={48} />
         }
     </PlatformContainer>
   )

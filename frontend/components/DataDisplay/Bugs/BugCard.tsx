@@ -95,7 +95,7 @@ function BugCard({issue, count}:{issue: IssueInterface, count: number}) {
                 <Avatar.Group maxCount={3} >
                     {
                         issue?.assignees?.map(({user_name, avatar})=>(
-                            <GeneralAvatar user_name={user_name} avatar={avatar} />
+                            <GeneralAvatar key={user_name} user_name={user_name} avatar={avatar} />
                         ))
                     }
                 </Avatar.Group>

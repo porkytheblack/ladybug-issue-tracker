@@ -94,7 +94,7 @@ function TeamCard({
         <Avatar.Group>
               {
                 !isUndefined(members) && members.map(({user_name, avatar})=>(
-                  <GeneralAvatar user_name={user_name} avatar={avatar} />
+                  <GeneralAvatar key={user_name} user_name={user_name} avatar={avatar} />
                 ))
               }
             </Avatar.Group>

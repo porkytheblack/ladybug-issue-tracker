@@ -48,7 +48,7 @@ function MyApp({ Component, pageProps }: AppProps) {
               <GlobalStyles/>
               <ThemeProvider theme={theme} >
               <InstantSearch searchClient={client} indexName='projects' >
-                <Layout>
+                <Layout  >
 
                   <Component {...pageProps} />
                 </Layout>

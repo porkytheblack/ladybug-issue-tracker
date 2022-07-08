@@ -73,7 +73,7 @@ function TagContainer({}: {}) {
         <div className="flex flex-row w-full items-center justify-start flex-wrap ">
             {
                 tags?.map(({tag_name, tag_color, _id: tag_id})=>(
-                    <Tag closable  onClose={()=>{
+                    <Tag closable key={tag_id}  onClose={()=>{
                         delete_tag(tag_id)
                     }} className="!mr-1 !flex !flex-row !items-center !justify-between !mb-1" color={tag_color} >
                         {tag_name}

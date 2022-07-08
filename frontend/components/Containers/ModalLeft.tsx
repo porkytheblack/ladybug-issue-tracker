@@ -70,7 +70,7 @@ function ModalLeft() {
             }} className='!flex shadow-lg bg-white !p-5 !flex-col !items-start !justify-start' >
                 {
                     IssueTypes.map(({name})=>(
-                        <Radio value={name.toLocaleLowerCase()} >
+                        <Radio key={name} value={name.toLocaleLowerCase()} >
                             {name}
                         </Radio>
                     ))
@@ -91,7 +91,7 @@ function ModalLeft() {
             }}  className='!flex shadow-lg bg-white !p-5 !flex-col !items-start !justify-start' >
                 {
                     severity_levels.map(({name})=>(
-                        <Radio value={name.toLocaleLowerCase()} >
+                        <Radio key={name} value={name.toLocaleLowerCase()} >
                              {name}
                         </Radio>
                     ))
@@ -114,7 +114,7 @@ function ModalLeft() {
             }}  className='!flex shadow-lg bg-white !p-5 !flex-col !items-start !justify-start' >
                 {
                     general_statuses.map(({name})=>(
-                        <Radio value={name.toLocaleLowerCase()} >
+                        <Radio key={name} value={name.toLocaleLowerCase()} >
                             {name}
                         </Radio>
                     ))

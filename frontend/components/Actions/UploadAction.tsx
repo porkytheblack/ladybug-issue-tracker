@@ -81,7 +81,7 @@ function UploadAction({onChange}:{onChange?: (val: any)=>void}) {
              <EmptyAndLoading showLoading={true} loading={loading}  className='w-full  flex flex-col items-center justify-start' empty_description='No attachments provided'  >
               {
                 attachments.map(({attachment_name:name, file_type:type, attachment_key:key})=>(
-                  <div className="flex flex-row w-full items-center justify-start">
+                  <div key={key} className="flex flex-row w-full items-center justify-start">
                     <PaperClipOutlined className='mr-2' />
                       {( list.includes(name) && attachments.map(({attachment_name:name})=>name).includes(name) ) && <Text type="success" className="font-semibold !text-green-800 text-md" >
                         {name}

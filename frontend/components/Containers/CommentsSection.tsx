@@ -27,7 +27,7 @@ function CommentsSection() {
                 {
                     comments?.filter(({issue_id})=>issue_id == current_issue).map(({author, description}, key)=>{
                     return (
-                        <Steps.Step icon={
+                        <Steps.Step key={key} icon={
                             <GeneralAvatar avatar={author.avatar} user_name={author.user_name} />
                         } description={
                             <div className={`flex flex-col items-center transition-all duration-300 justify-start relative ${ active_comment !== key ? "h-[80px]": "h-full"} overflow-hidden rounded-md border-[0.2px]  border-gray-100 !bg-[#F2F5FA]   w-full`}>

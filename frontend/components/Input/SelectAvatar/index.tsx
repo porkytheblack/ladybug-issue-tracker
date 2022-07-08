@@ -43,7 +43,7 @@ function SelectAvatar() {
     <Row align='top' justify='space-between' className="w-3/4" gutter={[8,8]}  >
         {
             the_schmoes.map((schmoe)=>(
-                <Col span={3} >
+                <Col key={schmoe} span={3} >
                     <SelectedAvatar schmoe={schmoe} set_active={set_schmoe} active_schmoe={active_schmoe} />
                 </Col>
             ))

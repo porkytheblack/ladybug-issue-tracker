@@ -7,7 +7,7 @@ function Custom404() {
     const {back} = useRouter()
   return (
     <div className="flex flex-col w-screen h-screen items-center justify-center">
-        <Image src={"/illustrations/404.svg"} width="300px" height="300px" />
+        <Image alt="404" src={"/illustrations/404.svg"} width="300px" height="300px" />
         <Button onClick={back} >
             Back
         </Button>

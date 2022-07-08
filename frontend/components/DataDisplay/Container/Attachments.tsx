@@ -21,7 +21,7 @@ function Attachments() {
                     {
                         attachments?.filter(({file_type, attachment_key})=>file_type.includes("image") && !isUndefined(attachment_key) ).map(({file_type, attachment_key, attachment_name})=>(
                             
-                                        <ImageWithPreview _key={attachment_key} image={`${backend_url}/asset/${attachment_key}`} />
+                                        <ImageWithPreview key={attachment_key} _key={attachment_key} image={`${backend_url}/asset/${attachment_key}`} />
                                    
                             
                         ))
@@ -32,7 +32,7 @@ function Attachments() {
                     {
                         attachments?.filter(({file_type})=>!file_type.includes("image")).map(({file_type, attachment_key, attachment_name})=>(
                             
-                                        <DocAttachment _key={attachment_key} name={attachment_name} />
+                                        <DocAttachment key={attachment_key} _key={attachment_key} name={attachment_name} />
                                     
                              
                         ))

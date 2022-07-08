@@ -64,7 +64,7 @@ function AssigneesComponent() {
     <Avatar.Group maxCount={5} >
         {
             assignees?.map(({avatar, user_name, _id: assignee_id})=>(
-                <div className="flex flex-row group overflow-hidden items-center justify-center rounded-full relative">
+                <div key={assignee_id} className="flex flex-row group overflow-hidden items-center justify-center rounded-full relative">
                     <GeneralAvatar avatar={avatar} user_name={user_name}  />
                      {creator?.user_name !== user_name && <div className="flex-row cursor-pointer items-center hidden group-hover:flex justify-center w-full h-full absolute top-0 left-0 bg-[#00000060] ">
                         <Tooltip title={`Remove ${user_name}`} >
@@ -90,7 +90,7 @@ function AssigneesComponent() {
             >
                 {members.filter(({user_name})=>!assignees?.map(({user_name})=>user_name)?.includes(is_def_string(user_name))).map(({user_name, _id})=>(
                     
-                    <Checkbox value={_id} > 
+                    <Checkbox key={_id} value={_id} > 
                         {user_name}   
                     </Checkbox>   
                 ))}
