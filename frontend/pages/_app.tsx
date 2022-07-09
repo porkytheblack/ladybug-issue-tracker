@@ -13,6 +13,8 @@ import algoliasearch from 'algoliasearch'
 import { Select, Typography } from 'antd';
 import { CookiesProvider } from 'react-cookie';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { is_def_string } from '../helpers';
+import { useEffect, useState } from 'react';
 
 const GlobalStyles = createGlobalStyle`
   *{
@@ -34,12 +36,16 @@ export const {Option} = Select
 
 function MyApp({ Component, pageProps }: AppProps) {
   const appClient = new QueryClient()
+  const [origin, set_origin] = useState<string>("")
+  useEffect(()=>{
+    set_origin(window.origin)
+  }, [])
 
   return    ( 
 
                   <CookiesProvider>
                     <QueryClientProvider client={appClient} >
-                  <Auth0Provider  domain='dev-1r9889va.us.auth0.com' clientId='MC8VL8hqPB1QByekIIM9Cs38fnfevGla' redirectUri={window?.origin} >
+                  <Auth0Provider  domain='dev-1r9889va.us.auth0.com' clientId='MC8VL8hqPB1QByekIIM9Cs38fnfevGla' redirectUri={origin} >
                 <Head>
                   <title>LadyBug</title>
                   <meta name="description" content="The only bug tracker you will ever need" />
