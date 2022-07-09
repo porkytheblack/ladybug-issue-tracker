@@ -1,4 +1,4 @@
-export const backend_url: string = "http://localhost:8080"
+export const backend_url: string = "https://ladybug-355721.uc.r.appspot.com/"
 import { BugOutlined, SearchOutlined, QuestionOutlined, BulbOutlined, ToolOutlined, StarOutlined } from "@ant-design/icons"
 import { ForwardRefExoticComponent, ReactNode } from "react"
 
