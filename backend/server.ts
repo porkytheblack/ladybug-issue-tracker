@@ -29,7 +29,7 @@ app.use(express.urlencoded({extended: true}))
 app.use(express.json());
 
 
-const PORT = process.env.dev_port || 4000 || 4001
+const PORT = process.env.PORT || 4000 || 4001
 
 app.use("/", require("./server/router/index"))
 

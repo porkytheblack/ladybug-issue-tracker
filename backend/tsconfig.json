@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-      "target": "es5",
+      "target": "es6",
       "module": "commonjs",
       "moduleResolution": "node",
       "esModuleInterop": true,
@@ -16,8 +16,8 @@
       "lib": ["dom", "dom.iterable", "esnext"],
       "allowSyntheticDefaultImports": true,
       "resolveJsonModule": true,
-      "jsx": "react",
-      "types": ["node"]
+      "types": ["node"],
+      "noImplicitAny": false
     },
     "files": ["./node_modules/@types/node/index.d.ts"],
     "include": ["/*", "server/**/*", "server.ts", "db.ts"],
