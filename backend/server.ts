@@ -1,14 +1,14 @@
 import path from "path"
+import express from "express"
+import cors from "cors"
+import dotenv from "dotenv"
+import morgan from "morgan"
+import client from "./db"
+import cookieParser from "cookie-parser"
 
-const express = require("express")
 const app = express()
-const cors = require("cors")
-const dotenv = require("dotenv")
-const morgan = require("morgan")
-const client = require("./db")
-const cookieParser = require("cookie-parser")
 
-app.use(express.json({limit: "20mb", extended: true}))
+app.use(express.json({limit: "20mb"}))
 app.use(express.urlencoded({limit: "20mb", extended: true}))
 
 
@@ -34,6 +34,11 @@ const PORT = process.env.PORT || 4000 || 4001
 app.use("/", require("./server/router/index"))
 
     
-app.listen(PORT, ()=>{
+app.listen(PORT, async ()=>{
+        await client.then(()=>{
+                console.log("Connected to db server successfully")
+        }).catch((e)=>{
+                console.log("An error occured while attempting connection to db")
+        })
         console.log(`App is listening on PORT: ${PORT}`);
 })

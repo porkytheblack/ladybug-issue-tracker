@@ -510,7 +510,6 @@ export const get_project_by_id = (req: extRequest, res: Response) =>{
 export const get_issue_by_id = (req: extRequest, res: Response) =>{
     const  id = req.params.issue_id 
     const {user_name} = req.user
-    console.log(id.toString().length)
     if(typeof id == "undefined" || id.length == 0) return res.status(400).send({Error: "issue id not specified"})
     ProjectModel.find({
         "issues._id": id,
