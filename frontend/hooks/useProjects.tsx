@@ -2,6 +2,7 @@ import axios from 'axios'
 import { useAtom } from 'jotai'
 import React, { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
+import { backend_url } from '../globals'
 import { projectInterface } from '../globaltypes'
 import { project_fetch_tick, userAuthTypeAtom } from '../jotai/state'
 
@@ -15,7 +16,7 @@ function useProjects(): {
     const [tick, ] = useAtom(project_fetch_tick)
     const [authType, setAuthType] = useAtom(userAuthTypeAtom)
     const [projects, set_projects] = useState<projectInterface[]>([])
-    const projects_query = useQuery(["projects", tick], ()=>axios.get("http://localhost:8080/projects", {withCredentials: true}).then(({data})=>data as projectInterface[]), {
+    const projects_query = useQuery(["projects", tick], ()=>axios.get(`${backend_url}/projects`, {withCredentials: true}).then(({data})=>data as projectInterface[]), {
       enabled: authType !== "unauthenticated"
     })
     useEffect(()=>{

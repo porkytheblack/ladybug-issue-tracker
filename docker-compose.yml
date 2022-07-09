@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  nginx:
+    depends_on:
+      - backend
+      - client
+    restart: always 
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx 
+    ports:
+      - "4000:4000"
+
+  backend:
+    build:
+      dockerfile: Dockerfile
+      context: "./backend"
+    
+  
+  client:
+    stdin_open: true
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+   
