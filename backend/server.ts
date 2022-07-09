@@ -18,11 +18,13 @@ dotenv.config({path: path.resolve(`${__dirname}/.env`)})
 app.use(cookieParser())
 app.options("*", cors({
         origin: ["https://bug-tracker-five.vercel.app","https://bug-tracker-porkytheblack.vercel.app","https://bug-tracker-git-main-porkytheblack.vercel.app", "*"],
-        credentials: true
+        credentials: true,
+        optionsSuccessStatus: 200
 }))
 app.use(cors({
         origin: ["https://bug-tracker-five.vercel.app","https://bug-tracker-porkytheblack.vercel.app","https://bug-tracker-git-main-porkytheblack.vercel.app", "*"],
-        credentials: true
+        credentials: true,
+        optionsSuccessStatus: 200
 }));
 app.use(morgan('tiny'));
 app.use(express.urlencoded({extended: true}))

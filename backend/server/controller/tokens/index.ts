@@ -63,7 +63,6 @@ export const login = (req: Request, res: Response) =>{
                     if(Object.keys(results).length > 0){
                         compare(password, results.password, async (err, is_password)=>{
                             if(err){
-                                console.log("33", err)
                                 res.status(500).send({
                                     Error: err,
                                     message: "An error occured while trying to verify the password"
@@ -72,9 +71,10 @@ export const login = (req: Request, res: Response) =>{
                                 if(!is_password) return res.status(400).send({Error: "Invalid password provided"})
                                 const {user_name, email, authType, avatar} = results
                                 res.cookie("access_token", genAccessToken(email, user_name, avatar), {
-                                    secure: false,
+                                    secure: true,
                                     httpOnly: true,
-                                    expires: dayjs().add(30, "minutes").toDate()
+                                    expires: dayjs().add(30, "minutes").toDate(),
+                                    sameSite: "none"
                                 })
                                 
                                 
@@ -123,9 +123,10 @@ export const login = (req: Request, res: Response) =>{
                         if(Object.keys(data).length == 0) return res.status(404).send({Error: "No such user exists"})
                         const {email, avatar, authType, user_name} = data
                         res.cookie("access_token", genAccessToken(email, user_name, avatar), {
-                            secure: false,
+                            secure: true,
                             httpOnly: true,
-                            expires: dayjs().add(30, "minutes").toDate()
+                            expires: dayjs().add(30, "minutes").toDate(),
+                            sameSite: "none"
                         })
                         res.status(200).send({
                             email,
@@ -172,9 +173,10 @@ export const refreshtoken = (req: Request, res: Response)=>{
                     const {email, user_name, avatar} = user as any
                     res.cookie(
                         "access_token", genAccessToken(email, user_name, avatar),{
-                            secure: false,
+                            secure: true,
                             httpOnly: true,
-                            expires: dayjs().add(30, "minutes").toDate()
+                            expires: dayjs().add(30, "minutes").toDate(),
+                            sameSite: "none"
                         }
                     )      
                     res.sendStatus(200)
